@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Fortify\Fortify;
 
@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         $this->configureAuthRateLimiters();
         $this->configureDefaults();
     }
-
 
     /**
      * PAWL12: a credential attempt is limited per normalized email + client IP.
