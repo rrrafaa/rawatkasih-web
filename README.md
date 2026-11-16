@@ -17,6 +17,8 @@ php artisan serve --port=8090
 
 Isi `SUPABASE_PUBLISHABLE_KEY` di `.env` dengan publishable key aktif dari proyek `arxxfqpgbxthnybznkiw`. URL sudah disetel di `.env.example`. Key yang dibutuhkan bukan `service_role`. Jangan menyalin kunci rahasia ke source atau mengirimkannya ke browser.
 
+Jika ingin memakai alamat lokal `http://127.0.0.1:8000/login`, jalankan `php artisan serve --host=127.0.0.1 --port=8000` dan atur `APP_URL=http://127.0.0.1:8000` di `.env`. Jangan timpa file `.env` lama atau mengganti `APP_KEY` aplikasi yang sudah digunakan. Perintah di atas (`npm run build`) untuk build asset frontend; saat mengembangkan style, jalankan `npm run dev` di terminal kedua. Jika halaman login terlihat seperti HTML tanpa CSS, periksa request `/css/rawatkasih.css` di browser DevTools > Network dan jalankan `php artisan optimize:clear`. Style inti halaman login disajikan dari `public/css/rawatkasih.css`, sehingga tidak memerlukan Vite aktif; bundle Vite tetap digunakan bila tersedia untuk font dan komponen lainnya.
+
 Buka `http://localhost:8090/login`. Gunakan akun yang sudah dibuat pada Supabase Auth dan mempunyai baris `public.profiles` dengan ID yang sama, `is_active=true`, serta role `admin`, `caregiver`, atau `family`. Password dikelola Supabase Auth. Tidak ada akun/password demo tetap di repository dan tidak ada pendaftaran publik.
 
 Tidak perlu menjalankan migration Laravel untuk login. Tabel bisnis yang sudah ada di Supabase diakses melalui Data API dengan JWT pengguna, sehingga RLS berlaku. Jangan menjalankan `migrate:fresh`, `db reset`, atau seeder starter ke proyek bersama.
