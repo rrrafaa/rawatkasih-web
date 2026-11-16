@@ -1,0 +1,1953 @@
+{
+  "tables": [
+    {
+      "name": "public.profiles",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "full_name",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "email",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "phone",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "role",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'family'::text",
+          "check": "role = ANY (ARRAY['admin'::text, 'caregiver'::text, 'family'::text])"
+        },
+        {
+          "name": "is_active",
+          "data_type": "boolean",
+          "format": "bool",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "false"
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "care_task_occurrences_completed_by_fkey",
+          "source_table": "public.care_task_occurrences",
+          "source_columns": [
+            "completed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "profiles_id_fkey",
+          "source_table": "public.profiles",
+          "source_columns": [
+            "id"
+          ],
+          "target_table": "auth.users",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_links_user_id_fkey",
+          "source_table": "public.family_links",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "caregiver_assignments_user_id_fkey",
+          "source_table": "public.caregiver_assignments",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "consents_recorded_by_fkey",
+          "source_table": "public.consents",
+          "source_columns": [
+            "recorded_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_status_history_changed_by_fkey",
+          "source_table": "public.care_task_status_history",
+          "source_columns": [
+            "changed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "daily_notes_caregiver_id_fkey",
+          "source_table": "public.daily_notes",
+          "source_columns": [
+            "caregiver_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_updates_author_id_fkey",
+          "source_table": "public.family_updates",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_reporter_id_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_resolved_by_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "resolved_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incident_status_history_changed_by_fkey",
+          "source_table": "public.incident_status_history",
+          "source_columns": [
+            "changed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "visit_requests_requester_id_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "requester_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "visit_requests_reviewed_by_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "reviewed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "audit_logs_actor_id_fkey",
+          "source_table": "public.audit_logs",
+          "source_columns": [
+            "actor_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.residents",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "full_name",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "birth_date",
+          "data_type": "date",
+          "format": "date",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "gender",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ],
+          "check": "gender = ANY (ARRAY['male'::text, 'female'::text, 'other'::text, 'undisclosed'::text])"
+        },
+        {
+          "name": "room",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "admitted_at",
+          "data_type": "date",
+          "format": "date",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'active'::text",
+          "check": "status = ANY (ARRAY['active'::text, 'inactive'::text, 'archived'::text])"
+        },
+        {
+          "name": "archived_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "resident_private_details_resident_id_fkey",
+          "source_table": "public.resident_private_details",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_links_resident_id_fkey",
+          "source_table": "public.family_links",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "caregiver_assignments_resident_id_fkey",
+          "source_table": "public.caregiver_assignments",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "consents_resident_id_fkey",
+          "source_table": "public.consents",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_templates_resident_id_fkey",
+          "source_table": "public.care_task_templates",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "daily_notes_resident_id_fkey",
+          "source_table": "public.daily_notes",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_updates_resident_id_fkey",
+          "source_table": "public.family_updates",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_resident_id_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "visit_requests_resident_id_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.resident_private_details",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "emergency_contact_name",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "emergency_contact_phone",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "emergency_contact_relation",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "blood_type",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "allergies",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "health_conditions",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "mobility_notes",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "dietary_notes",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "care_instructions",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "resident_id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "resident_private_details_resident_id_fkey",
+          "source_table": "public.resident_private_details",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.family_links",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "relationship",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'family'::text"
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'pending'::text",
+          "check": "status = ANY (ARRAY['pending'::text, 'verified'::text, 'revoked'::text])"
+        },
+        {
+          "name": "verified_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "family_links_user_id_fkey",
+          "source_table": "public.family_links",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_links_resident_id_fkey",
+          "source_table": "public.family_links",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.caregiver_assignments",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "start_date",
+          "data_type": "date",
+          "format": "date",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "CURRENT_DATE"
+        },
+        {
+          "name": "end_date",
+          "data_type": "date",
+          "format": "date",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "notes",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "caregiver_assignments_user_id_fkey",
+          "source_table": "public.caregiver_assignments",
+          "source_columns": [
+            "user_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "caregiver_assignments_resident_id_fkey",
+          "source_table": "public.caregiver_assignments",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.consents",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "scope",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "check": "scope = ANY (ARRAY['family_visibility'::text, 'photo_share'::text])"
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'revoked'::text",
+          "check": "status = ANY (ARRAY['granted'::text, 'revoked'::text])"
+        },
+        {
+          "name": "recorded_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "recorded_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "revoked_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "notes",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "consents_resident_id_fkey",
+          "source_table": "public.consents",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "consents_recorded_by_fkey",
+          "source_table": "public.consents",
+          "source_columns": [
+            "recorded_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.care_task_templates",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "title",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "category",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'other'::text"
+        },
+        {
+          "name": "scheduled_time",
+          "data_type": "time without time zone",
+          "format": "time",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "instructions",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "frequency",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'daily'::text",
+          "check": "frequency = ANY (ARRAY['daily'::text, 'weekly'::text])"
+        },
+        {
+          "name": "days_of_week",
+          "data_type": "ARRAY",
+          "format": "_int4",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'{}'::integer[]"
+        },
+        {
+          "name": "is_active",
+          "data_type": "boolean",
+          "format": "bool",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "true"
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "care_task_templates_resident_id_fkey",
+          "source_table": "public.care_task_templates",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_occurrences_template_id_fkey",
+          "source_table": "public.care_task_occurrences",
+          "source_columns": [
+            "template_id"
+          ],
+          "target_table": "public.care_task_templates",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.care_task_occurrences",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "template_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "task_date",
+          "data_type": "date",
+          "format": "date",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'pending'::text",
+          "check": "status = ANY (ARRAY['pending'::text, 'completed'::text, 'deferred'::text, 'missed'::text])"
+        },
+        {
+          "name": "reason",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "completed_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "completed_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "care_task_status_history_occurrence_id_fkey",
+          "source_table": "public.care_task_status_history",
+          "source_columns": [
+            "occurrence_id"
+          ],
+          "target_table": "public.care_task_occurrences",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_occurrences_template_id_fkey",
+          "source_table": "public.care_task_occurrences",
+          "source_columns": [
+            "template_id"
+          ],
+          "target_table": "public.care_task_templates",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_occurrences_completed_by_fkey",
+          "source_table": "public.care_task_occurrences",
+          "source_columns": [
+            "completed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.care_task_status_history",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "format": "int8",
+          "options": [
+            "identity",
+            "updatable"
+          ],
+          "identity_generation": "ALWAYS"
+        },
+        {
+          "name": "occurrence_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "old_status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "new_status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "reason",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "changed_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "changed_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "care_task_status_history_occurrence_id_fkey",
+          "source_table": "public.care_task_status_history",
+          "source_columns": [
+            "occurrence_id"
+          ],
+          "target_table": "public.care_task_occurrences",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "care_task_status_history_changed_by_fkey",
+          "source_table": "public.care_task_status_history",
+          "source_columns": [
+            "changed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.daily_notes",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "caregiver_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "mood",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "meal_note",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "internal_note",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "recorded_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "daily_notes_resident_id_fkey",
+          "source_table": "public.daily_notes",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "daily_notes_caregiver_id_fkey",
+          "source_table": "public.daily_notes",
+          "source_columns": [
+            "caregiver_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.family_updates",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "author_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "summary",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "photo_path",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'draft'::text",
+          "check": "status = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])"
+        },
+        {
+          "name": "published_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "family_updates_author_id_fkey",
+          "source_table": "public.family_updates",
+          "source_columns": [
+            "author_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "family_updates_resident_id_fkey",
+          "source_table": "public.family_updates",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.incidents",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "reporter_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "category",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "severity",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'low'::text",
+          "check": "severity = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text, 'critical'::text])"
+        },
+        {
+          "name": "description",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "action_taken",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "occurred_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'open'::text",
+          "check": "status = ANY (ARRAY['open'::text, 'in_progress'::text, 'closed'::text])"
+        },
+        {
+          "name": "follow_up",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "resolved_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "resolved_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "incident_status_history_incident_id_fkey",
+          "source_table": "public.incident_status_history",
+          "source_columns": [
+            "incident_id"
+          ],
+          "target_table": "public.incidents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_resolved_by_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "resolved_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_reporter_id_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "reporter_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incidents_resident_id_fkey",
+          "source_table": "public.incidents",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.incident_status_history",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "format": "int8",
+          "options": [
+            "identity",
+            "updatable"
+          ],
+          "identity_generation": "ALWAYS"
+        },
+        {
+          "name": "incident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "old_status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "new_status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "changed_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "changed_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "incident_status_history_changed_by_fkey",
+          "source_table": "public.incident_status_history",
+          "source_columns": [
+            "changed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "incident_status_history_incident_id_fkey",
+          "source_table": "public.incident_status_history",
+          "source_columns": [
+            "incident_id"
+          ],
+          "target_table": "public.incidents",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.visit_requests",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "gen_random_uuid()"
+        },
+        {
+          "name": "resident_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "requester_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "requested_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "visitor_count",
+          "data_type": "integer",
+          "format": "int4",
+          "options": [
+            "updatable"
+          ],
+          "check": "visitor_count >= 1 AND visitor_count <= 20"
+        },
+        {
+          "name": "note",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "'pending'::text",
+          "check": "status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text, 'cancelled'::text])"
+        },
+        {
+          "name": "reviewed_by",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "reviewed_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "review_note",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "visit_requests_requester_id_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "requester_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "visit_requests_resident_id_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "resident_id"
+          ],
+          "target_table": "public.residents",
+          "target_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "visit_requests_reviewed_by_fkey",
+          "source_table": "public.visit_requests",
+          "source_columns": [
+            "reviewed_by"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.audit_logs",
+      "rls_enabled": true,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "format": "int8",
+          "options": [
+            "identity",
+            "updatable"
+          ],
+          "identity_generation": "ALWAYS"
+        },
+        {
+          "name": "actor_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "nullable",
+            "updatable"
+          ]
+        },
+        {
+          "name": "action",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ],
+          "check": "action = ANY (ARRAY['INSERT'::text, 'UPDATE'::text, 'DELETE'::text])"
+        },
+        {
+          "name": "target_table",
+          "data_type": "text",
+          "format": "text",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "target_id",
+          "data_type": "uuid",
+          "format": "uuid",
+          "options": [
+            "updatable"
+          ]
+        },
+        {
+          "name": "occurred_at",
+          "data_type": "timestamp with time zone",
+          "format": "timestamptz",
+          "options": [
+            "updatable"
+          ],
+          "default_value": "now()"
+        }
+      ],
+      "primary_keys": [
+        "id"
+      ],
+      "foreign_key_constraints": [
+        {
+          "name": "audit_logs_actor_id_fkey",
+          "source_table": "public.audit_logs",
+          "source_columns": [
+            "actor_id"
+          ],
+          "target_table": "public.profiles",
+          "target_columns": [
+            "id"
+          ]
+        }
+      ]
+    }
+  ]
+}

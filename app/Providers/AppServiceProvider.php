@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
+use App\Models\Resident;
+use App\Policies\ResidentPolicy;
+use App\Services\SupabaseSession;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Fortify::ignoreRoutes();
     }
 
     /**
@@ -23,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Resident::class, ResidentPolicy::class);
+        Auth::viaRequest('supabase', fn ($request) => app(SupabaseSession::class)->user($request));
         $this->configureDefaults();
     }
 
