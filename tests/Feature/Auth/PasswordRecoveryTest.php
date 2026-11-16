@@ -47,3 +47,15 @@ test('temporary update failure retains verified recovery for retry', function ()
     Http::fake(['*/auth/v1/verify' => Http::response(['access_token' => 'recovery-access']), '*/auth/v1/user' => Http::response([], 503)]);
     $this->post('/reset-password', ['token_hash' => 'valid', 'password' => 'long-enough-password', 'password_confirmation' => 'long-enough-password'])->assertStatus(503)->assertSessionHas('supabase_recovery.token', 'recovery-access');
 });
+
+test('recovery requests are throttled per email and IP after five attempts', function () {
+    Http::fake(['*/auth/v1/recover' => Http::response([], 200)]);
+    for ($i = 0; $i < 5; $i++) {
+        $this->from('/forgot-password')->post('/forgot-password', ['email' => 'limit-recovery@example.test'])
+            ->assertRedirect('/forgot-password');
+    }
+    $this->post('/forgot-password', ['email' => 'limit-recovery@example.test'])
+        ->assertStatus(429)
+        ->assertHeader('Retry-After');
+    Http::assertSentCount(5);
+});
