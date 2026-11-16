@@ -367,6 +367,7 @@ Dokumen proyek yang perlu dibaca oleh seluruh anggota:
 - [`docs/TEAM.md` — Pembagian tugas dan acceptance criteria](docs/TEAM.md).
 - [`docs/SUPABASE.md` — Kontrak data, RLS, auth, recovery, dan storage](docs/SUPABASE.md).
 - [`docs/PRD-REVIEW.md` — Perbandingan implementasi dengan PRD](docs/PRD-REVIEW.md).
+- [`docs/PAWL12-SECURITY-REVIEW.md` — Audit autentikasi dan keamanan berdasarkan materi PAWL12](docs/PAWL12-SECURITY-REVIEW.md).
 - [`docs/supabase-schema.json` — Snapshot metadata struktur database](docs/supabase-schema.json).
 - [`docs/team/` — Panduan modul anggota](docs/team/).
 
