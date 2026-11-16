@@ -143,9 +143,8 @@ return [
     */
 
     'features' => [
-        Features::registration(),
-        Features::resetPasswords(),
-        Features::emailVerification(),
+        // Public registration is deliberately disabled.
+
     ],
 
 ];

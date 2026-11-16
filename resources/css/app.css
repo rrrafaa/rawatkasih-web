@@ -1,3 +1,5 @@
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/plus-jakarta-sans/latin-700.css';
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 
@@ -64,3 +66,6 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* RawatKasih MVC screens use the standalone public/css/rawatkasih.css.
+   This Vite stylesheet provides Tailwind, Flux and local font packages. */

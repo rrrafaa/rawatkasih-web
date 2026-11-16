@@ -1,4 +1,4 @@
-composer check-platform-reqs/.phpunit.cache
+/.phpunit.cache
 /node_modules
 /public/build
 /public/fonts-manifest.dev.json
@@ -38,3 +38,19 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+
+# Environment files and private runtime data
+.env.*
+!.env.example
+*.pem
+*.key
+*.sql.gz
+*.dump
+/database/*.sqlite*
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/supabase/.temp/
+/supabase/.branches/
+/playwright-report/
+/test-results/
+/work/

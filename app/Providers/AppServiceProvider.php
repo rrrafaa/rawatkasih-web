@@ -2,11 +2,21 @@
 
 namespace App\Providers;
 
+use App\Models\Resident;
+use App\Policies\ResidentPolicy;
+use App\Services\SupabaseSession;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Fortify::ignoreRoutes();
     }
 
     /**
@@ -23,7 +33,36 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Resident::class, ResidentPolicy::class);
+        Auth::viaRequest('supabase', fn ($request) => app(SupabaseSession::class)->user($request));
+        $this->configureAuthRateLimiters();
         $this->configureDefaults();
+    }
+
+    /**
+     * PAWL12: a credential attempt is limited per normalized email + client IP.
+     * Middleware emits HTTP 429 and Retry-After instead of a validation redirect.
+     * Hash cache keys to avoid storing raw email addresses in cache metadata.
+     */
+    protected function configureAuthRateLimiters(): void
+    {
+        RateLimiter::for('login', function (Request $request) {
+            $input = $request->input('email');
+            $email = Str::lower(trim(is_string($input) ? $input : ''));
+
+            return Limit::perMinute(5)
+                ->by('login:'.hash('sha256', $email.'|'.$request->ip()))
+                ->response(fn (Request $request, array $headers) => $request->expectsJson()
+                    ? response()->json(['message' => 'Terlalu banyak percobaan. Coba lagi dalam satu menit.'], 429, $headers)
+                    : response()->view('errors.too-many-requests', [], 429, $headers));
+        });
+
+        RateLimiter::for('password-recovery', function (Request $request) {
+            $input = $request->input('email');
+            $email = Str::lower(trim(is_string($input) ? $input : ''));
+
+            return Limit::perMinute(5)->by('password-recovery:'.hash('sha256', $email.'|'.$request->ip()));
+        });
     }
 
     /**

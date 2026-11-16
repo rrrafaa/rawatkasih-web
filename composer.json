@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "rawatkasih/web",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "RawatKasih \u2014 Laravel MVC with Supabase Auth and RLS",
     "keywords": [
         "laravel",
         "framework"
@@ -48,7 +48,6 @@
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
-            "@php artisan migrate --force",
             "npm install",
             "npm run build"
         ],
