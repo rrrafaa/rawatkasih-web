@@ -74,14 +74,13 @@ Buka **PowerShell** atau terminal VS Code:
 ```powershell
 git clone https://github.com/rrrafaa/rawatkasih-web.git
 cd rawatkasih-web
-git fetch origin
-git switch feat/rrrafaa-supabase-auth-mvc
-git pull --ff-only origin feat/rrrafaa-supabase-auth-mvc
+git switch main
+git pull --ff-only origin main
 ```
 
 Repository: **https://github.com/rrrafaa/rawatkasih-web**.
 
-> **Penting:** Panduan ini menggunakan branch `feat/rrrafaa-supabase-auth-mvc`, bukan otomatis branch `main`. Jika folder proyek sudah ada, tidak perlu clone ulang; masuk ke folder tersebut, cek `git status`, dan perbarui branch yang sesuai.
+> **Asumsi panduan:** Fondasi autentikasi, MVC, dan tampilan RawatKasih dari branch `feat/rrrafaa-supabase-auth-mvc` **sudah di-merge ke `main`**. Karena itu anggota cukup menggunakan `main` terbaru sebagai dasar kerja. Jika folder proyek sudah ada, tidak perlu clone ulang; cek `git status` dan simpan perubahan lokal terlebih dahulu.
 
 ### Langkah 2 — Instal dependency
 
@@ -309,33 +308,39 @@ Dokumentasi lebih lanjut: [Integrasi Supabase](docs/SUPABASE.md).
 
 ## 🌿 8. Git Workflow untuk Kolaborasi
 
-**Jangan mengerjakan semua fitur langsung pada `main`.** Gunakan branch fitur dan Pull Request ke branch integrasi yang telah disepakati tim.
+**Jangan mengerjakan fitur langsung pada `main`.** Dalam panduan ini, fondasi Supabase Auth/MVC dianggap **sudah digabung ke `main`**. Setiap anggota mengambil kode terbaru dari `main`, bekerja di branch fitur masing-masing, lalu mengajukan **Pull Request ke `main`** setelah pengujian dan review.
 
-### Ambil pembaruan fondasi
+### Ambil pembaruan fondasi dari `main`
 
 ```powershell
+git status
 git fetch origin
-git switch feat/rrrafaa-supabase-auth-mvc
-git pull --ff-only origin feat/rrrafaa-supabase-auth-mvc
+git switch main
+git pull --ff-only origin main
 git status
 ```
 
-Jika sudah ada perubahan lokal, simpan/commit pekerjaan sebelum berpindah branch agar tidak tertimpa.
+Jika `git status` menampilkan perubahan lokal, simpan atau commit perubahan tersebut sebelum berpindah branch. Jangan menggunakan `git reset --hard` untuk mengatasi konflik tanpa memeriksa isi pekerjaan lokal.
 
 ### Buat branch sesuai modul
 
-Contoh **pilih satu**:
+Dari `main` yang sudah diperbarui, **pilih satu** branch untuk tugas anggota:
 
 ```powershell
+# Orang 1 — Perawatan & Manajemen Tugas
 git switch -c feat/care-tasks/checklist
 
-# Contoh alternatif untuk anggota lain:
+# Orang 2 — Catatan Perawatan & Kabar Keluarga
 # git switch -c feat/care-updates/timeline
+
+# Orang 3 — Portal Keluarga & Manajemen Kunjungan
 # git switch -c feat/family-visits/request
+
+# Orang 4 — Insiden & Monitoring Operasional
 # git switch -c feat/operations/incidents
 ```
 
-Branch contoh di atas dibuat dari fondasi auth saat ini. Untuk pekerjaan berikutnya, ikuti branch integrasi resmi (`develop` bila tim memakainya). Jangan menebak target merge dan jangan membuat branch baru dari branch fitur anggota lain.
+Perintah tanpa tanda `#` dijalankan untuk contoh **Orang 1**. Anggota lain membuat branch sesuai modulnya dari `main`, **bukan dari branch Orang 1**. Jika branch sudah tersedia di remote, gunakan `git fetch origin` dan checkout branch yang ada; jangan membuat duplikat.
 
 ### Commit, push, dan Pull Request
 
@@ -348,9 +353,9 @@ git commit -m "feat(care-tasks): tambah checklist perawatan"
 git push -u origin feat/care-tasks/checklist
 ```
 
-Periksa staged diff sebelum commit untuk memastikan tidak ada credential atau data privat. Buat Pull Request, jelaskan ruang lingkup, lampirkan langkah pengujian dan screenshot bila relevan, lalu minta review.
+Ganti nama branch serta pesan commit sesuai modul yang dikerjakan. Periksa perubahan yang sudah di-*stage* sebelum commit agar tidak ada kredensial atau data pribadi. Kemudian buat **Pull Request dari branch fitur ke `main`**, lampirkan ringkasan, langkah pengujian, dan screenshot jika relevan. Minta review anggota lain; merge setelah pemeriksaan selesai.
 
-**Contoh format commit:** `feat(auth): ...`, `feat(care-updates): ...`, `fix(login): ...`, `test(visits): ...`, dan `docs(readme): ...`.
+**Contoh format commit:** `feat(care-tasks): ...`, `feat(care-updates): ...`, `feat(family-visits): ...`, `feat(operations): ...`, `fix(login): ...`, dan `docs(readme): ...`.
 
 ## 🔒 9. Keamanan Repository
 
