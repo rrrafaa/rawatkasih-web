@@ -51,12 +51,31 @@ test('invalid credentials produce a generic error', function () {
     $this->post('/login', ['email' => 'missing@example.test', 'password' => 'bad'])->assertSessionHasErrors(['email' => 'Tidak dapat masuk. Periksa kredensial atau hubungi admin.'])->assertSessionMissing('supabase');
 });
 
-test('five failed attempts throttle the next attempt', function () {
+test('login is rate limited by email and IP with HTTP 429 and Retry-After', function () {
     Http::fake(['*/auth/v1/token*' => Http::response([], 400)]);
     for ($i = 0; $i < 5; $i++) {
         $this->post('/login', ['email' => 'locked@example.test', 'password' => 'bad'])->assertSessionHasErrors('email');
     }
-    $this->post('/login', ['email' => 'locked@example.test', 'password' => 'bad'])->assertSessionHasErrors(['email' => 'Terlalu banyak percobaan. Coba lagi dalam satu menit.']);
+    $this->post('/login', ['email' => 'locked@example.test', 'password' => 'bad'])
+        ->assertStatus(429)->assertHeader('Retry-After');
+    Http::assertSentCount(5);
+
+    // Throttle is keyed per normalized email + IP, not globally for all accounts.
+    $this->post('/login', ['email' => 'other@example.test', 'password' => 'bad'])
+        ->assertSessionHasErrors('email');
+    Http::assertSentCount(6);
+});
+
+test('throttled JSON login requests get a JSON 429 response', function () {
+    Http::fake(['*/auth/v1/token*' => Http::response([], 400)]);
+    for ($i = 0; $i < 5; $i++) {
+        $this->postJson('/login', ['email' => 'json-locked@example.test', 'password' => 'bad'])
+            ->assertUnprocessable();
+    }
+    $this->postJson('/login', ['email' => 'json-locked@example.test', 'password' => 'bad'])
+        ->assertStatus(429)
+        ->assertHeader('Retry-After')
+        ->assertJsonPath('message', 'Terlalu banyak percobaan. Coba lagi dalam satu menit.');
     Http::assertSentCount(5);
 });
 
