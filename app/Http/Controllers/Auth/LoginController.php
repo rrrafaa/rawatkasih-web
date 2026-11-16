@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Exceptions\InvalidCredentials;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Services\SupabaseSession;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+
+class LoginController extends Controller
+{
+    public function create(): View
+    {
+        return view('auth.login');
+    }
+
+    public function store(LoginRequest $request, SupabaseSession $session): RedirectResponse
+    {
+        $data = $request->validated();
+        $email = Str::lower(trim($data['email']));
+        $key = 'login:'.hash('sha256', $email.'|'.$request->ip());
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            throw ValidationException::withMessages(['email' => 'Terlalu banyak percobaan. Coba lagi dalam satu menit.']);
+        }
+        RateLimiter::hit($key, 60);
+        try {
+            $user = $session->login($request, $email, $data['password']);
+        } catch (InvalidCredentials) {
+            throw ValidationException::withMessages(['email' => 'Tidak dapat masuk. Periksa kredensial atau hubungi admin.']);
+        }
+        RateLimiter::clear($key);
+
+        // A role always lands on its own dashboard; ignore arbitrary intended URLs.
+        return redirect()->route($user->role()->value.'.dashboard');
+    }
+
+    public function destroy(Request $request, SupabaseSession $session): RedirectResponse
+    {
+        $session->logout($request);
+
+        return redirect()->route('login')->with('status', 'Anda telah keluar.');
+    }
+}

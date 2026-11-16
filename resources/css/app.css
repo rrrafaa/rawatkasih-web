@@ -1,3 +1,5 @@
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/plus-jakarta-sans/latin-700.css';
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 
@@ -64,3 +66,337 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Figma UI-AUTH-01 (101:3) and UI-AUTH-02 (101:18). */
+:root {
+    --rk-green:#005338;
+    --rk-bg:#f7f8f7;
+    --rk-text:#1b2420;
+    --rk-muted:#68776f;
+    --rk-heading:'Plus Jakarta Sans',sans-serif}
+
+.rk-body {
+    margin:0;
+    background:var(--rk-bg);
+    color:var(--rk-text);
+    font-family:Inter,Arial,sans-serif;
+    font-size:14px;
+    line-height:1.4}
+.rk-body * {
+    box-sizing:border-box}
+.rk-body a {
+    color:var(--rk-green);
+    text-underline-offset:4px}
+.rk-body input,.rk-body button {
+    font:inherit}
+.rk-body :focus-visible {
+    outline:3px solid #b66719;
+    outline-offset:4px}
+.rk-skip {
+    position:absolute;
+    top:-100px;
+    left:16px;
+    z-index:20;
+    background:white;
+    padding:12px}
+.rk-skip:focus {
+    top:12px}
+
+.rk-auth {
+    display:grid;
+    grid-template-columns:43.333333% 56.666667%;
+    min-height:100dvh}
+.rk-story {
+    background:var(--rk-green);
+    color:white;
+    padding:56px 42px;
+    min-height:690px}
+.rk-login-logo {
+    display:grid;
+    place-items:center;
+    width:91px;
+    height:94px;
+    background:white;
+    border-radius:18px;
+    margin-left:-9px}
+.rk-story h1 {
+    font-family:var(--rk-heading);
+    font-size:38px;
+    font-weight:700;
+    line-height:48px;
+    margin:0;
+    width:100%;
+    max-width:320px}
+.rk-story>p {
+    font-size:18px;
+    line-height:22px;
+    margin:17px 0 0;
+    max-width:300px}
+
+.rk-login-main {
+    padding:145px 60px 75px;
+    min-width:0}
+.rk-form-wrap {
+    max-width:376px;
+    width:100%}
+.rk-form-wrap h2 {
+    font-family:var(--rk-heading);
+    font-size:29px;
+    line-height:37px;
+    font-weight:700;
+    margin:0 0 13px}
+.rk-description {
+    color:var(--rk-muted);
+    font-size:14px;
+    line-height:17px;
+    margin:0}
+.rk-form {
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+    margin-top:51px}
+.rk-form label {
+    display:block;
+    font-family:var(--rk-heading);
+    font-size:14px;
+    line-height:18px;
+    font-weight:700;
+    margin-bottom:11px}
+.rk-form input:not([type=hidden]) {
+    display:block;
+    width:100%;
+    min-height:52px;
+    background:white;
+    border:1px solid transparent;
+    border-radius:9px;
+    padding:15px 12px;
+    color:var(--rk-text);
+    font-size:13px}
+.rk-form input::placeholder {
+    color:var(--rk-muted)}
+.rk-form input[aria-invalid=true] {
+    border-color:#a32e28}
+.rk-password {
+    position:relative}
+.rk-password input {
+    padding-right:66px!important}
+.rk-password button {
+    position:absolute;
+    right:4px;
+    top:4px;
+    min-width:52px;
+    min-height:44px;
+    border:0;
+    background:transparent;
+    color:var(--rk-green);
+    font-size:12px;
+    cursor:pointer}
+.rk-button {
+    background:var(--rk-green);
+    color:white;
+    border:0;
+    border-radius:10px;
+    font-family:var(--rk-heading)!important;
+    font-size:14px;
+    font-weight:700;
+    min-height:48px;
+    padding:14px 16px;
+    text-align:left;
+    cursor:pointer}
+.rk-button:hover {
+    background:#003e2a}
+.rk-login-main .rk-button {
+    margin-top:36px}
+.rk-reset-link {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    min-height:44px;
+    margin-top:9px;
+    font-size:12px;
+    text-decoration:none;
+    white-space:normal}
+.rk-error {
+    font-size:13px;
+    line-height:1.5;
+    color:#9c302b;
+    margin:8px 0 0}
+.rk-notice {
+    padding:12px;
+    margin:20px 0;
+    background:#e3efe8;
+    border:1px solid #94bca4;
+    border-radius:8px;
+    font-size:13px;
+    color:#005338}
+.rk-mobile-brand {
+    display:none}
+
+.rk-brand {
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    color:var(--rk-green);
+    font-family:var(--rk-heading);
+    font-size:24px;
+    text-decoration:none}
+.rk-brand img {
+    object-fit:contain}
+.rk-recovery {
+    max-width:598px;
+    margin:50px auto;
+    padding:24px}
+.rk-card {
+    background:white;
+    border-radius:16px;
+    padding:42px 32px;
+    min-height:520px;
+    margin-top:24px}
+.rk-card h1 {
+    font-family:var(--rk-heading);
+    font-size:26px;
+    line-height:33px;
+    color:var(--rk-green);
+    font-weight:700;
+    margin:0 0 21px}
+.rk-card .rk-form {
+    margin-top:57px;
+    gap:35px}
+.rk-card .rk-form input:not([type=hidden]) {
+    background:var(--rk-bg);
+    min-height:54px}
+.rk-card .rk-form label {
+    font-size:13px}
+.rk-back {
+    display:inline-block;
+    font-size:13px;
+    min-height:44px;
+    padding:13px 0;
+    margin-top:20px}
+.rk-forgot {
+    max-width:550px;
+    margin:58px auto 0;
+    padding:24px 0;
+    transform:translateX(-5px)}
+.rk-forgot .rk-card {
+    margin:0;
+    padding:48px 38px 42px 32px}
+.rk-forgot .rk-card .rk-form {
+    margin-top:55px}
+
+.rk-dashboard-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:white;
+    border-bottom:1px solid #dce6de;
+    padding:20px 6%}
+.rk-account {
+    display:flex;
+    align-items:center;
+    gap:16px}
+.rk-role {
+    font-size:12px;
+    background:#e3efe8;
+    color:var(--rk-green);
+    border-radius:20px;
+    padding:6px 12px}
+.rk-logout {
+    min-height:44px;
+    border:1px solid #a4b9ac;
+    border-radius:8px;
+    background:white;
+    padding:8px 16px;
+    cursor:pointer}
+.rk-dashboard {
+    max-width:1200px;
+    margin:48px auto;
+    padding:0 24px}
+.rk-dashboard h1 {
+    font-family:var(--rk-heading);
+    font-size:28px;
+    font-weight:700;
+    margin:12px 0}
+.rk-eyebrow {
+    font-size:12px;
+    color:var(--rk-green);
+    letter-spacing:1px}
+.rk-empty-workspace {
+    min-height:300px}
+
+@media(min-width:1100px) {
+    .rk-login-main {
+    padding-left:clamp(60px,8vw,150px);
+    padding-top:max(145px,calc((100dvh - 400px)/2))}
+.rk-story {
+    padding-top:max(56px,calc((100dvh - 580px)/2))}
+}
+
+@media(max-width:760px) {
+    .rk-auth {
+    display:block}
+.rk-story {
+    min-height:0;
+    padding:24px}
+.rk-login-logo {
+    width:67px;
+    height:72px;
+    border-radius:14px;
+    margin:0}
+.rk-login-logo img {
+    width:54px;
+    height:57px}
+.rk-story h1 {
+    font-size:28px;
+    line-height:40px;
+    margin-top:12px}
+.rk-story>p {
+    font-size:15px;
+    line-height:21px;
+    margin-top:6px;
+    max-width:100%}
+.rk-login-main {
+    padding:38px 24px 40px}
+.rk-form-wrap {
+    max-width:440px;
+    margin:auto}
+.rk-form-wrap h2 {
+    font-size:27px}
+.rk-form {
+    margin-top:36px;
+    gap:24px}
+.rk-login-main .rk-button {
+    margin-top:10px}
+.rk-reset-link {
+    gap:10px}
+.rk-recovery,.rk-forgot {
+    margin:20px auto;
+    padding:20px;
+    transform:none}
+.rk-forgot .rk-card {
+    padding:30px 22px}
+.rk-card {
+    padding:30px 22px;
+    min-height:0}
+.rk-card h1 {
+    font-size:24px}
+.rk-card .rk-form {
+    margin-top:32px}
+.rk-dashboard-header {
+    padding:14px}
+.rk-dashboard-header .rk-brand {
+    gap:6px;
+    font-size:16px}
+.rk-dashboard-header .rk-brand img {
+    width:36px;
+    height:38px}
+.rk-account {
+    gap:7px}
+.rk-role {
+    padding:5px 8px}
+.rk-dashboard {
+    margin-top:32px}
+.rk-dashboard h1 {
+    font-size:24px}
+}
