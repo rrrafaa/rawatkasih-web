@@ -226,19 +226,71 @@ Model domain berkomunikasi dengan Supabase menggunakan JWT pengguna agar **RLS**
 
 ## 👥 6. Pembagian Tugas Kelompok
 
-Pengerjaan empat modul mengikuti [`docs/TEAM.md`](docs/TEAM.md).
+Pengembangan fitur dibagi menjadi **empat modul** sesuai tanggung jawab masing-masing anggota. Pembagian ini menjadi acuan ruang lingkup implementasi, pengujian, dan Pull Request. Detail kontrak serta acceptance criteria tersedia di [`docs/TEAM.md`](docs/TEAM.md).
 
-| Anggota | Modul | Data utama | Target pengembangan |
+| Anggota | Modul | Kode fitur | Database utama |
 | --- | --- | --- | --- |
-| **Orang 1** | Perawatan & Manajemen Tugas | `care_task_templates`, `care_task_occurrences` | Template tugas, checklist, status, alasan penundaan, riwayat |
-| **Orang 2** | Catatan Perawatan & Kabar Keluarga | `daily_notes`, `family_updates` | Catatan internal, publikasi kabar, consent dan foto privat |
-| **Orang 3** | Portal Keluarga & Manajemen Kunjungan | `visit_requests`, relasi keluarga | Beranda keluarga, status kunjungan, pengajuan dan keputusan |
-| **Orang 4** | Insiden & Monitoring Operasional | `incidents`, `audit_logs` | Laporan insiden, tindak lanjut, dashboard data nyata, audit |
-| **Bersama** | Fondasi aplikasi | Supabase Auth, `profiles`, layout, routes | Integrasi, keamanan, pengujian lintas-role, code review |
+| **Orang 1** | Perawatan & Manajemen Tugas | `RK-ADM-04`, `RK-CG-01`, `RK-CG-02` | `care_task_templates`, `care_task_occurrences` |
+| **Orang 2** | Catatan Perawatan & Kabar Keluarga | `RK-CG-03` dan bagian kabar dari `RK-FAM-01` | `daily_notes`, `family_updates` |
+| **Orang 3** | Portal Keluarga & Manajemen Kunjungan | `RK-FAM-01`, `RK-FAM-02`, `RK-VIS-01` | `visit_requests` |
+| **Orang 4** | Insiden & Monitoring Operasional | `RK-CG-04` dan fitur dashboard admin | `incidents`, `audit_logs` |
 
-**Pekerjaan yang belum dialokasikan:** CRUD pengguna dan lansia, `family_links`, `caregiver_assignments`, serta `consents`. Tim perlu menetapkan pemiliknya; pekerjaan ini belum otomatis menjadi tanggung jawab Orang 4.
+### Orang 1 — Perawatan & Manajemen Tugas
 
-Setiap anggota membuat perubahan terfokus pada modulnya. Jika perlu mengubah file bersama (`routes/web.php`, middleware auth, layout umum, atau konfigurasi), koordinasikan terlebih dahulu.
+**Kode fitur:** `RK-ADM-04`, `RK-CG-01`, `RK-CG-02`.
+
+- Admin membuat template rutinitas perawatan.
+- Caregiver melihat jadwal dan tugas harian.
+- Checklist tugas **selesai**, **ditunda**, atau **terlewat**.
+- Mencatat alasan penundaan dan waktu penyelesaian.
+- Melihat riwayat pelaksanaan perawatan.
+
+**Database:** `care_task_templates`, `care_task_occurrences`.
+
+### Orang 2 — Catatan Perawatan & Kabar Keluarga
+
+**Kode fitur:** `RK-CG-03` dan bagian kabar dari `RK-FAM-01`.
+
+- Caregiver membuat catatan harian internal.
+- Caregiver membuat kabar kondisi lansia untuk keluarga.
+- Mengunggah dokumentasi foto berdasarkan izin.
+- Mengelola draft dan publikasi kabar.
+- Menampilkan timeline kabar yang sudah dipublikasikan.
+
+**Database:** `daily_notes`, `family_updates`.
+
+### Orang 3 — Portal Keluarga & Manajemen Kunjungan
+
+**Kode fitur:** `RK-FAM-01`, `RK-FAM-02`, `RK-VIS-01`.
+
+- Dashboard keluarga dan ringkasan profil lansia.
+- Form pengajuan kunjungan keluarga.
+- **Empty state** ketika belum ada kunjungan.
+- Tampilan status dan riwayat permintaan kunjungan.
+- Admin menyetujui atau menolak permintaan kunjungan.
+- Panduan kunjungan untuk keluarga.
+
+**Database:** `visit_requests`. Modul ini **menggunakan informasi kabar dari Orang 2**, bukan membuat sumber data kabar baru.
+
+### Orang 4 — Insiden & Monitoring Operasional
+
+**Kode fitur:** `RK-CG-04` dan fitur dashboard admin.
+
+- Caregiver melaporkan insiden lansia.
+- Admin melihat daftar dan detail insiden.
+- Mencatat tindak lanjut dan status penyelesaian.
+- Dashboard statistik tugas, insiden, dan kunjungan.
+- Monitoring aktivitas operasional dan tampilan riwayat audit.
+
+**Database:** `incidents`, `audit_logs`. **Statistik dashboard harus membaca data dari modul lainnya**, bukan menduplikasi data tugas maupun kunjungan.
+
+### Ketentuan integrasi antaranggota
+
+- **Orang 2 → Orang 3:** Orang 2 menyediakan sumber data kabar/timeline yang sudah dipublikasikan; Orang 3 menampilkannya pada portal keluarga dengan tetap memperhatikan hak akses.
+- **Orang 1 & Orang 3 → Orang 4:** Dashboard admin Orang 4 menggunakan data tugas, kunjungan, dan insiden dari modul masing-masing.
+- **Seluruh anggota:** Gunakan fondasi Supabase Auth, role, MVC, Policy/RLS, desain, dan route bersama. Koordinasikan perubahan pada file bersama, seperti `routes/web.php`, layout, middleware, dan konfigurasi.
+
+**Catatan cakupan:** CRUD pengguna dan lansia, `family_links`, `caregiver_assignments`, serta `consents` belum secara eksplisit dialokasikan pada pembagian di atas. Tim perlu menetapkan penanggung jawabnya secara terpisah agar tidak ada pekerjaan inti yang terlewat.
 
 ## 🗄️ 7. Backend dan Pengelolaan Data
 
