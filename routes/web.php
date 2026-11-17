@@ -18,7 +18,7 @@ Route::post('/reset-password', [PasswordController::class, 'update'])->middlewar
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard')->block(10, 10);
-    foreach (['admin', 'caregiver', 'family'] as $role) {
+    foreach (['admin', 'caregiver'] as $role) {
         Route::prefix($role)->name($role.'.')->middleware('role:'.$role)->group(function () {
             Route::get('/', [DashboardController::class, 'show'])->name('dashboard')->block(10, 10);
         });

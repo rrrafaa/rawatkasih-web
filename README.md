@@ -6,7 +6,7 @@
 
 **RawatKasih** adalah aplikasi web untuk membantu koordinasi perawatan lansia, pencatatan aktivitas caregiver, penyampaian kabar kepada keluarga, dan pemantauan operasional. Proyek ini dikembangkan untuk **Proyek Akhir Pemrograman Web Lanjut** menggunakan **Laravel (MVC), Blade, dan Supabase**.
 
-Fondasi yang tersedia saat ini mencakup **login/logout tiga peran (Admin, Caregiver, Keluarga)**, integrasi Supabase Authentication, sesi Laravel terenkripsi, pembatasan akses berbasis peran, serta UI autentikasi yang mengacu pada desain Figma. **Modul operasional masih dalam pengembangan**; halaman dashboard per peran saat ini baru berupa kerangka.
+Fondasi yang tersedia saat ini mencakup **login/logout tiga peran (Admin, Caregiver, Keluarga)**, integrasi Supabase Authentication, sesi Laravel terenkripsi, pembatasan akses berbasis peran, serta UI autentikasi yang mengacu pada desain Figma. **Modul Orang 3 sudah menyediakan portal keluarga dan manajemen kunjungan** berbasis Supabase: pengajuan, pembatalan pending, riwayat/status, dan persetujuan atau penolakan oleh admin. Kabar harian masih berupa **dummy berlabel** sambil menunggu modul Orang 2. Modul operasional lainnya masih dalam pengembangan.
 
 > **Dokumentasi kolaborasi:** README ini tidak memuat password, token, session, atau kredensial pribadi. Konfigurasi akses backend yang diperlukan anggota kelompok harus dibagikan melalui saluran privat. Jangan mengunggah isi `.env`, screenshot token, atau data pribadi lansia ke repository.
 
@@ -21,10 +21,12 @@ Fondasi yang tersedia saat ini mencakup **login/logout tiga peran (Admin, Caregi
 | **Manajemen Lansia & Pengguna** | Data lansia, penugasan caregiver, verifikasi keluarga, serta consent | **Belum diimplementasikan** sebagai CRUD aplikasi |
 | **Perawatan & Manajemen Tugas** | Template tugas, checklist harian, status, dan alasan penundaan | **Modul anggota 1 — dikembangkan** |
 | **Catatan Perawatan & Kabar Keluarga** | Catatan internal, kabar terpublikasi, dan foto sesuai izin | **Modul anggota 2 — dikembangkan** |
-| **Portal Keluarga & Kunjungan** | Profil lansia terverifikasi, timeline kabar, dan pengajuan kunjungan | **Modul anggota 3 — dikembangkan** |
+| **Portal Keluarga & Kunjungan** | Profil lansia terverifikasi, pengajuan/pembatalan, riwayat/status, keputusan admin, dan panduan | **Diimplementasikan**; kabar/foto masih dummy berlabel ([panduan modul](docs/team/family-visits.md)) |
 | **Insiden & Monitoring** | Pencatatan insiden, tindak lanjut admin, dashboard, dan audit | **Modul anggota 4 — dikembangkan** |
 
 **Catatan:** Keberadaan tabel di Supabase atau halaman dashboard kosong **bukan** bukti bahwa fitur CRUD telah selesai. Cakupan dan temuan detail ada pada [peninjauan PRD](docs/PRD-REVIEW.md).
+
+Implementasi Orang 3 mengacu pada [Figma v2](https://www.figma.com/design/dEsADF72zaAkTdeS8brN6b/PAWL---Rawat-Kasih?node-id=160-1205). [Dokumentasi modul](docs/team/family-visits.md) menjelaskan route, model/relasi, migrasi Supabase, kontrak kabar untuk Orang 2, dan hasil pengujian. Peninjauan PRD awal tetap menjadi catatan kondisi fondasi, bukan status terbaru modul ini.
 
 ## 🛠️ 2. Teknologi yang Digunakan
 

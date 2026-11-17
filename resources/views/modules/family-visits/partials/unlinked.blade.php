@@ -1,0 +1,1 @@
+<section class="fv-empty"><h2>Belum ada orang tersayang yang terhubung</h2><p>Hubungi admin panti untuk memverifikasi hubungan keluarga dan izin akses Anda. Profil, kabar, dan pengajuan kunjungan tersedia setelah verifikasi.</p></section>

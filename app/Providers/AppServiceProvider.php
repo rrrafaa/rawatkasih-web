@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Contracts\FamilyNewsProvider;
+use App\Models\FamilyVisits\VisitRequest;
 use App\Models\Resident;
+use App\Policies\FamilyVisitPolicy;
 use App\Policies\ResidentPolicy;
+use App\Services\FamilyVisits\DummyFamilyNewsProvider;
 use App\Services\SupabaseSession;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -26,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         Fortify::ignoreRoutes();
+        $this->app->bind(FamilyNewsProvider::class, DummyFamilyNewsProvider::class);
     }
 
     /**
@@ -34,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Resident::class, ResidentPolicy::class);
+        Gate::policy(VisitRequest::class, FamilyVisitPolicy::class);
         Auth::viaRequest('supabase', fn ($request) => app(SupabaseSession::class)->user($request));
         $this->configureAuthRateLimiters();
         $this->configureDefaults();

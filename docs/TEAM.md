@@ -9,7 +9,7 @@ Pembagian pada permintaan pengguna menggantikan pembagian A–D di PRD. Setiap a
 | Orang 3 | Portal Keluarga & Manajemen Kunjungan: RK-FAM-01–02, RK-VIS-01 | visit_requests | FamilyVisits / family-visits.php |
 | Orang 4 | Insiden & Monitoring Operasional: RK-CG-04, RK-DASH-01, audit | incidents, audit_logs; incident_status_history | Operations / operations.php |
 
-Ada petunjuk direktori untuk setiap orang di `docs/team/`. Model berada di `app/Models/`; folder Controller, Form Request, View, dan test modul sudah dibuat. Model yang ada saat ini adalah fondasi pembacaan; fitur simpan dan alur domain harus ditambahkan beserta validasi dan Policy, bukan dianggap sudah selesai.
+Ada petunjuk direktori untuk setiap orang di `docs/team/`. Model berada di `app/Models/`; folder Controller, Form Request, View, dan test modul sudah dibuat. Modul Orang 3 sudah mengimplementasikan alur kunjungan dengan validasi dan Policy; [panduan integrasinya](team/family-visits.md) menjelaskan batas kabar dummy dan kontrak Orang 2. Model bersama untuk modul lain masih berupa fondasi pembacaan, sehingga fitur simpan dan alur domain masing-masing tetap perlu dikerjakan.
 
 ## Acceptance criteria per modul
 

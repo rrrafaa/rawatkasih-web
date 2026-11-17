@@ -1,0 +1,1 @@
+<section class="fv-resident-context" aria-label="Lansia terkait"><span class="fv-avatar" aria-hidden="true">{{ mb_substr($resident->full_name, 0, 1) }}</span><div><h2>{{ $resident->full_name }}</h2><p>{{ $resident->room ?: 'Kamar belum diisi' }} · {{ config('family_visits.facility_name') }} · Relasi terverifikasi</p></div></section>

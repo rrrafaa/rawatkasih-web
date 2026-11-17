@@ -1,0 +1,8 @@
+@extends('modules.family-visits.layout', ['pageTitle' => 'Keluarga yang selalu terhubung', 'pageDescription' => 'Informasi akun dan hubungan terverifikasi dengan orang tersayang.', 'breadcrumb' => 'Profil Akun'])
+@section('portal-content')
+<section class="fv-profile-overview"><span class="fv-avatar fv-avatar-large" aria-hidden="true">{{ mb_substr($user->name(), 0, 1) }}</span><div><h2>{{ $user->name() }}</h2><p>Anggota keluarga</p><p>Akun aktif · {{ $resident ? 'Keluarga terverifikasi' : 'Menunggu verifikasi relasi' }}</p></div></section>
+<div class="fv-profile-grid"><section class="fv-card"><h2>Informasi akun</h2><dl class="fv-details"><dt>Email</dt><dd>{{ $account['email'] ?? $user->email }}</dd><dt>Nomor telepon</dt><dd>{{ $account['phone'] ?? 'Belum diisi' }}</dd><dt>Peran</dt><dd>Keluarga</dd></dl><p>Perubahan data akun dibantu oleh admin panti.</p></section>
+@if($resident)<section class="fv-card fv-mint"><span class="fv-avatar fv-avatar-large" aria-hidden="true">{{ mb_substr($resident->full_name, 0, 1) }}</span><h2>{{ $resident->full_name }}</h2><p>{{ $resident->room ?: 'Kamar belum diisi' }} · {{ config('family_visits.facility_name') }}<br>Hubungan: {{ $resident->familyLink->relationship }}</p><span class="fv-badge fv-badge-success">Terverifikasi</span><p>Akses hanya untuk lansia yang tercatat pada hubungan aktif.</p></section>
+@else @include('modules.family-visits.partials.unlinked') @endif</div>
+<section class="fv-card fv-peach"><h2>Privasi Eyang adalah prioritas</h2><p>Dapat dilihat: kabar yang dipublikasikan, foto dengan izin aktif, dan status kunjungan keluarga.<br>Catatan internal staf, insiden, serta data penghuni lain tidak ditampilkan.</p></section>
+@endsection
