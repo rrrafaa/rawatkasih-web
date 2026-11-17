@@ -1,0 +1,1 @@
+@if(count(array_filter($stories, fn ($story) => $story['is_demo'])) > 0)<p class="fv-demo-notice" role="note">Contoh kabar · Data dummy sementara dari modul kabar keluarga. Bukan laporan kondisi lansia yang sebenarnya.</p>@endif
