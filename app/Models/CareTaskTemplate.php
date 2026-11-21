@@ -19,7 +19,7 @@ class CareTaskTemplate extends SupabaseModel
     }
 
     /**
-     * @param list<string> $residentIds
+     * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
      */
     public function activeForResidents(array $residentIds): array
@@ -38,7 +38,7 @@ class CareTaskTemplate extends SupabaseModel
     }
 
     /**
-     * @param list<string> $residentIds
+     * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
      */
     public function allForResidents(array $residentIds): array
@@ -56,18 +56,17 @@ class CareTaskTemplate extends SupabaseModel
     }
 
     /**
-     * @param list<string> $ids
+     * @param  list<string>  $ids
      * @return list<string>
      */
     private function validUuidList(array $ids): array
     {
         return array_values(array_unique(array_filter(
             $ids,
-            fn ($id) => is_string($id)
-                && preg_match(
-                    '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
-                    $id
-                )
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
     }
 
@@ -100,7 +99,7 @@ class CareTaskTemplate extends SupabaseModel
             preg_match(
                 '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
                 $id
-            ),
+            ) === 1,
             404
         );
 

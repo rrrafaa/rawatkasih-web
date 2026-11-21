@@ -11,18 +11,17 @@ class CareTaskStatusHistory extends SupabaseModel
     protected string $columns = 'id,occurrence_id,old_status,new_status,reason,changed_by,changed_at';
 
     /**
-     * @param list<string> $occurrenceIds
+     * @param  list<string>  $occurrenceIds
      * @return list<array<string, mixed>>
      */
     public function forOccurrences(array $occurrenceIds): array
     {
         $ids = array_values(array_unique(array_filter(
             $occurrenceIds,
-            fn ($id) => is_string($id)
-                && preg_match(
-                    '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
-                    $id
-                )
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
 
         if ($ids === []) {

@@ -32,20 +32,18 @@ class Profile
         return new SupabaseUser($profile);
     }
 
-
     /**
-     * @param list<string> $ids
+     * @param  list<string>  $ids
      * @return array<string, string>
      */
     public function namesByIds(array $ids, string $token): array
     {
         $profileIds = array_values(array_unique(array_filter(
             $ids,
-            fn ($id) => is_string($id)
-                && preg_match(
-                    '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
-                    $id
-                )
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
 
         if ($profileIds === []) {

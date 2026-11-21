@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\CareTasks;
 
 use App\Http\Controllers\Controller;
+use App\Models\CaregiverAssignment;
 use App\Models\CareTaskOccurrence;
 use App\Models\CareTaskStatusHistory;
 use App\Models\CareTaskTemplate;
-use App\Models\CaregiverAssignment;
 use App\Models\Profile;
 use App\Models\Resident;
 use App\Models\SupabaseUser;
@@ -72,12 +72,14 @@ class CaregiverDashboardController extends Controller
                 );
             }
 
-            $historyOccurrenceIds = collect($historyRows)
-                ->pluck('occurrence_id')
-                ->filter(fn ($id) => is_string($id) && $id !== '')
-                ->unique()
-                ->values()
-                ->all();
+            $historyOccurrenceIds = array_values(
+                collect($historyRows)
+                    ->pluck('occurrence_id')
+                    ->filter(fn ($id) => is_string($id) && $id !== '')
+                    ->unique()
+                    ->values()
+                    ->all()
+            );
 
             $historyOccurrenceRows = $occurrences->forIds(
                 $historyOccurrenceIds
@@ -87,12 +89,14 @@ class CaregiverDashboardController extends Controller
 
             $residentsById = collect($residentRows)->keyBy('id');
 
-            $changedByIds = collect($historyRows)
-                ->pluck('changed_by')
-                ->filter(fn ($id) => is_string($id) && $id !== '')
-                ->unique()
-                ->values()
-                ->all();
+            $changedByIds = array_values(
+                collect($historyRows)
+                    ->pluck('changed_by')
+                    ->filter(fn ($id) => is_string($id) && $id !== '')
+                    ->unique()
+                    ->values()
+                    ->all()
+            );
 
             $changedByNames = [];
 
@@ -167,12 +171,14 @@ class CaregiverDashboardController extends Controller
         );
 
         // Ambil nama caregiver yang menyelesaikan tugas.
-        $completedByIds = collect($occurrenceRows)
-            ->pluck('completed_by')
-            ->filter(fn ($id) => is_string($id) && $id !== '')
-            ->unique()
-            ->values()
-            ->all();
+        $completedByIds = array_values(
+            collect($occurrenceRows)
+                ->pluck('completed_by')
+                ->filter(fn ($id) => is_string($id) && $id !== '')
+                ->unique()
+                ->values()
+                ->all()
+        );
 
         $completedByNames = [];
 

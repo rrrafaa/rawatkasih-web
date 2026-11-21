@@ -97,7 +97,6 @@ test('invalid resident ids do not send a supabase request', function () {
     Http::assertNothingSent();
 });
 
-
 test('admin can create a care task template through supabase', function () {
     $this->actingAs(new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000002',

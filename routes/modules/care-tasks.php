@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\CareTasks\CareTaskOccurrenceController;
 use App\Http\Controllers\CareTasks\TemplateController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CareTasks\CareTaskOccurrenceController;
 
 // Orang 1: Perawatan & Manajemen Tugas
 Route::prefix('care-tasks')->name('care-tasks.')->group(function () {

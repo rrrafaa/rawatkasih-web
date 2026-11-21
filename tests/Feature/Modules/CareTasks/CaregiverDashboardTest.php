@@ -32,8 +32,7 @@ test('caregiver page includes the name of the person who completed a task', func
     $date = now('Asia/Jakarta')->toDateString();
 
     Http::fake([
-        '*/rest/v1/rpc/generate_today_care_task_occurrences' =>
-            Http::response('0', 200),
+        '*/rest/v1/rpc/generate_today_care_task_occurrences' => Http::response('0', 200),
 
         '*/rest/v1/caregiver_assignments*' => Http::response([
             [
@@ -93,23 +92,23 @@ test('caregiver page includes the name of the person who completed a task', func
     $this->get(route('caregiver.dashboard'))
         ->assertOk()
         ->assertViewHas('residents', function ($residents) use ($caregiverId) {
-        if (count($residents) !== 1) {
-            return false;
-        }
+            if (count($residents) !== 1) {
+                return false;
+            }
 
-        $resident = $residents[0];
-        $summary = $resident['task_summary'] ?? [];
+            $resident = $residents[0];
+            $summary = $resident['task_summary'] ?? [];
 
-        return $resident['full_name'] === 'Ibu Sri'
-            && $resident['tasks'][0]['completed_by'] === $caregiverId
-            && $resident['tasks'][0]['completed_by_name'] === 'Dewi'
-            && ($summary['total'] ?? null) === 1
-            && ($summary['completed'] ?? null) === 1
-            && ($summary['pending'] ?? null) === 0
-            && ($summary['postponed'] ?? null) === 0
-            && ($summary['missed'] ?? null) === 0
-            && ($summary['completion_percentage'] ?? null) === 100.0;
-    });
+            return $resident['full_name'] === 'Ibu Sri'
+                && $resident['tasks'][0]['completed_by'] === $caregiverId
+                && $resident['tasks'][0]['completed_by_name'] === 'Dewi'
+                && ($summary['total'] ?? null) === 1
+                && ($summary['completed'] ?? null) === 1
+                && ($summary['pending'] ?? null) === 0
+                && ($summary['postponed'] ?? null) === 0
+                && ($summary['missed'] ?? null) === 0
+                && ($summary['completion_percentage'] ?? null) === 100.0;
+        });
 
     Http::assertSent(function ($request) use ($caregiverId) {
         parse_str(
@@ -135,8 +134,7 @@ test('caregiver page does not request profiles when no task has been completed',
     $date = now('Asia/Jakarta')->toDateString();
 
     Http::fake([
-        '*/rest/v1/rpc/generate_today_care_task_occurrences' =>
-            Http::response('0', 200),
+        '*/rest/v1/rpc/generate_today_care_task_occurrences' => Http::response('0', 200),
 
         '*/rest/v1/caregiver_assignments*' => Http::response([
             [
@@ -196,7 +194,6 @@ test('caregiver page does not request profiles when no task has been completed',
 
     Http::assertSentCount(5);
 });
-
 
 test('caregiver can view history with task resident and actor details', function () {
     $residentId = '30000000-0000-4000-8000-000000000001';

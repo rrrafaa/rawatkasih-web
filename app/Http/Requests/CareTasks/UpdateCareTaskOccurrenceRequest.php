@@ -12,6 +12,9 @@ class UpdateCareTaskOccurrenceRequest extends FormRequest
         return $this->user()?->role()->value === 'caregiver';
     }
 
+    /**
+     * @return array<string, array<int, mixed>>
+     */
     public function rules(): array
     {
         return [

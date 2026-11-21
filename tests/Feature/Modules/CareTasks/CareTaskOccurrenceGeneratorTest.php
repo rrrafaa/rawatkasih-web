@@ -69,7 +69,6 @@ test('caregiver can complete an assigned task occurrence', function () {
     });
 });
 
-
 test('caregiver must provide a reason when postponing a task', function () {
     $this->actingAs(new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
@@ -113,7 +112,6 @@ test('caregiver must provide a reason when marking a task as missed', function (
 
     Http::assertNothingSent();
 });
-
 
 test('caregiver can postpone a task with a reason', function () {
     $occurrenceId = '20000000-0000-4000-8000-000000000001';
@@ -169,7 +167,6 @@ test('caregiver can postpone a task with a reason', function () {
     });
 });
 
-
 test('caregiver can mark a task as missed with a reason', function () {
     $occurrenceId = '20000000-0000-4000-8000-000000000001';
 
@@ -223,7 +220,6 @@ test('caregiver can mark a task as missed with a reason', function () {
             && $request['reason'] === 'Lansia menolak melakukan aktivitas.';
     });
 });
-
 
 test('caregiver cannot update an occurrence they cannot access', function () {
     $occurrenceId = '20000000-0000-4000-8000-000000000099';

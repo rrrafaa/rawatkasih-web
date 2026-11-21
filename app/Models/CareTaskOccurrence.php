@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Exceptions\SupabaseUnavailable;
-use App\Models\SupabaseUser;
 
 class CareTaskOccurrence extends SupabaseModel
 {
@@ -18,8 +17,7 @@ class CareTaskOccurrence extends SupabaseModel
     {
         $ids = array_values(array_unique(array_filter(
             $templateIds,
-            fn ($id) => is_string($id)
-                && preg_match('/^[0-9a-f-]{36}$/iD', $id)
+            fn ($id) => preg_match('/^[0-9a-f-]{36}$/iD', $id) === 1
         )));
 
         if ($ids === []) {
@@ -32,7 +30,6 @@ class CareTaskOccurrence extends SupabaseModel
             'order' => 'scheduled_time.asc',
         ]);
     }
-
 
     /** @param array{status: string, reason: ?string} $data */
     public function updateStatus(string $id, array $data): void
@@ -64,18 +61,17 @@ class CareTaskOccurrence extends SupabaseModel
     }
 
     /**
-     * @param list<string> $occurrenceIds
+     * @param  list<string>  $occurrenceIds
      * @return list<array<string, mixed>>
      */
     public function forIds(array $occurrenceIds): array
     {
         $ids = array_values(array_unique(array_filter(
             $occurrenceIds,
-            fn ($id) => is_string($id)
-                && preg_match(
-                    '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
-                    $id
-                )
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
 
         if ($ids === []) {

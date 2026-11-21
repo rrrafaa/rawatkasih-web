@@ -11,6 +11,9 @@ class StoreCareTaskTemplateRequest extends FormRequest
         return $this->user()?->role()->value === 'admin';
     }
 
+    /**
+     * @return array<string, array<int, mixed>>
+     */
     public function rules(): array
     {
         return [

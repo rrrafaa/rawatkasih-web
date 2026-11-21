@@ -4,7 +4,7 @@ use App\Models\CareTaskStatusHistory;
 use App\Models\Profile;
 use App\Models\SupabaseUser;
 use Illuminate\Support\Facades\Http;
-
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 beforeEach(function () {
     config([
@@ -139,15 +139,13 @@ test('status history read fails when supabase rejects access', function () {
     $occurrenceId = '20000000-0000-4000-8000-000000000001';
 
     Http::fake([
-        '*/rest/v1/care_task_status_history*' =>
-            Http::response(['message' => 'Forbidden'], 403),
+        '*/rest/v1/care_task_status_history*' => Http::response(['message' => 'Forbidden'], 403),
     ]);
 
     expect(fn () => app(CareTaskStatusHistory::class)
         ->forOccurrences([$occurrenceId]))
-        ->toThrow(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        ->toThrow(HttpException::class);
 });
-
 
 test('caregiver can read latest status history with pagination', function () {
     Http::fake([

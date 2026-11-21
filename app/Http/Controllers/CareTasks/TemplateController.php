@@ -57,6 +57,7 @@ class TemplateController extends Controller
             ->route('care-tasks.templates.index')
             ->with('status', 'Template tugas berhasil ditambahkan.');
     }
+
     public function update(
         StoreCareTaskTemplateRequest $request,
         string $templateId,
@@ -91,6 +92,7 @@ class TemplateController extends Controller
             ->route('care-tasks.templates.index')
             ->with('status', 'Template tugas berhasil diperbarui.');
     }
+
     public function setStatus(
         Request $request,
         string $templateId,

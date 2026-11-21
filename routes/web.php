@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\CareTasks\CaregiverDashboardController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,7 @@ Route::post('/reset-password', [PasswordController::class, 'update'])->middlewar
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard')->block(10, 10);
-        foreach (['admin', 'family'] as $role) {
+    foreach (['admin', 'family'] as $role) {
         Route::prefix($role)->name($role.'.')->middleware('role:'.$role)->group(function () {
             Route::get('/', [DashboardController::class, 'show'])->name('dashboard')->block(10, 10);
         });
@@ -29,7 +30,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get(
                 '/',
-                [\App\Http\Controllers\CareTasks\CaregiverDashboardController::class, 'index']
+                [CaregiverDashboardController::class, 'index']
             )->name('dashboard')->block(10, 10);
         });
     // Each module owns a separate route file, keeping shared auth routes stable.
