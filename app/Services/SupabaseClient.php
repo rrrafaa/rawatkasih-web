@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Http;
 
 class SupabaseClient
 {
-    /** @param array<string, mixed> $data */
-    public function request(string $method, string $path, array $data = [], ?string $token = null): Response
+    /** @param array<string, mixed>|object $data */
+    public function request(string $method, string $path, array|object $data = [], ?string $token = null): Response
     {
         $url = rtrim((string) config('supabase.url'), '/');
         $key = (string) config('supabase.publishable_key');
+
         if (! str_starts_with($url, 'https://') || $key === '') {
             throw new SupabaseUnavailable;
         }
@@ -22,6 +23,7 @@ class SupabaseClient
         try {
             $request = Http::baseUrl($url)->acceptJson()->asJson()
                 ->withHeaders(['apikey' => $key])->timeout((int) config('supabase.timeout', 10));
+
             if ($token !== null) {
                 $request = $request->withToken($token);
             }
@@ -47,10 +49,12 @@ class SupabaseClient
     public function auth(string $method, string $path, array $data = [], ?string $token = null): array
     {
         $response = $this->request($method, '/auth/v1/'.$path, $data, $token);
+
         if (! $response->successful()) {
             if (in_array($response->status(), [400, 401, 403, 422], true)) {
                 throw new InvalidCredentials;
             }
+
             throw new SupabaseUnavailable;
         }
 

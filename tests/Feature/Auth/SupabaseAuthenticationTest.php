@@ -20,6 +20,8 @@ function fakeIdentity(string $role = 'admin', bool $active = true): void
         '*/auth/v1/user' => Http::response(['id' => '10000000-0000-4000-8000-000000000001']),
         '*/rest/v1/profiles*' => Http::response([['id' => '10000000-0000-4000-8000-000000000001', 'full_name' => 'Pengguna Uji', 'email' => 'uji@example.test', 'role' => $role, 'is_active' => $active]]),
         '*/auth/v1/logout*' => Http::response([], 204),
+        '*/rest/v1/rpc/generate_today_care_task_occurrences' => Http::response('0', 200),
+        '*/rest/v1/*' => Http::response([], 200),
     ]);
 }
 
