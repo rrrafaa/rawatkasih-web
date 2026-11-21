@@ -18,11 +18,20 @@ Route::post('/reset-password', [PasswordController::class, 'update'])->middlewar
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard')->block(10, 10);
-    foreach (['admin', 'caregiver', 'family'] as $role) {
+        foreach (['admin', 'family'] as $role) {
         Route::prefix($role)->name($role.'.')->middleware('role:'.$role)->group(function () {
             Route::get('/', [DashboardController::class, 'show'])->name('dashboard')->block(10, 10);
         });
     }
+    Route::prefix('caregiver')
+        ->name('caregiver.')
+        ->middleware('role:caregiver')
+        ->group(function () {
+            Route::get(
+                '/',
+                [\App\Http\Controllers\CareTasks\CaregiverDashboardController::class, 'index']
+            )->name('dashboard')->block(10, 10);
+        });
     // Each module owns a separate route file, keeping shared auth routes stable.
     foreach (['care-tasks', 'care-updates', 'family-visits', 'operations'] as $module) {
         require __DIR__.'/modules/'.$module.'.php';
