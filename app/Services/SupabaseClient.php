@@ -7,6 +7,7 @@ use App\Exceptions\SupabaseUnavailable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SupabaseClient
 {
@@ -46,11 +47,13 @@ class SupabaseClient
             $response = $request->send($method, $path, [
                 strtoupper($method) === 'GET' ? 'query' : 'json' => $data,
             ]);
-        } catch (ConnectionException) {
+        } catch (ConnectionException $e) {
+            Log::error('Supabase ConnectionException: '.$e->getMessage());
             throw new SupabaseUnavailable;
         }
 
         if ($response->serverError() || $response->status() === 429) {
+            Log::error('Supabase ServerError '.$response->status().': '.$response->body());
             throw new SupabaseUnavailable;
         }
 

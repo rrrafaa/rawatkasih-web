@@ -10,12 +10,25 @@ class CareTaskTemplate extends SupabaseModel
 
     protected string $columns = 'id,resident_id,title,category,scheduled_time,instructions,is_active,frequency,days_of_week,created_at,updated_at';
 
-    /** @return list<array<string, mixed>> */
-    public function allForAdmin(): array
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<array<string, mixed>>
+     */
+    public function allForAdmin(array $params = []): array
     {
-        return $this->read([
-            'order' => 'created_at.desc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/care_task_templates',
+            array_merge([
+                'select' => $this->columns,
+                'order' => 'created_at.desc',
+            ], $params),
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
     /**
@@ -30,11 +43,21 @@ class CareTaskTemplate extends SupabaseModel
             return [];
         }
 
-        return $this->read([
-            'resident_id' => 'in.('.implode(',', $ids).')',
-            'is_active' => 'eq.true',
-            'order' => 'scheduled_time.asc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/care_task_templates',
+            [
+                'select' => $this->columns,
+                'resident_id' => 'in.('.implode(',', $ids).')',
+                'is_active' => 'eq.true',
+                'order' => 'scheduled_time.asc',
+            ],
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
     /**
@@ -49,10 +72,20 @@ class CareTaskTemplate extends SupabaseModel
             return [];
         }
 
-        return $this->read([
-            'resident_id' => 'in.('.implode(',', $ids).')',
-            'order' => 'scheduled_time.asc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/care_task_templates',
+            [
+                'select' => $this->columns,
+                'resident_id' => 'in.('.implode(',', $ids).')',
+                'order' => 'scheduled_time.asc',
+            ],
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
     /**
@@ -80,7 +113,7 @@ class CareTaskTemplate extends SupabaseModel
 
         $response = $this->client->request(
             'POST',
-            '/rest/v1/'.$this->table,
+            '/rest/v1/care_task_templates',
             $data,
             $token
         );
@@ -110,7 +143,7 @@ class CareTaskTemplate extends SupabaseModel
 
         $response = $this->client->request(
             'PATCH',
-            '/rest/v1/'.$this->table.'?id=eq.'.$id,
+            '/rest/v1/care_task_templates?id=eq.'.$id,
             $data,
             $token
         );

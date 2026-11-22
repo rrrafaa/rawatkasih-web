@@ -8,16 +8,30 @@ class Resident extends SupabaseModel
 
     protected string $columns = 'id,full_name,room,status';
 
-    /** @return list<array<string, mixed>> */
-    public function activeResidents(): array
+    /**
+     * @param  array<string, mixed>  $params
+     * @return list<array<string, mixed>>
+     */
+    public function activeResidents(array $params = []): array
     {
-        return $this->read([
-            'status' => 'eq.active',
-            'order' => 'full_name.asc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/residents',
+            array_merge([
+                'select' => $this->columns,
+                'status' => 'eq.active',
+                'order' => 'full_name.asc',
+            ], $params),
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
-    /** @param list<string> $residentIds
+    /**
+     * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
      */
     public function forAssignedResidents(array $residentIds): array
@@ -26,19 +40,52 @@ class Resident extends SupabaseModel
             return [];
         }
 
-        return $this->read([
-            'id' => 'in.('.implode(',', $residentIds).')',
-            'order' => 'full_name.asc',
-        ]);
+        $validIds = array_values(array_filter(
+            $residentIds,
+            fn ($id) => preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id) === 1
+        ));
+
+        if ($validIds === []) {
+            return [];
+        }
+
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/residents',
+            [
+                'select' => $this->columns,
+                'id' => 'in.('.implode(',', $validIds).')',
+                'order' => 'full_name.asc',
+            ],
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
     public function findForCurrentUser(string $id): ?array
     {
-        $residents = $this->read([
-            'id' => 'eq.'.$id,
-            'limit' => 1,
-        ]);
+        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id)) {
+            return null;
+        }
 
-        return $residents[0] ?? null;
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/residents',
+            [
+                'select' => $this->columns,
+                'id' => 'eq.'.$id,
+                'limit' => 1,
+            ],
+            $token
+        );
+
+        $rows = $response->json() ?? [];
+
+        return $rows[0] ?? null;
     }
 }
