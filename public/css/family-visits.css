@@ -359,12 +359,15 @@
         appearance: base-select;
     }
 
-    .fv-select {
+    .fv-main .fv-select {
+        display: flex;
         align-items: center;
+        gap: 8px;
         padding-right: 13px;
     }
 
     .fv-select::picker-icon {
+        margin-inline-start: auto;
         color: var(--adm-ink);
     }
 
