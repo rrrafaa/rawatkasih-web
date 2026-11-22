@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         'care-tasks',
         'care-updates',
         'family-visits',
+        'incidents',
         'operations',
     ] as $module) {
         require __DIR__.'/modules/'.$module.'.php';

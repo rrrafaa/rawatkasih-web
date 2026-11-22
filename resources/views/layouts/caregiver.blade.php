@@ -65,8 +65,11 @@
                         <span>Kabar Keluarga</span>
                     </span>
 
-                    <span class="rk-care-nav-link rk-care-nav-link--disabled"
-                        aria-disabled="true">
+                    <a
+                        href="{{ route('incidents.index') }}"
+                        @class(['rk-care-nav-link', 'is-active' => request()->routeIs('incidents.*')])
+                        @if (request()->routeIs('incidents.*')) aria-current="page" @endif
+                    >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             aria-hidden="true">
@@ -75,7 +78,7 @@
                             <path d="m10.3 3.86-8.1 14A2 2 0 0 0 3.93 21h16.14a2 2 0 0 0 1.73-3.14l-8.1-14a2 2 0 0 0-3.4 0Z"></path>
                         </svg>
                         <span>Insiden</span>
-                    </span>
+                    </a>
 
                 </nav>
             </div>
