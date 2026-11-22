@@ -19,7 +19,13 @@
         <section class="adm-visit-card" aria-labelledby="admin-visit-details">
             <h2 id="admin-visit-details">Rincian kunjungan</h2>
             <dl class="adm-visit-facts">
-                <div><dt>Nama pengaju</dt><dd>{{ $visit->requester?->full_name ?? 'Keluarga' }}</dd></div>
+                <div>
+                    <dt>Nama pengaju</dt>
+                    <dd class="fv-requester-avatar">
+                        <img class="fv-account-photo" src="{{ route('admin.visits.avatar', $visit->id) }}" alt="" width="36" height="36">
+                        {{ $visit->requester?->full_name ?? 'Keluarga' }}
+                    </dd>
+                </div>
                 <div><dt>Tanggal</dt><dd>{{ $start->translatedFormat('l, d F Y') }}</dd></div>
                 <div><dt>Waktu</dt><dd>{{ $start->format('H.i') }}{{ $end ? '–'.$end->format('H.i') : '' }} WIB</dd></div>
                 <div><dt>Jumlah pengunjung</dt><dd>{{ $visit->visitor_count }} orang</dd></div>

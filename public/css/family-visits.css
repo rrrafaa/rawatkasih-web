@@ -787,3 +787,14 @@ a.adm-visit-card[aria-current] {
 .adm-visit-dialog-confirm.is-rejection {
     background: #9d3634;
 }
+
+.fv-account-photo {
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.fv-requester-avatar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

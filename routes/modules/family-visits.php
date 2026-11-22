@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('family')->name('family.')->middleware('role:family')->group(function () {
     Route::get('/', [FamilyPortalController::class, 'index'])->name('dashboard')->block(10, 10);
     Route::get('kabar', [FamilyPortalController::class, 'news'])->name('news');
+    Route::get('foto-profil', [FamilyPortalController::class, 'avatar'])->name('avatar');
     Route::get('profil', [FamilyPortalController::class, 'profile'])->name('profile');
     Route::patch('profil', [FamilyPortalController::class, 'updateProfile'])->name('profile.update');
     Route::get('contoh-media/{asset}', [FamilyPortalController::class, 'media'])->whereIn('asset', ['garden', 'lunch', 'morning', 'sulastri'])->name('demo-media');
@@ -19,6 +20,7 @@ Route::prefix('family')->name('family.')->middleware('role:family')->group(funct
 });
 
 Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
+    Route::get('kunjungan/{visit}/foto-pengaju', [FamilyPortalController::class, 'requesterAvatar'])->name('visits.avatar');
     Route::resource('kunjungan', AdminVisitController::class)->only(['index', 'show', 'update'])
         ->parameters(['kunjungan' => 'visit'])->names('visits');
 });

@@ -6,10 +6,12 @@ use App\Contracts\FamilyNewsProvider;
 use App\Http\Controllers\Controller;
 use App\Models\FamilyVisits\FamilyVisitData;
 use App\Models\FamilyVisits\Resident;
+use App\Models\FamilyVisits\VisitRequest;
 use App\Services\FamilyVisits\PortalContext;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -19,10 +21,12 @@ class FamilyPortalController extends Controller
     {
         $vars = $context->for($request);
         $resident = $vars['resident'];
-        $stories = $resident ? $news->publishedFor($resident->id, $data->photoConsent($resident->id)) : [];
+        $photoConsent = $resident !== null && $data->photoConsent($resident->id);
+        $stories = $resident ? $news->publishedFor($resident->id, $photoConsent) : [];
         $visits = $resident ? $data->visits($resident->id, null, 1) : null;
 
-        return view('modules.family-visits.home', [...$vars, 'stories' => $stories, 'visits' => $visits, 'activeNav' => 'home']);
+        return view('modules.family-visits.home', [...$vars, 'stories' => $stories, 'visits' => $visits,
+            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident), 'activeNav' => 'home']);
     }
 
     public function news(Request $request, PortalContext $context, FamilyVisitData $data, FamilyNewsProvider $news): View
@@ -79,8 +83,32 @@ class FamilyPortalController extends Controller
         abort_unless($resident !== null && ($asset !== 'sulastri' || $this->hasDemoPortrait($resident)), 404);
         abort_unless($data->photoConsent($resident->id), 403);
 
-        // Private demo imagery from Figma; never a public URL for real resident media.
-        return response()->file(resource_path('demo/family/'.$asset.'.jpg'), [
+        $file = $asset === 'sulastri' ? 'resident/sulastri/profil.jpg' : 'resident/contoh-kabar/'.$asset.'.jpg';
+
+        return $this->photoResponse(resource_path($file));
+    }
+
+    public function avatar(Request $request): BinaryFileResponse
+    {
+        return $this->familyAvatar((string) $request->user()->getAuthIdentifier());
+    }
+
+    public function requesterAvatar(VisitRequest $visit): BinaryFileResponse
+    {
+        return $this->familyAvatar($visit->requester_id);
+    }
+
+    private function familyAvatar(string $id): BinaryFileResponse
+    {
+        abort_unless(Str::isUuid($id), 404);
+        $photo = resource_path('keluarga/'.$id.'.jpg');
+
+        return $this->photoResponse(is_file($photo) ? $photo : resource_path('keluarga/ilustrasi-profil.jpg'));
+    }
+
+    private function photoResponse(string $path): BinaryFileResponse
+    {
+        return response()->file($path, [
             'Content-Type' => 'image/jpeg', 'Cache-Control' => 'no-store, private',
             'X-Content-Type-Options' => 'nosniff',
         ]);

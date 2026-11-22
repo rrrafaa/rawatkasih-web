@@ -93,7 +93,7 @@ Set `FAMILY_DEMO_NEWS=false` untuk mengosongkan kabar contoh. Lalu jalankan `php
 
 Orang 2 cukup mengganti binding `FamilyNewsProvider` pada `AppServiceProvider` dengan implementasi produksinya. Method `publishedFor($residentId, $photoConsent)` mengembalikan daftar DTO terurut terbaru dengan field `id`, `title`, `summary`, `category`, `published_at` (ISO 8601), `author`, `media` (ID aset untuk dummy; URL privat untuk kabar nyata; atau null), `is_demo` (false untuk kabar nyata). Implementasi produksi wajib memakai JWT pengguna, hanya memuat kabar terpublikasi yang berizin, serta memeriksa consent pada setiap akses media. Kategori UI saat ini `aktivitas` dan `kebersamaan`; perluas kontrak/filter bersama jika kategori modul 2 berbeda.
 
-Aset dummy berada di `resources/demo/family/`, bukan direktori `public`. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
+Foto dan aset kabar dummy berada di `resources/resident/`, bukan direktori `public`. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
 
 ## Menjalankan dan memverifikasi
 
@@ -115,3 +115,7 @@ Hasil verifikasi implementasi:
 SQL ini hanya untuk operator pada lingkungan pengujian yang memiliki fixture profil/relasi/consent sesuai prasyarat file; jangan menjadikannya seed atau migrasi produksi. Akun dengan relasi/consent nyata tetap perlu menjalani UAT bersama pemilik akun sebelum rilis. Kabar produksi menunggu Orang 2; CRUD profil/relasi/consent dan modul lainnya tetap mengikuti pembagian tim.
 
 Branch lanjutan anggota: `feat/family-visits/nama-fitur`. Gunakan PR, sertakan perubahan kontrak/migrasi dan jalankan pemeriksaan di atas. Jangan mengubah file modul anggota lain atau menerapkan ulang migrasi yang sudah ada di proyek bersama.
+
+### Aset profil
+
+Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang sudah dipakai aplikasi. Foto akun keluarga disimpan sebagai `resources/keluarga/<uuid-profil>.jpg`. Portal memakai ilustrasi bawaan jika akun belum memiliki berkas foto. Keluarga hanya dapat membuka foto akunnya sendiri, dan admin dapat membuka foto pengaju melalui detail kunjungan. Penempatan foto dilakukan melalui repositori sehingga tidak memerlukan kolom baru di database.

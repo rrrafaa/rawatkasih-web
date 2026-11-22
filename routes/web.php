@@ -8,6 +8,10 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
+Route::get('/images/rawatkasih-mark.svg', fn () => response()->file(resource_path('asset/rawatkasih-mark.svg'), [
+    'Content-Type' => 'image/svg+xml',
+    'Cache-Control' => 'public, max-age=3600',
+]));
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])
