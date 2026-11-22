@@ -110,7 +110,7 @@ class Incident extends SupabaseModel
     }
 
     /**
-     * Temukan insiden berdasarkan ID.
+     * @return array<string, mixed>|null // use "|null" only if the method returns ?array
      */
     public function find(string $id): ?array
     {
@@ -133,9 +133,8 @@ class Incident extends SupabaseModel
     }
 
     /**
-     * Buat insiden baru.
-     *
      * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
      */
     public function create(array $data): array
     {
@@ -164,9 +163,8 @@ class Incident extends SupabaseModel
     }
 
     /**
-     * Update incident (untuk admin).
-     *
      * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
      */
     public function update(string $id, array $data): array
     {

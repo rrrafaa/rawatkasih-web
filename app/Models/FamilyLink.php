@@ -12,7 +12,7 @@ class FamilyLink extends SupabaseModel
     {
         $user = auth()->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user === null) {
             return false;
         }
 

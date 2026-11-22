@@ -24,7 +24,7 @@ class AdminDashboardController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -44,6 +44,9 @@ class AdminDashboardController extends Controller
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getTaskStats(CareTaskTemplate $templates, CareTaskOccurrence $occurrences, string $today): array
     {
         $allTemplates = $templates->allForAdmin(['order' => 'category.asc,created_at.asc']);
@@ -76,6 +79,9 @@ class AdminDashboardController extends Controller
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getIncidentStats(Incident $incidents): array
     {
         $allIncidents = $incidents->all([], 100);
@@ -110,6 +116,9 @@ class AdminDashboardController extends Controller
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getVisitStats(FamilyVisitData $visitData, CaregiverAssignment $assignments, string $today): array
     {
         $assignmentRows = $assignments->activeForCurrentCaregiver($today);

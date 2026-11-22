@@ -27,7 +27,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -57,11 +57,11 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
-        if ($user->role()->value === 'admin') {
+        if ($user->role()->value == 'admin') {
             return redirect()->route('admin.incidents.index');
         }
 
@@ -100,7 +100,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -131,7 +131,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -197,7 +197,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -232,7 +232,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser || $user->role()->value !== 'admin') {
+        if ($user == null || $user->role()->value !== 'admin') {
             abort(403);
         }
 
@@ -265,7 +265,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser) {
+        if ($user == null) {
             abort(401);
         }
 
@@ -307,7 +307,7 @@ class IncidentController extends Controller
         /** @var SupabaseUser $user */
         $user = $request->user();
 
-        if (! $user instanceof SupabaseUser || $user->role()->value !== 'admin') {
+        if ($user == null || $user->role()->value !== 'admin') {
             abort(403);
         }
 
@@ -328,8 +328,7 @@ class IncidentController extends Controller
     }
 
     /**
-     * Status labels untuk view.
-     * Maps both enum values and DB values to display labels.
+     * @return array<string, string>
      */
     protected function statusLabels(): array
     {
@@ -347,7 +346,7 @@ class IncidentController extends Controller
     }
 
     /**
-     * Status colors untuk view.
+     * @return array<string, string>
      */
     protected function statusColors(): array
     {

@@ -20,10 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        $this->registerPolicies();
-    }
+    public function boot(): void {}
 
     /**
      * Register any application services.
