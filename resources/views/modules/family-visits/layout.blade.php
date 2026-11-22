@@ -35,7 +35,7 @@
         </nav>
 
         <div class="adm-sidebar-profile">
-            <img class="adm-avatar fv-account-photo" src="{{ route('family.avatar') }}" alt="" width="40" height="40">
+            <img class="adm-avatar fv-account-photo" src="{{ route('family.avatar', absolute: false) }}" alt="" width="40" height="40">
             <div class="adm-profile-info">
                 <p class="adm-profile-name">{{ $user->name() }}</p>
                 <p class="adm-profile-role">{{ $resident ? 'Keluarga terverifikasi' : 'Menunggu verifikasi' }}</p>

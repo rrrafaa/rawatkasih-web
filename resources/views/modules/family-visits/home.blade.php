@@ -2,7 +2,7 @@
 @section('portal-content')
 @if (!$resident) @include('modules.family-visits.partials.unlinked')
 @else
-    <section class="fv-spotlight">@if ($demoPortrait)<img class="fv-avatar fv-avatar-spotlight fv-account-photo" src="{{ route('family.demo-media', ['asset' => 'sulastri', 'resident' => $resident->id]) }}" alt="Foto ilustrasi Ibu Sulastri">@else<span class="fv-avatar fv-avatar-spotlight" aria-hidden="true">{{ mb_substr($resident->full_name, 0, 1) }}</span>@endif<div class="fv-spotlight-text"><p class="fv-eyebrow">ORANG TERSAYANG</p><h2>{{ $resident->full_name }}</h2><p>{{ $resident->birth_date ? $resident->birth_date->age.' tahun · ' : '' }}{{ $resident->room ?: 'Kamar belum diisi' }}</p><p>Terhubung dengan keluarga terverifikasi</p></div><a class="adm-primary-button" href="{{ route('family.news', ['resident' => $resident->id]) }}">Lihat kabar Eyang</a></section>
+    <section class="fv-spotlight">@if ($demoPortrait)<img class="fv-avatar fv-avatar-spotlight fv-account-photo" src="{{ route('family.demo-media', ['asset' => 'sulastri', 'resident' => $resident->id], absolute: false) }}" alt="Foto ilustrasi Ibu Sulastri">@else<span class="fv-avatar fv-avatar-spotlight" aria-hidden="true">{{ mb_substr($resident->full_name, 0, 1) }}</span>@endif<div class="fv-spotlight-text"><p class="fv-eyebrow">ORANG TERSAYANG</p><h2>{{ $resident->full_name }}</h2><p>{{ $resident->birth_date ? $resident->birth_date->age.' tahun · ' : '' }}{{ $resident->room ?: 'Kamar belum diisi' }}</p><p>Terhubung dengan keluarga terverifikasi</p></div><a class="adm-primary-button" href="{{ route('family.news', ['resident' => $resident->id]) }}">Lihat kabar Eyang</a></section>
     @include('modules.family-visits.partials.demo-notice')
     @php($latest = $stories[0] ?? null)
     @php($hasDemo = count(array_filter($stories, fn ($story) => $story['is_demo'])) > 0)
@@ -16,7 +16,7 @@
     <div class="fv-home-columns">
         <section class="fv-card fv-latest-story">
             @if($latest)
-                @if($latest['media'])<img class="fv-latest-photo" src="{{ $latest['is_demo'] ? route('family.demo-media', ['asset' => $latest['media'], 'resident' => $resident->id]) : $latest['media'] }}" alt="{{ $latest['is_demo'] ? 'Ilustrasi kabar contoh: ' : 'Dokumentasi kabar: ' }}{{ $latest['title'] }}">@endif
+                @if($latest['media'])<img class="fv-latest-photo" src="{{ $latest['is_demo'] ? route('family.demo-media', ['asset' => $latest['media'], 'resident' => $resident->id], absolute: false) : $latest['media'] }}" alt="{{ $latest['is_demo'] ? 'Ilustrasi kabar contoh: ' : 'Dokumentasi kabar: ' }}{{ $latest['title'] }}">@endif
                 <p class="fv-eyebrow">{{ $latest['is_demo'] ? 'KABAR CONTOH' : 'KABAR KELUARGA' }} / {{ \Carbon\CarbonImmutable::parse($latest['published_at'])->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M · H.i') }} WIB</p><h2>{{ $latest['title'] }}</h2><p>{{ $latest['summary'] }}</p>
             @else<h2>Menunggu kabar keluarga</h2><p>Kabar yang dibagikan panti akan tersedia di sini.</p>@endif
             <a class="adm-secondary-button" href="{{ route('family.news', ['resident' => $resident->id]) }}">Baca kabar harian</a>

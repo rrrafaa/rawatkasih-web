@@ -1,7 +1,7 @@
 <section class="fv-resident-context" aria-label="Lansia terkait">
     @if ($showDemoPortrait ?? false)
         <img class="fv-resident-photo"
-             src="{{ route('family.demo-media', ['asset' => 'sulastri', 'resident' => $resident->id]) }}"
+             src="{{ route('family.demo-media', ['asset' => 'sulastri', 'resident' => $resident->id], absolute: false) }}"
              alt="Foto ilustrasi Ibu Sulastri" width="56" height="56">
     @else
         <span class="fv-avatar" aria-hidden="true">{{ mb_substr($resident->full_name, 0, 1) }}</span>

@@ -22,7 +22,7 @@
                 <div>
                     <dt>Nama pengaju</dt>
                     <dd class="fv-requester-avatar">
-                        <img class="fv-account-photo" src="{{ route('admin.visits.avatar', $visit->id) }}" alt="" width="36" height="36">
+                        <img class="fv-account-photo" src="{{ route('admin.visits.avatar', $visit->id, absolute: false) }}" alt="" width="36" height="36">
                         {{ $visit->requester?->full_name ?? 'Keluarga' }}
                     </dd>
                 </div>

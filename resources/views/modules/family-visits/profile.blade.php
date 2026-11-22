@@ -2,7 +2,7 @@
 
 @section('portal-content')
     <section class="fv-card fv-profile-overview">
-        <img class="fv-avatar fv-account-photo" src="{{ route('family.avatar') }}" alt="" width="48" height="48">
+        <img class="fv-avatar fv-account-photo" src="{{ route('family.avatar', absolute: false) }}" alt="" width="48" height="48">
         <div>
             <h2>{{ $user->name() }}</h2>
             <p>Anggota keluarga</p>

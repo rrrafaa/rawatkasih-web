@@ -40,7 +40,7 @@
                 @foreach ($stories as $story)
                     <article class="fv-card fv-news-card">
                         @if ($story['media'])
-                            <img src="{{ $story['is_demo'] ? route('family.demo-media', ['asset' => $story['media'], 'resident' => $resident->id]) : $story['media'] }}"
+                            <img src="{{ $story['is_demo'] ? route('family.demo-media', ['asset' => $story['media'], 'resident' => $resident->id], absolute: false) : $story['media'] }}"
                                  alt="{{ ($story['is_demo'] ? 'Ilustrasi: ' : 'Dokumentasi: ').$story['title'] }}" loading="lazy">
                         @endif
                         <div class="fv-news-card-body">

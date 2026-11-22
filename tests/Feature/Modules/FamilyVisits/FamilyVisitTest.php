@@ -190,6 +190,18 @@ test('published dummy text remains visible when photo permission is revoked', fu
     $this->get('/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT)->assertForbidden();
 });
 
+test('family images use the page origin and serve JPEG files', function () {
+    $avatar = '/family/foto-profil';
+    $story = '/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT;
+
+    $this->get('/family')->assertOk()->assertSee('src="'.$avatar.'"', false)
+        ->assertSee('src="'.$story.'"', false);
+    foreach ([$avatar, $story] as $image) {
+        Auth::forgetGuards();
+        $this->get($image)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    }
+});
+
 test('demo media requires auth, a verified relation and fresh photo permission', function () {
     $this->get('/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT)->assertOk()->assertHeader('Content-Type', 'image/jpeg')->assertHeader('Cache-Control', 'no-store, private');
     $this->fake->linked = false;
