@@ -38,7 +38,7 @@
                     <p class="adm-form-error" role="alert">{{ $message }}</p>
                 @enderror
                 <form method="post" action="{{ route('admin.visits.update', $visit->id) }}"
-                      class="adm-visit-decision" data-confirm="Simpan keputusan ini? Keputusan tidak dapat diubah kembali.">
+                      class="adm-visit-decision" data-review-form>
                     @csrf
                     @method('PATCH')
                     <div>
@@ -61,6 +61,19 @@
                     </div>
                     <div><button type="submit" class="adm-primary-button">Simpan keputusan</button></div>
                 </form>
+                <dialog class="adm-visit-dialog" id="review-confirmation" aria-labelledby="review-confirmation-title"
+                        aria-describedby="review-confirmation-description">
+                    <form method="dialog">
+                        <span class="adm-visit-dialog-icon" aria-hidden="true">!</span>
+                        <button type="submit" value="cancel" class="adm-visit-dialog-close" aria-label="Tutup dialog">×</button>
+                        <h2 id="review-confirmation-title">Konfirmasi keputusan</h2>
+                        <p id="review-confirmation-description">Keputusan yang sudah disimpan tidak dapat diubah.</p>
+                        <div class="adm-visit-dialog-actions">
+                            <button type="submit" value="cancel" class="adm-secondary-button" autofocus>Batal</button>
+                            <button type="submit" value="confirm" class="adm-visit-dialog-confirm">Simpan keputusan</button>
+                        </div>
+                    </form>
+                </dialog>
             @else
                 @if ($visit->reviewed_at)
                     <dl class="adm-visit-facts">

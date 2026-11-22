@@ -165,11 +165,34 @@ if (visitForm) {
 }
 const decision = document.getElementById('decision');
 if (decision) {
+    const reviewForm = decision.form;
+    const dialog = document.getElementById('review-confirmation');
+    let confirmed = false;
     const updateRequired = () => { document.getElementById('review_note').required = decision.value === 'rejected'; };
     decision.addEventListener('change', updateRequired);
     updateRequired();
+    if (dialog && typeof dialog.showModal === 'function') {
+        const title = document.getElementById('review-confirmation-title');
+        const confirm = dialog.querySelector('[value="confirm"]');
+        reviewForm.addEventListener('submit', (event) => {
+            if (event.defaultPrevented || confirmed) return;
+            event.preventDefault();
+            const reject = decision.value === 'rejected';
+            title.textContent = reject ? 'Tolak kunjungan ini?' : 'Setujui kunjungan ini?';
+            confirm.textContent = reject ? 'Tolak kunjungan' : 'Setujui kunjungan';
+            confirm.classList.toggle('is-rejection', reject);
+            dialog.returnValue = '';
+            dialog.showModal();
+        });
+        dialog.addEventListener('close', () => {
+            if (dialog.returnValue !== 'confirm') return;
+            confirmed = true;
+            reviewForm.requestSubmit();
+            confirmed = false;
+        });
+    }
 }
-document.querySelectorAll('form[data-confirm], form[data-visit-form]').forEach((form) => {
+document.querySelectorAll('form[data-confirm], form[data-visit-form], form[data-review-form]').forEach((form) => {
     form.addEventListener('submit', (event) => {
         if (event.defaultPrevented) return;
         if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) { event.preventDefault(); return; }
