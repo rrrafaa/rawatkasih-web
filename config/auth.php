@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\SupabaseUser;
-use App\Models\User;
 
 return [
 

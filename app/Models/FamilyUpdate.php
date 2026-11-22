@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models; 
+namespace App\Models;
 
 use App\Exceptions\SupabaseUnavailable;
 use Illuminate\Support\Facades\Log;
@@ -119,7 +119,6 @@ class FamilyUpdate extends SupabaseModel
         }
     }
 
-
     /**
      * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
@@ -128,8 +127,10 @@ class FamilyUpdate extends SupabaseModel
     {
         $validIds = array_values(array_unique(array_filter(
             $residentIds,
-            fn ($id) => is_string($id)
-                && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id) === 1
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
 
         if ($validIds === []) {

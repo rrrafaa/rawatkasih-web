@@ -1,7 +1,5 @@
 <?php
 
-use Laravel\Fortify\Features;
-
 return [
 
     // Guard yang digunakan Fortify untuk autentikasi.
