@@ -22,29 +22,4 @@ class CaregiverAssignment extends SupabaseModel
             'order' => 'start_date.desc',
         ]);
     }
-
-    public function isAssignedToResident(string $residentId, ?string $date = null): bool
-    {
-        $user = auth()->user();
-
-        if (! $user instanceof SupabaseUser) {
-            return false;
-        }
-
-        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $residentId)) {
-            return false;
-        }
-
-        $date ??= now('Asia/Jakarta')->toDateString();
-
-        $rows = $this->read([
-            'user_id' => 'eq.'.$user->id(),
-            'resident_id' => 'eq.'.$residentId,
-            'start_date' => 'lte.'.$date,
-            'or' => '(end_date.is.null,end_date.gte.'.$date.')',
-            'limit' => 1,
-        ]);
-
-        return count($rows) > 0;
-    }
 }
