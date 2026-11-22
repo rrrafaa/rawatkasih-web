@@ -41,3 +41,11 @@ Migration remote `20261116023335_harden_auth_helpers`:
 - Menolak pemanggilan RPC profil oleh anon.
 
 Privilege sudah diperiksa ulang; akun nonaktif ditolak melalui pengujian transaksi rollback. Advisor tetap menandai `update_my_profile` sebagai SECURITY DEFINER yang dapat dipanggil authenticated: ini disengaja untuk mengubah nama/telepon sendiri, dan perlu ditinjau bila fungsi diperluas. [Penjelasan advisor](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+
+## Metadata foto dan kabar keluarga (22 November 2026)
+
+Migration `20261122145059_add_family_media_metadata.sql` telah diterapkan pada proyek Supabase bersama. Kolom opsional baru: `residents.profile_photo_path`, `profiles.avatar_path`, serta `family_updates.title`, `family_updates.category`, `family_updates.photo_caption`. Nilai kategori baru hanya `aktivitas` atau `kebersamaan` (atau NULL untuk baris legacy). `family_updates.photo_path` sudah ada sejak skema awal dan tetap digunakan. `daily_notes` tidak berubah dan tetap internal.
+
+Path foto adalah **object key storage privat**, bukan URL publik atau signed URL permanen. Belum ada file yang diunggah ataupun route produksi untuk memuatnya. RLS dan consent yang sudah ada tetap berlaku; sebelum mengaktifkan rendering media nyata, implementasikan pembatasan akses gambar per resident/user dan tinjau kebijakan `family_updates` jika teks kabar harus tetap terlihat saat `photo_share` dicabut.
+
+Migration ini sudah terdaftar pada remote sebagai versi `20261122145059`; **jangan jalankan ulang di proyek bersama**. Untuk environment baru, urutkan sesuai nomor migration dan audit skema dasar serta migrasi lain yang belum sinkron lebih dahulu.

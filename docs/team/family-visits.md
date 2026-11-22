@@ -120,3 +120,9 @@ Branch lanjutan anggota: `feat/family-visits/nama-fitur`. Gunakan PR, sertakan p
 ### Aset profil
 
 Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang sudah dipakai aplikasi. Foto akun keluarga disimpan sebagai `resources/keluarga/<uuid-profil>.jpg`. Portal memakai ilustrasi bawaan jika akun belum memiliki berkas foto. Keluarga hanya dapat membuka foto akunnya sendiri, dan admin dapat membuka foto pengaju melalui detail kunjungan. Penempatan foto dilakukan melalui repositori sehingga tidak memerlukan kolom baru di database.
+
+## Tahap 2 — Kontrak metadata foto
+
+Sejak 22 November 2026, Supabase bersama memiliki kolom nullable `residents.profile_photo_path`, `profiles.avatar_path`, serta `family_updates.title`, `family_updates.category`, `family_updates.photo_caption` dari migration `20261122145059_add_family_media_metadata.sql`. `family_updates.photo_path` telah tersedia sebelumnya. `daily_notes` tidak dimodifikasi.
+
+Perubahan pada `App\\Models\\FamilyUpdate` menambahkan kolom-kolom tersebut ke proyeksi pembacaan; portal keluarga masih menggunakan provider dummy sampai tahap integrasi storage dan provider produksi. Jangan menampilkan object key privat langsung di view atau mengubah `family_updates` menjadi daftar catatan perawatan internal.
