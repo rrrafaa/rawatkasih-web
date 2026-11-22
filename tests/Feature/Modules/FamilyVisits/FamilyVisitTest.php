@@ -95,12 +95,21 @@ test('invalid visit data never reaches a write RPC', function (array $invalid, s
     $this->from('/family/kunjungan/create')->post('/family/kunjungan', [...validFamilyVisit(), ...$invalid])->assertSessionHasErrors($field);
     expect($this->fake->calls)->toBeEmpty();
 })->with([
-    [['visit_date' => '2026-11-16'], 'visit_date'], [['visit_date' => '2026-11-17', 'start_time' => '07:00'], 'visit_date'],
+    [['visit_date' => '2026-11-16'], 'visit_date'], [['visit_date' => '2026-11-17', 'start_time' => '08:00'], 'visit_date'],
     [['end_time' => '08:00'], 'end_time'], [['end_time' => '09:00'], 'end_time'], [['visitor_count' => 0], 'visitor_count'],
     [['visitor_count' => 21], 'visitor_count'], [['visitor_count' => '2.5'], 'visitor_count'], [['primary_visitor_name' => '   '], 'primary_visitor_name'],
     [['primary_visitor_name' => 'a'], 'primary_visitor_name'], [['note' => str_repeat('a', 1001)], 'note'], [['resident_id' => 'not-uuid'], 'resident_id'],
     [['submission_key' => ''], 'submission_key'], [['visit_date' => '2026-02-31'], 'visit_date'], [['start_time' => '24:00'], 'start_time'],
+    [['start_time' => '07:45'], 'start_time'], [['start_time' => '19:00'], 'start_time'],
+    [['start_time' => '09:10'], 'start_time'], [['end_time' => '19:15'], 'end_time'],
+    [['end_time' => '10:10'], 'end_time'],
 ]);
+
+test('the last available visit ends at 19.00 WIB', function () {
+    $this->post('/family/kunjungan', [...validFamilyVisit(), 'start_time' => '18:45', 'end_time' => '19:00'])
+        ->assertRedirect()->assertSessionHas('status');
+    expect($this->fake->calls[0]['data']['p_requested_end_at'])->toBe('2026-11-19T12:00:00+00:00');
+});
 
 test('own pending visit can be viewed and cancelled', function () {
     $this->fake->rows[] = $this->fake->row();

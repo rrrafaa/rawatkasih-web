@@ -14,7 +14,7 @@
                 <input type="hidden" name="resident" value="{{ $resident->id }}">
                 <div class="fv-filter-field">
                     <label class="adm-form-label" for="visit-status">Status pengajuan</label>
-                    <select class="adm-filter" name="status" id="visit-status">
+                    <select class="adm-filter fv-select" name="status" id="visit-status">
                         <option value="">Semua status</option>
                         @foreach (\App\Enums\VisitStatus::cases() as $status)
                             <option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>

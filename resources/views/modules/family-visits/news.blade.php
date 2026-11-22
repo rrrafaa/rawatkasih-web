@@ -11,7 +11,7 @@
             <input type="hidden" name="resident" value="{{ $resident->id }}">
             <div class="fv-filter-field">
                 <label class="adm-form-label" for="news-date">Tanggal kabar</label>
-                <select class="adm-filter" name="date" id="news-date">
+                <select class="adm-filter fv-select" name="date" id="news-date">
                     <option value="">Semua tanggal</option>
                     @if (request('date') && !isset($dates[request('date')]))
                         <option value="{{ request('date') }}" selected>{{ request('date') }}</option>
@@ -23,7 +23,7 @@
             </div>
             <div class="fv-filter-field">
                 <label class="adm-form-label" for="news-category">Kategori</label>
-                <select class="adm-filter" name="category" id="news-category">
+                <select class="adm-filter fv-select" name="category" id="news-category">
                     @foreach (['semua' => 'Semua kategori', 'aktivitas' => 'Aktivitas', 'kebersamaan' => 'Kebersamaan'] as $value => $label)
                         <option value="{{ $value }}" @selected(request('category', 'semua') === $value)>{{ $label }}</option>
                     @endforeach

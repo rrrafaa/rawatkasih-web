@@ -351,3 +351,162 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* White dropdown surfaces match the admin action menu. */
+@supports (appearance: base-select) {
+    .fv-select,
+    .fv-select::picker(select) {
+        appearance: base-select;
+    }
+
+    .fv-select {
+        align-items: center;
+        padding-right: 13px;
+    }
+
+    .fv-select::picker-icon {
+        color: var(--adm-ink);
+    }
+
+    .fv-select::picker(select) {
+        margin: 5px 0;
+        padding: 6px;
+        border: 1px solid var(--adm-border);
+        border-radius: 12px;
+        background: white;
+        color: var(--adm-ink);
+        box-shadow: 0 8px 24px rgb(27 36 32 / 12%);
+    }
+
+    .fv-select::picker(select) {
+        max-height: min(280px, 55dvh);
+        overflow: auto;
+    }
+
+    .fv-select option {
+        min-height: 40px;
+        padding: 8px 10px;
+        border-radius: 8px;
+    }
+
+    .fv-select option:hover,
+    .fv-select option:focus-visible,
+    .fv-select option:checked {
+        background: var(--adm-aqua-soft);
+        color: var(--adm-primary);
+    }
+}
+
+.fv-date-picker {
+    position: relative;
+}
+
+.fv-date-picker [hidden] {
+    display: none;
+}
+
+.fv-date-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.fv-chevron {
+    width: 8px;
+    height: 8px;
+    margin: -4px 3px 0 0;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+
+.fv-calendar {
+    position: absolute;
+    z-index: 5;
+    top: 100%;
+    left: 0;
+    width: min(320px, 100%);
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid var(--adm-border);
+    border-radius: 12px;
+    background: white;
+    color: var(--adm-ink);
+    box-shadow: 0 8px 24px rgb(27 36 32 / 12%);
+}
+
+.fv-calendar-header,
+.fv-calendar-grid {
+    display: grid;
+    align-items: center;
+    gap: 3px;
+    text-align: center;
+}
+
+.fv-calendar-header {
+    grid-template-columns: 36px 1fr 36px;
+    margin-bottom: 6px;
+}
+
+.fv-calendar-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.fv-calendar-grid span {
+    font-size: 11px;
+    color: var(--adm-muted);
+}
+
+.fv-calendar button {
+    min-height: 36px;
+    border: 0;
+    border-radius: 7px;
+    background: white;
+    color: var(--adm-ink);
+    cursor: pointer;
+}
+
+.fv-calendar button:not(:disabled):hover,
+.fv-calendar button[aria-pressed="true"] {
+    background: var(--adm-aqua-soft);
+    color: var(--adm-primary);
+}
+
+.fv-calendar button:disabled {
+    color: var(--adm-muted);
+    opacity: .5;
+    cursor: default;
+}
+
+.fv-main .fv-guidance {
+    margin: 0;
+    list-style: none;
+    counter-reset: visit-step;
+}
+
+.fv-guidance li {
+    position: relative;
+    padding-left: 40px;
+    counter-increment: visit-step;
+}
+
+.fv-guidance li::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--fv-mint);
+    color: var(--fv-green);
+    font-weight: 700;
+    content: counter(visit-step);
+}
+
+.fv-form .adm-form-error:empty {
+    margin: 0;
+}

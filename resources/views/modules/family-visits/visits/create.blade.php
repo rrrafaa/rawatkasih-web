@@ -15,29 +15,37 @@
             <fieldset>
                 <legend>Tanggal dan waktu</legend>
                 <div>
-                    <label class="adm-form-label" for="visit_date">Tanggal kunjungan</label>
-                    <input class="adm-form-control" id="visit_date" name="visit_date" type="date"
-                           min="{{ now('Asia/Jakarta')->format('Y-m-d') }}" required value="{{ old('visit_date') }}"
-                           @error('visit_date') aria-invalid="true" aria-describedby="visit_date-error" @enderror>
-                    @error('visit_date') <p class="adm-form-error" id="visit_date-error">{{ $message }}</p> @enderror
+                    <label class="adm-form-label" id="visit-date-label" for="visit_date">Tanggal kunjungan</label>
+                    <div class="fv-date-picker">
+                        <input class="adm-form-control" id="visit_date" name="visit_date" type="date"
+                               min="{{ now('Asia/Jakarta')->format('Y-m-d') }}" required value="{{ old('visit_date') }}"
+                               aria-describedby="visit_date-error" @error('visit_date') aria-invalid="true" @enderror>
+                        <button type="button" class="adm-form-control fv-date-trigger" hidden
+                                id="visit-date-trigger" aria-labelledby="visit-date-label visit-date-value"
+                                aria-describedby="visit_date-error" aria-expanded="false" aria-controls="visit-calendar">
+                            <span id="visit-date-value">Pilih tanggal</span><span class="fv-chevron" aria-hidden="true"></span>
+                        </button>
+                        <div class="fv-calendar" id="visit-calendar" role="group" aria-label="Kalender kunjungan" hidden>
+                            <div class="fv-calendar-header">
+                                <button type="button" data-calendar-month="-1" aria-label="Bulan sebelumnya">‹</button>
+                                <strong data-calendar-title aria-live="polite"></strong>
+                                <button type="button" data-calendar-month="1" aria-label="Bulan berikutnya">›</button>
+                            </div>
+                            <div class="fv-calendar-grid" aria-hidden="true">
+                                @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $day)
+                                    <span>{{ $day }}</span>
+                                @endforeach
+                            </div>
+                            <div class="fv-calendar-grid" data-calendar-days></div>
+                        </div>
+                    </div>
+                    <p class="adm-form-error" id="visit_date-error" aria-live="polite">{{ $errors->first('visit_date') }}</p>
                 </div>
                 <div class="fv-time-grid">
-                    <div>
-                        <label class="adm-form-label" for="start_time">Waktu mulai (WIB)</label>
-                        <input class="adm-form-control" id="start_time" name="start_time" type="time"
-                               required value="{{ old('start_time') }}"
-                               @error('start_time') aria-invalid="true" aria-describedby="start_time-error" @enderror>
-                        @error('start_time') <p class="adm-form-error" id="start_time-error">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="adm-form-label" for="end_time">Waktu selesai (WIB)</label>
-                        <input class="adm-form-control" id="end_time" name="end_time" type="time"
-                               required value="{{ old('end_time') }}" aria-describedby="visit-time-hint"
-                               @error('end_time') aria-invalid="true" @enderror>
-                        <p class="@error('end_time') adm-form-error @else fv-form-hint @enderror"
-                           id="visit-time-hint" aria-live="polite">@error('end_time'){{ $message }}@else Waktu selesai harus setelah waktu mulai pada hari yang sama. @enderror</p>
-                    </div>
+                    @include('modules.family-visits.partials.visit-time', ['field' => 'start_time', 'label' => 'Waktu mulai (WIB)', 'slots' => array_slice($visitSlots, 0, -1)])
+                    @include('modules.family-visits.partials.visit-time', ['field' => 'end_time', 'label' => 'Waktu selesai (WIB)', 'slots' => array_slice($visitSlots, 1)])
                 </div>
+                <p class="fv-form-hint">Jam kunjungan 08.00–19.00 WIB. Pilih waktu selesai setelah waktu mulai.</p>
             </fieldset>
 
             <fieldset>
@@ -46,21 +54,21 @@
                     <label class="adm-form-label" for="visitor_count">Jumlah pengunjung</label>
                     <input class="adm-form-control" id="visitor_count" name="visitor_count" type="number"
                            min="1" max="20" required value="{{ old('visitor_count', 1) }}"
-                           @error('visitor_count') aria-invalid="true" aria-describedby="visitor_count-error" @enderror>
-                    @error('visitor_count') <p class="adm-form-error" id="visitor_count-error">{{ $message }}</p> @enderror
+                           aria-describedby="visitor_count-error" @error('visitor_count') aria-invalid="true" @enderror>
+                    <p class="adm-form-error" id="visitor_count-error" aria-live="polite">{{ $errors->first('visitor_count') }}</p>
                 </div>
                 <div>
                     <label class="adm-form-label" for="primary_visitor_name">Nama pengunjung utama</label>
                     <input class="adm-form-control" id="primary_visitor_name" name="primary_visitor_name"
                            maxlength="120" autocomplete="name" required value="{{ old('primary_visitor_name', $user->name()) }}"
-                           @error('primary_visitor_name') aria-invalid="true" aria-describedby="primary_visitor_name-error" @enderror>
-                    @error('primary_visitor_name') <p class="adm-form-error" id="primary_visitor_name-error">{{ $message }}</p> @enderror
+                           aria-describedby="primary_visitor_name-error" @error('primary_visitor_name') aria-invalid="true" @enderror>
+                    <p class="adm-form-error" id="primary_visitor_name-error" aria-live="polite">{{ $errors->first('primary_visitor_name') }}</p>
                 </div>
                 <div>
                     <label class="adm-form-label" for="note">Catatan tambahan (opsional)</label>
                     <textarea class="adm-form-control" id="note" name="note" maxlength="1000" rows="3"
-                              @error('note') aria-invalid="true" aria-describedby="note-error" @enderror>{{ old('note') }}</textarea>
-                    @error('note') <p class="adm-form-error" id="note-error">{{ $message }}</p> @enderror
+                              aria-describedby="note-error" @error('note') aria-invalid="true" @enderror>{{ old('note') }}</textarea>
+                    <p class="adm-form-error" id="note-error" aria-live="polite">{{ $errors->first('note') }}</p>
                 </div>
             </fieldset>
             @foreach (['resident_id', 'submission_key'] as $hidden)

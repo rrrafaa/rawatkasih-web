@@ -51,7 +51,7 @@
         <header class="fv-page-heading"><h1 class="adm-page-title">{{ $pageTitle }}</h1><p>{{ $pageDescription }}</p></header>
         @if (session('status'))<div class="fv-alert fv-alert-success" role="status">{{ session('status') }}</div>@endif
         @if ($errors->has('visit'))<div class="fv-alert fv-alert-error" role="alert">{{ $errors->first('visit') }}</div>@endif
-        @if (count($residents) > 1)<form method="get" action="{{ route('family.dashboard') }}" class="adm-toolbar fv-filter-bar"><div class="fv-filter-field"><label class="adm-form-label" for="resident-selector">Orang tersayang</label><select class="adm-filter" id="resident-selector" name="resident">@foreach ($residents as $linked)<option value="{{ $linked->id }}" @selected($resident?->id === $linked->id)>{{ $linked->full_name }}</option>@endforeach</select></div><button class="adm-secondary-button" type="submit">Tampilkan</button></form>@endif
+        @if (count($residents) > 1)<form method="get" action="{{ route('family.dashboard') }}" class="adm-toolbar fv-filter-bar"><div class="fv-filter-field"><label class="adm-form-label" for="resident-selector">Orang tersayang</label><select class="adm-filter fv-select" id="resident-selector" name="resident">@foreach ($residents as $linked)<option value="{{ $linked->id }}" @selected($resident?->id === $linked->id)>{{ $linked->full_name }}</option>@endforeach</select></div><button class="adm-secondary-button" type="submit">Tampilkan</button></form>@endif
         @yield('portal-content')
         <p class="fv-footer">Privasi Eyang terjaga. Hanya kabar terpublikasi yang ditampilkan kepada keluarga terverifikasi.</p>
     </main>

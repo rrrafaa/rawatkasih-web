@@ -7,6 +7,7 @@ use App\Http\Requests\FamilyVisits\StoreVisitRequest;
 use App\Models\FamilyVisits\FamilyVisitData;
 use App\Models\FamilyVisits\VisitRequest;
 use App\Services\FamilyVisits\PortalContext;
+use App\Services\FamilyVisits\VisitHours;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class FamilyVisitController extends Controller
         abort_unless($vars['resident'] !== null, 404);
         Gate::authorize('create', [VisitRequest::class, $vars['resident']]);
 
-        return view('modules.family-visits.visits.create', [...$vars, 'submissionKey' => (string) Str::uuid(), 'activeNav' => 'visits']);
+        return view('modules.family-visits.visits.create', [...$vars, 'submissionKey' => (string) Str::uuid(), 'visitSlots' => VisitHours::slots(), 'activeNav' => 'visits']);
     }
 
     public function store(StoreVisitRequest $request, FamilyVisitData $data): RedirectResponse
