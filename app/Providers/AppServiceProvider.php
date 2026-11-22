@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use App\Contracts\FamilyNewsProvider;
+use App\Models\DailyNote;
+use App\Models\FamilyUpdate;
 use App\Models\FamilyVisits\VisitRequest;
 use App\Models\Resident;
+use App\Policies\DailyNotePolicy;
+use App\Policies\FamilyUpdatePolicy;
 use App\Policies\FamilyVisitPolicy;
 use App\Policies\ResidentPolicy;
 use App\Services\FamilyVisits\DummyFamilyNewsProvider;
@@ -40,6 +44,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Resident::class, ResidentPolicy::class);
         Gate::policy(VisitRequest::class, FamilyVisitPolicy::class);
+        Gate::policy(DailyNote::class, DailyNotePolicy::class);
+        Gate::policy(FamilyUpdate::class, FamilyUpdatePolicy::class);
         Auth::viaRequest('supabase', fn ($request) => app(SupabaseSession::class)->user($request));
         $this->configureAuthRateLimiters();
         $this->configureDefaults();

@@ -77,3 +77,94 @@ Route::middleware('auth')->group(function () {
         require __DIR__.'/modules/'.$module.'.php';
     }
 });
+
+// Route tes cepat untuk melihat tampilan tanpa harus login Supabase:
+Route::get('/preview/daily-notes', function () {
+    $dummyUser = new \App\Models\SupabaseUser([
+        'id' => '10000000-0000-4000-8000-000000000001',
+        'full_name' => 'Dewi Caregiver (Demo)',
+        'role' => 'caregiver',
+    ]);
+    auth()->setUser($dummyUser);
+
+    $dummyResidents = [
+        ['id' => '30000000-0000-4000-8000-000000000001', 'full_name' => 'Eyang Hartono Soedirdjo', 'room' => 'Melati 01', 'photo_consent' => true],
+        ['id' => '30000000-0000-4000-8000-000000000002', 'full_name' => 'Ibu Sulastri', 'room' => 'Mawar 02', 'photo_consent' => false],
+    ];
+
+    $dummyNotes = [
+        [
+            'id' => '1',
+            'resident_id' => '30000000-0000-4000-8000-000000000001',
+            'resident_name' => 'Eyang Hartono Soedirdjo',
+            'resident_room' => 'Melati 01',
+            'caregiver_name' => 'Dewi Caregiver',
+            'mood' => 'Ceria',
+            'meal_note' => 'Habis satu porsi bubur ayam & teh hangat',
+            'internal_note' => 'Tidur siang 2 jam nyenyak, tensi darah stabil 120/80, tidak ada keluhan pusing.',
+            'recorded_at' => now()->toIso8601String(),
+        ],
+    ];
+
+    return view('modules.care-updates.daily-notes.index', [
+        'user' => $dummyUser,
+        'date' => now('Asia/Jakarta')->toDateString(),
+        'residents' => $dummyResidents,
+        'selectedResidentId' => null,
+        'notes' => $dummyNotes,
+        'page' => 1,
+        'hasMore' => false,
+    ]);
+});
+
+Route::get('/preview/family-updates', function () {
+    $dummyUser = new \App\Models\SupabaseUser([
+        'id' => '10000000-0000-4000-8000-000000000001',
+        'full_name' => 'Dewi Caregiver (Demo)',
+        'role' => 'caregiver',
+    ]);
+    auth()->setUser($dummyUser);
+
+    $dummyResidents = [
+        ['id' => '30000000-0000-4000-8000-000000000001', 'full_name' => 'Eyang Hartono Soedirdjo', 'room' => 'Melati 01', 'photo_consent' => true],
+        ['id' => '30000000-0000-4000-8000-000000000002', 'full_name' => 'Ibu Sulastri', 'room' => 'Mawar 02', 'photo_consent' => false],
+    ];
+
+    $dummyUpdates = [
+        [
+            'id' => '1',
+            'resident_id' => '30000000-0000-4000-8000-000000000001',
+            'resident_name' => 'Eyang Hartono Soedirdjo',
+            'resident_room' => 'Melati 01',
+            'author_name' => 'Dewi Caregiver',
+            'summary' => 'Pagi ini Eyang sangat bersemangat mengikuti senam lansia di taman bersama teman-teman.',
+            'status' => 'published',
+            'published_at' => now()->toIso8601String(),
+            'created_at' => now()->toIso8601String(),
+            'photo_url' => null,
+        ],
+        [
+            'id' => '2',
+            'resident_id' => '30000000-0000-4000-8000-000000000002',
+            'resident_name' => 'Ibu Sulastri',
+            'resident_room' => 'Mawar 02',
+            'author_name' => 'Dewi Caregiver',
+            'summary' => 'Sedang istirahat dan merajut di ruang tengah (draft).',
+            'status' => 'draft',
+            'published_at' => null,
+            'created_at' => now()->toIso8601String(),
+            'photo_url' => null,
+        ],
+    ];
+
+    return view('modules.care-updates.family-updates.index', [
+        'user' => $dummyUser,
+        'date' => now('Asia/Jakarta')->toDateString(),
+        'residents' => $dummyResidents,
+        'selectedResidentId' => null,
+        'statusFilter' => null,
+        'updates' => $dummyUpdates,
+        'page' => 1,
+        'hasMore' => false,
+    ]);
+});

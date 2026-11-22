@@ -46,11 +46,13 @@ class SupabaseClient
             $response = $request->send($method, $path, [
                 strtoupper($method) === 'GET' ? 'query' : 'json' => $data,
             ]);
-        } catch (ConnectionException) {
+        } catch (ConnectionException $e) {
+            \Illuminate\Support\Facades\Log::error('Supabase ConnectionException: ' . $e->getMessage());
             throw new SupabaseUnavailable;
         }
 
         if ($response->serverError() || $response->status() === 429) {
+            \Illuminate\Support\Facades\Log::error('Supabase ServerError ' . $response->status() . ': ' . $response->body());
             throw new SupabaseUnavailable;
         }
 
