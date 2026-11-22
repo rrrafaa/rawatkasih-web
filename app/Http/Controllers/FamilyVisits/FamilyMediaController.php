@@ -52,9 +52,8 @@ class FamilyMediaController extends Controller
             throw new SupabaseUnavailable;
         }
         $path = (string) ($response->json('0.photo_path') ?? '');
-        abort_unless(str_starts_with($path, $linked->id.'/updates/'), 404);
 
-        return $media->download($path);
+        return $media->downloadUpdate($path, $linked->id);
     }
 
     public function uploadAvatar(Request $request, FamilyMediaStorage $media, SupabaseClient $client): RedirectResponse

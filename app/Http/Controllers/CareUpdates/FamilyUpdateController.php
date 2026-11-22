@@ -13,6 +13,7 @@ use App\Models\FamilyUpdate;
 use App\Models\Profile;
 use App\Models\Resident;
 use App\Models\SupabaseUser;
+use App\Services\FamilyVisits\FamilyMediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class FamilyUpdateController extends Controller
 {
@@ -100,7 +101,7 @@ class FamilyUpdateController extends Controller
             // URL foto privat via route terotorisasi
             $photoUrl = null;
             if (filled($photoPath)) {
-                $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $row['id']]);
+                $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $row['id']], absolute: false);
             }
 
             $updatesList[] = array_merge($row, [
@@ -210,7 +211,7 @@ class FamilyUpdateController extends Controller
 
         $photoUrl = null;
         if (filled($update['photo_path'] ?? null)) {
-            $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $update['id']]);
+            $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $update['id']], absolute: false);
         }
 
         return view('modules.care-updates.family-updates.edit', [
@@ -329,8 +330,9 @@ class FamilyUpdateController extends Controller
         FamilyUpdate $familyUpdates,
         CaregiverAssignment $assignments,
         FamilyLink $familyLinks,
-        Consent $consents
-    ): BinaryFileResponse {
+        Consent $consents,
+        FamilyMediaStorage $media
+    ): Response {
         /** @var SupabaseUser $user */
         $user = $request->user();
 
@@ -358,16 +360,6 @@ class FamilyUpdateController extends Controller
             abort_unless($consents->hasPhotoConsent($residentId), 403);
         }
 
-        // 2. Cek keberadaan file di private disk
-        abort_unless(Storage::disk('local')->exists($photoPath), 404);
-
-        $fullPath = Storage::disk('local')->path($photoPath);
-        $mime = mime_content_type($fullPath) ?: 'image/jpeg';
-
-        return response()->file($fullPath, [
-            'Content-Type' => $mime,
-            'Cache-Control' => 'no-store, private',
-            'X-Content-Type-Options' => 'nosniff',
-        ]);
+        return $media->downloadUpdate($photoPath, $residentId);
     }
 }

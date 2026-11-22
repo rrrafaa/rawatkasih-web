@@ -6,6 +6,7 @@ use App\Exceptions\SupabaseUnavailable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -59,6 +60,19 @@ class FamilyMediaStorage
         return $path;
     }
 
+    public function downloadUpdate(string $path, string $residentId): SymfonyResponse
+    {
+        if (str_starts_with($path, $residentId.'/updates/')) {
+            return $this->download($path);
+        }
+
+        abort_unless(preg_match('~\\Afamily_updates/[a-z0-9_-]+\\.(?:jpe?g|png|webp)\\z~iD', $path) === 1, 404);
+        $disk = Storage::disk('local');
+        abort_unless($disk->exists($path), 404);
+
+        return $this->imageResponse($disk->get($path) ?? '');
+    }
+
     public function download(string $path): SymfonyResponse
     {
         // Terima hanya kunci objek privat tervalidasi, bukan URL bebas dari pengguna.
@@ -80,7 +94,12 @@ class FamilyMediaStorage
         if (! $response->successful()) {
             throw new SupabaseUnavailable;
         }
-        $body = $response->body();
+
+        return $this->imageResponse($response->body());
+    }
+
+    private function imageResponse(string $body): SymfonyResponse
+    {
         $image = @getimagesizefromstring($body);
         $mime = $image['mime'] ?? null;
         abort_unless(in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true), 502);

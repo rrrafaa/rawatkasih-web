@@ -290,7 +290,7 @@ test('private photo route serves image only to authorized users with valid conse
 
     // Taruh file palsu di storage private disk 'local'
     $path = 'family_updates/dummy.jpg';
-    Storage::disk('local')->put($path, 'fake-image-bytes');
+    Storage::disk('local')->put($path, file_get_contents(resource_path('resident/sulastri/profil.jpg')));
 
     Http::fake([
         '*/rest/v1/family_updates*' => Http::response([
@@ -346,7 +346,7 @@ test('private photo route returns 403 when photo consent is revoked for family',
     $request->setLaravelSession($this->app->make('session')->driver());
 
     $path = 'family_updates/dummy.jpg';
-    Storage::disk('local')->put($path, 'fake-image-bytes');
+    Storage::disk('local')->put($path, file_get_contents(resource_path('resident/sulastri/profil.jpg')));
 
     Http::fake([
         '*/rest/v1/family_updates*' => Http::response([
