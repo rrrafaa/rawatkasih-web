@@ -95,7 +95,7 @@ class FamilyVisitFake
             return Http::response($rows);
         }
         if (str_starts_with($path, '/storage/v1/object/authenticated/rawatkasih-private/')) {
-            return Http::response('binary-photo-bytes', 200, ['Content-Type' => 'image/jpeg']);
+            return Http::response(file_get_contents(resource_path('resident/sulastri/profil.jpg')), 200, ['Content-Type' => 'application/octet-stream']);
         }
         if ($path === '/rest/v1/visit_requests') {
             $rows = array_values(array_filter($this->rows, fn ($r) => ($this->role === 'admin' || ($this->linked && $r['requester_id'] === self::FAMILY))

@@ -80,10 +80,13 @@ class FamilyMediaStorage
         if (! $response->successful()) {
             throw new SupabaseUnavailable;
         }
-        $mime = strtolower(trim(explode(';', $response->header('Content-Type'), 2)[0]));
+        $body = $response->body();
+        $image = @getimagesizefromstring($body);
+        $mime = $image['mime'] ?? null;
         abort_unless(in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true), 502);
 
-        return response($response->body(), 200, [
+        return response($body, 200, [
+            'Content-Disposition' => 'inline',
             'Content-Type' => $mime,
             'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',

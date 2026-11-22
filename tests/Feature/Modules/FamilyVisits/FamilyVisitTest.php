@@ -266,6 +266,13 @@ test('family avatar uses the private local fallback on sidebar and profile', fun
         ->toBe(realpath(resource_path('keluarga/ilustrasi-profil.jpg')));
 });
 
+test('stored avatar is served inline with image bytes and detected MIME type', function () {
+    $this->fake->avatarPath = 'profiles/'.FamilyVisitFake::FAMILY.'/avatar/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg';
+    $response = $this->get('/family/foto-profil')->assertOk()
+        ->assertHeader('Content-Type', 'image/jpeg')->assertHeader('Content-Disposition', 'inline');
+    expect($response->getContent())->toBe(file_get_contents(resource_path('resident/sulastri/profil.jpg')));
+});
+
 test('Eloquent relationships match the Supabase foreign keys and protected fields', function () {
     $visit = new VisitRequest;
     expect($visit->resident()->getForeignKeyName())->toBe('resident_id')
