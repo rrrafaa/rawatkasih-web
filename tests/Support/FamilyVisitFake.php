@@ -18,6 +18,12 @@ class FamilyVisitFake
 
     public bool $conflict = false;
 
+    public string $residentName = 'Eyang Hartono Soedirdjo';
+
+    public string $familyName = 'Rina Wulandari';
+
+    public ?string $familyPhone = '0800000000';
+
     public array $rows = [];
 
     public array $calls = [];
@@ -38,12 +44,12 @@ class FamilyVisitFake
 
     public function profile(): array
     {
-        return ['id' => self::FAMILY, 'full_name' => 'Rina Wulandari', 'email' => 'rina@example.test', 'phone' => '0800000000', 'role' => $this->role, 'is_active' => true];
+        return ['id' => self::FAMILY, 'full_name' => $this->familyName, 'email' => 'rina@example.test', 'phone' => $this->familyPhone, 'role' => $this->role, 'is_active' => true];
     }
 
     public function resident(): array
     {
-        return ['id' => self::RESIDENT, 'full_name' => 'Eyang Hartono Soedirdjo', 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active'];
+        return ['id' => self::RESIDENT, 'full_name' => $this->residentName, 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active'];
     }
 
     public function row(array $overrides = []): array
@@ -86,6 +92,12 @@ class FamilyVisitFake
             }
             if ($this->conflict) {
                 return Http::response(['message' => 'changed'], 409);
+            }
+            if ($path === '/rest/v1/rpc/update_my_profile') {
+                $this->familyName = $request['p_full_name'];
+                $this->familyPhone = $request['p_phone'];
+
+                return Http::response(null, 204);
             }
             if ($path === '/rest/v1/rpc/family_visit_counts') {
                 return Http::response(array_map(fn ($status) => ['status' => $status, 'total' => count(array_filter($this->rows, fn ($r) => $r['status'] === $status))], ['pending', 'approved', 'rejected', 'cancelled']));

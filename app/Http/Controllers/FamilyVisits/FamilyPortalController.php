@@ -5,7 +5,10 @@ namespace App\Http\Controllers\FamilyVisits;
 use App\Contracts\FamilyNewsProvider;
 use App\Http\Controllers\Controller;
 use App\Models\FamilyVisits\FamilyVisitData;
+use App\Models\FamilyVisits\Resident;
 use App\Services\FamilyVisits\PortalContext;
+use Carbon\CarbonImmutable;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -27,11 +30,22 @@ class FamilyPortalController extends Controller
         $filters = $request->validate(['category' => ['nullable', 'in:semua,aktivitas,kebersamaan'], 'date' => ['nullable', 'date_format:Y-m-d']]);
         $vars = $context->for($request);
         $resident = $vars['resident'];
-        $stories = $resident ? $news->publishedFor($resident->id, $data->photoConsent($resident->id)) : [];
-        $stories = array_values(array_filter($stories, fn ($s) => (! isset($filters['category']) || $filters['category'] === 'semua' || $s['category'] === $filters['category'])
-            && (! isset($filters['date']) || substr($s['published_at'], 0, 10) === $filters['date'])));
+        $photoConsent = $resident !== null && $data->photoConsent($resident->id);
+        $stories = $resident ? $news->publishedFor($resident->id, $photoConsent) : [];
+        $dates = [];
+        $visibleStories = [];
+        foreach ($stories as $story) {
+            $publishedAt = CarbonImmutable::parse($story['published_at'])->setTimezone('Asia/Jakarta')->settings(['locale' => 'id']);
+            $date = $publishedAt->toDateString();
+            $dates[$date] = $publishedAt->translatedFormat('d F Y');
+            if ((! isset($filters['date']) || $filters['date'] === $date)
+                && (! isset($filters['category']) || $filters['category'] === 'semua' || $filters['category'] === $story['category'])) {
+                $visibleStories[] = [...$story, 'publishedAt' => $publishedAt];
+            }
+        }
 
-        return view('modules.family-visits.news', [...$vars, 'stories' => $stories, 'activeNav' => 'news']);
+        return view('modules.family-visits.news', [...$vars, 'stories' => $visibleStories, 'dates' => $dates,
+            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident), 'activeNav' => 'news']);
     }
 
     public function profile(Request $request, PortalContext $context, FamilyVisitData $data): View
@@ -39,17 +53,41 @@ class FamilyPortalController extends Controller
         return view('modules.family-visits.profile', [...$context->for($request), 'account' => $data->account(), 'activeNav' => 'profile']);
     }
 
+    public function updateProfile(Request $request, PortalContext $context, FamilyVisitData $data): RedirectResponse
+    {
+        $fields = $request->validate([
+            'full_name' => ['required', 'string', 'max:120'],
+            'phone' => ['nullable', 'string', 'max:32', 'regex:/^\+?[0-9][0-9(). -]*$/D'],
+        ], [
+            'full_name.required' => 'Nama lengkap wajib diisi.',
+            'full_name.max' => 'Nama lengkap maksimal 120 karakter.',
+            'phone.max' => 'Nomor telepon maksimal 32 karakter.',
+            'phone.regex' => 'Masukkan nomor telepon yang valid.',
+        ]);
+        $resident = $context->for($request)['resident'];
+        $data->updateAccount($fields['full_name'], $fields['phone'] ?? null);
+
+        return redirect()->route('family.profile', $resident ? ['resident' => $resident->id] : [])
+            ->with('status', 'Profil akun berhasil diperbarui.');
+    }
+
     public function media(Request $request, string $asset, PortalContext $context, FamilyVisitData $data): BinaryFileResponse
     {
-        abort_unless(config('family_visits.demo_news') && in_array($asset, ['garden', 'lunch', 'morning'], true), 404);
+        abort_unless(config('family_visits.demo_news') && in_array($asset, ['garden', 'lunch', 'morning', 'sulastri'], true), 404);
         $vars = $context->for($request);
-        abort_unless($vars['resident'] !== null, 404);
-        abort_unless($data->photoConsent($vars['resident']->id), 403);
+        $resident = $vars['resident'];
+        abort_unless($resident !== null && ($asset !== 'sulastri' || $this->hasDemoPortrait($resident)), 404);
+        abort_unless($data->photoConsent($resident->id), 403);
 
         // Private demo imagery from Figma; never a public URL for real resident media.
         return response()->file(resource_path('demo/family/'.$asset.'.jpg'), [
             'Content-Type' => 'image/jpeg', 'Cache-Control' => 'no-store, private',
             'X-Content-Type-Options' => 'nosniff',
         ]);
+    }
+
+    private function hasDemoPortrait(Resident $resident): bool
+    {
+        return config('family_visits.demo_news') && strcasecmp(trim($resident->full_name), 'Ibu Sulastri (Dummy)') === 0;
     }
 }

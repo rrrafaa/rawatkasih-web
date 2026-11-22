@@ -42,6 +42,9 @@ class FamilyVisitData
         abort_if(in_array($response->status(), [401, 403], true), 403);
         abort_if($response->status() === 404, 404);
         if ($response->status() === 422) {
+            if ($path === 'rpc/update_my_profile') {
+                throw ValidationException::withMessages(['full_name' => 'Profil belum dapat disimpan. Periksa kembali data akun.']);
+            }
             throw ValidationException::withMessages(['visit' => 'Detail kunjungan tidak valid. Periksa waktu, jumlah, dan status pengajuan.']);
         }
         if (! $response->successful()) {
@@ -139,6 +142,11 @@ class FamilyVisitData
     public function account(): array
     {
         return $this->send('GET', 'profiles', ['select' => 'id,full_name,email,phone', 'id' => 'eq.'.$this->user()->id(), 'limit' => 1])->json('0') ?? [];
+    }
+
+    public function updateAccount(string $name, ?string $phone): void
+    {
+        $this->send('POST', 'rpc/update_my_profile', ['p_full_name' => $name, 'p_phone' => $phone]);
     }
 
     public function photoConsent(string $residentId): bool

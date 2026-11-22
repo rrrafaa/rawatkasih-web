@@ -33,7 +33,30 @@ test('family dashboard uses related profile and clearly marks module two dummy d
 
 test('family can open v2 pages and empty visits', function (string $path, string $text) {
     $this->get($path)->assertOk()->assertSee($text);
-})->with([['/family/kabar', 'Cerita hari-hari Eyang'], ['/family/profil', 'Keluarga yang selalu terhubung'], ['/family/kunjungan', 'Belum ada pengajuan kunjungan'], ['/family/kunjungan/create', 'Rencanakan kunjungan keluarga']]);
+})->with([['/family/kabar', 'Cerita hari-hari Eyang'], ['/family/profil', 'Simpan perubahan'], ['/family/kunjungan', 'Belum ada pengajuan kunjungan'], ['/family/kunjungan/create', 'Ajukan Kunjungan']]);
+
+test('families can edit their own contact details without changing login identity or role', function () {
+    $url = '/family/profil?resident='.FamilyVisitFake::RESIDENT;
+    $this->patch($url, [
+        'full_name' => '  Rina Utami  ', 'phone' => '+62 812-3456-7890', 'role' => 'admin',
+        'email' => 'different@example.test', 'id' => FamilyVisitFake::OTHER,
+    ])->assertRedirect($url)->assertSessionHas('status');
+    expect($this->fake->calls)->toBe([['path' => '/rest/v1/rpc/update_my_profile',
+        'data' => ['p_full_name' => 'Rina Utami', 'p_phone' => '+62 812-3456-7890']]]);
+    Http::assertSent(fn ($request) => str_ends_with($request->url(), '/rpc/update_my_profile')
+        && $request->hasHeader('Authorization', 'Bearer family-token'));
+    Auth::forgetGuards();
+    $this->get($url)->assertOk()->assertSee('Rina Utami')->assertSee('+62 812-3456-7890')
+        ->assertSee('rina@example.test')->assertDontSee('different@example.test');
+});
+
+test('invalid profile data and other roles cannot update a family profile', function () {
+    $this->patch('/family/profil', ['full_name' => ' ', 'phone' => 'example'])->assertSessionHasErrors(['full_name', 'phone']);
+    $this->fake->role = 'admin';
+    Auth::forgetGuards();
+    $this->patch('/family/profil', ['full_name' => 'Admin'])->assertForbidden();
+    expect($this->fake->calls)->toBeEmpty();
+});
 
 test('unlinked families see a safe empty state without dummy stories or a visit form', function () {
     $this->fake->linked = false;
@@ -157,6 +180,24 @@ test('news filters use the temporary provider without querying module two', func
     $this->get('/family/kabar?category=aktivitas')->assertOk()->assertSee('Berkebun bersama')->assertDontSee('Makan siang bersama teman');
     Auth::forgetGuards();
     $this->get('/family/kabar?date=2026-11-13')->assertOk()->assertSee('Belum ada kabar untuk pilihan ini');
+    Auth::forgetGuards();
+    $this->get('/family/kabar?date=2026-11-12&category=kebersamaan')->assertOk()
+        ->assertSee('Cerita dan kenangan pagi')->assertDontSee('Makan siang bersama teman');
+});
+
+test('the fictional Sulastri portrait belongs to the selected dummy resident and requires photo consent', function () {
+    $portrait = '/family/contoh-media/sulastri?resident='.FamilyVisitFake::RESIDENT;
+    $this->get($portrait)->assertNotFound();
+    $this->fake->residentName = 'Ibu Sulastri (Dummy)';
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee('Foto ilustrasi Ibu Sulastri')->assertSee($portrait);
+    Auth::forgetGuards();
+    $this->get($portrait)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    $this->fake->photoConsent = false;
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
+    Auth::forgetGuards();
+    $this->get($portrait)->assertForbidden();
 });
 
 test('Eloquent relationships match the Supabase foreign keys and protected fields', function () {

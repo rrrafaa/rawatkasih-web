@@ -1,16 +1,58 @@
-@extends('modules.family-visits.layout', ['pageTitle' => $visits?->total() ? 'Kunjungan keluarga' : 'Waktu bersama, lebih bermakna', 'pageDescription' => 'Rencanakan kunjungan dan lihat perkembangan pengajuan keluarga.', 'breadcrumb' => 'Kunjungan'])
+@extends('modules.family-visits.layout', ['pageTitle' => 'Kunjungan Keluarga', 'pageDescription' => 'Ajukan jadwal dan pantau keputusan untuk setiap kunjungan.', 'breadcrumb' => 'Kunjungan'])
+
 @section('portal-content')
-@if (!$resident) @include('modules.family-visits.partials.unlinked')
-@else
-    @include('modules.family-visits.partials.resident')
-    @if($visits->total() === 0 && !request('status'))
-        <section class="fv-empty"><h2>Momen hangat berikutnya<br>dimulai dari sini.</h2><p>Belum ada pengajuan kunjungan. Pilih tanggal dan waktu yang nyaman untuk keluarga; admin akan meninjau permintaan Anda.</p><a class="fv-btn" href="{{ route('family.visits.create', ['resident' => $resident->id]) }}">Ajukan kunjungan</a></section>
+    @if (!$resident)
+        @include('modules.family-visits.partials.unlinked')
     @else
-        <div class="fv-list-heading"><h2>Pengajuan dan riwayat</h2><a class="fv-btn" href="{{ route('family.visits.create', ['resident' => $resident->id]) }}">Ajukan jadwal baru</a></div>
-        <form method="get" class="fv-news-filter"><input type="hidden" name="resident" value="{{ $resident->id }}"><label for="visit-status">Status pengajuan</label><select name="status" id="visit-status"><option value="">Semua status</option>@foreach(\App\Enums\VisitStatus::cases() as $status)<option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>@endforeach</select><button class="fv-btn fv-btn-secondary" type="submit">Tampilkan</button></form>
-        <section class="fv-card"><h2>Riwayat permintaan kunjungan</h2>@forelse($visits as $item)<a class="fv-visit-row" href="{{ route('family.visits.show', $item->id) }}"><div><strong>{{ $item->requested_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</strong><p>{{ $item->requested_at->timezone('Asia/Jakarta')->format('H.i') }} WIB · {{ $item->visitor_count }} pengunjung</p>@if($item->review_note)<small>Catatan admin: {{ $item->review_note }}</small>@endif</div><x-visit-status :status="$item->status"/></a>@empty<p>Belum ada pengajuan dengan status ini.</p>@endforelse
-        @include('modules.family-visits.partials.pagination', ['paginator' => $visits])</section>
+        @include('modules.family-visits.partials.resident')
+        <section class="fv-section" aria-labelledby="visit-history">
+            <div class="fv-list-heading">
+                <h2 id="visit-history">Riwayat pengajuan</h2>
+                <a class="adm-primary-button" href="{{ route('family.visits.create', ['resident' => $resident->id]) }}">+ Ajukan kunjungan</a>
+            </div>
+            <form method="get" action="{{ route('family.visits.index') }}" class="adm-toolbar fv-filter-bar">
+                <input type="hidden" name="resident" value="{{ $resident->id }}">
+                <div class="fv-filter-field">
+                    <label class="adm-form-label" for="visit-status">Status pengajuan</label>
+                    <select class="adm-filter" name="status" id="visit-status">
+                        <option value="">Semua status</option>
+                        @foreach (\App\Enums\VisitStatus::cases() as $status)
+                            <option value="{{ $status->value }}" @selected(request('status') === $status->value)>{{ $status->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button class="adm-secondary-button" type="submit">Tampilkan</button>
+            </form>
+            <div class="adm-table-wrap" tabindex="0" role="region" aria-labelledby="visit-history">
+                <table class="adm-table fv-visit-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tanggal</th>
+                            <th scope="col">Waktu (WIB)</th>
+                            <th scope="col">Pengunjung</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($visits as $item)
+                            <tr>
+                                <td class="adm-elder-name">{{ $item->requested_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d F Y') }}</td>
+                                <td>{{ $item->requested_at->timezone('Asia/Jakarta')->format('H.i') }}{{ $item->requested_end_at ? '–'.$item->requested_end_at->timezone('Asia/Jakarta')->format('H.i') : '' }}</td>
+                                <td>{{ $item->visitor_count }} orang</td>
+                                <td><x-visit-status :status="$item->status"/></td>
+                                <td><a class="fv-table-link" href="{{ route('family.visits.show', $item->id) }}">Lihat detail</a></td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td class="fv-table-empty" colspan="5">{{ request('status') ? 'Belum ada pengajuan dengan status ini.' : 'Belum ada pengajuan kunjungan.' }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @include('modules.family-visits.partials.pagination', ['paginator' => $visits])
+        </section>
+        @include('modules.family-visits.partials.guidance')
     @endif
-    @include('modules.family-visits.partials.guidance')
-@endif
 @endsection

@@ -1,7 +1,7 @@
 @extends('modules.family-visits.layout', ['pageTitle' => 'Kunjungan keluarga', 'pageDescription' => 'Lihat perkembangan pengajuan dan rencana waktu bersama.', 'breadcrumb' => 'Kunjungan'])
 @section('portal-content')
 @include('modules.family-visits.partials.resident')
-<section class="fv-request-card {{ $visit->status === \App\Enums\VisitStatus::Approved ? 'fv-mint' : 'fv-peach' }}">
+<section class="fv-card fv-request-card">
     <x-visit-status :status="$visit->status"/>
     <h2>@switch($visit->status) @case(\App\Enums\VisitStatus::Pending) Pengajuanmu sudah diterima, {{ explode(' ', $user->name())[0] }}. @break @case(\App\Enums\VisitStatus::Approved) Waktu bersama keluarga telah disetujui. @break @case(\App\Enums\VisitStatus::Rejected) Pengajuan kunjungan belum dapat disetujui. @break @default Pengajuan kunjungan telah dibatalkan. @endswitch</h2>
     <p>{{ $visit->status === \App\Enums\VisitStatus::Pending ? 'Admin akan meninjau permintaan dan memberikan keputusan.' : 'Status ini tersimpan pada permintaan kunjungan Anda.' }}</p>
@@ -12,6 +12,6 @@
     @if($visit->review_note)<div class="fv-review-note"><strong>Catatan admin</strong><p>{{ $visit->review_note }}</p></div>@endif
     @if($visit->reviewed_at)<small>Keputusan dicatat {{ $visit->reviewed_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d F Y, H.i') }} WIB.</small>@endif
 </section>
-<div class="fv-actions"><a class="fv-btn" href="{{ route('family.visits.create', ['resident' => $resident->id]) }}">Ajukan jadwal baru</a>@can('cancel', $visit)<form method="post" action="{{ route('family.visits.cancel', $visit->id) }}" data-confirm="Batalkan pengajuan kunjungan ini?">@csrf @method('PATCH')<button class="fv-btn fv-btn-danger" type="submit">Batalkan pengajuan</button></form>@endcan<a class="fv-btn fv-btn-secondary" href="{{ route('family.visits.index', ['resident' => $resident->id]) }}">Riwayat pengajuan</a></div>
+<div class="fv-actions"><a class="adm-primary-button" href="{{ route('family.visits.create', ['resident' => $resident->id]) }}">Ajukan jadwal baru</a>@can('cancel', $visit)<form method="post" action="{{ route('family.visits.cancel', $visit->id) }}" data-confirm="Batalkan pengajuan kunjungan ini?">@csrf @method('PATCH')<button class="fv-btn fv-btn-danger" type="submit">Batalkan pengajuan</button></form>@endcan<a class="adm-secondary-button" href="{{ route('family.visits.index', ['resident' => $resident->id]) }}">Riwayat pengajuan</a></div>
 @include('modules.family-visits.partials.guidance')
 @endsection
