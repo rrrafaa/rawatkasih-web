@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Http;
 class SupabaseClient
 {
     /**
-     * @param array<string, mixed>|object $data
-     * @param array<string, string> $headers
+     * @param  array<string, mixed>|object  $data
+     * @param  array<string, string>  $headers
      */
     public function request(
         string $method,
@@ -58,7 +58,7 @@ class SupabaseClient
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function auth(

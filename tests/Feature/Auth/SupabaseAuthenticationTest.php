@@ -54,8 +54,7 @@ function fakeIdentity(string $role = 'admin', bool $active = true): void
         '*/rest/v1/family_links*' => Http::response([], 200),
 
         // Care tasks: preserve RPC mock from main.
-        '*/rest/v1/rpc/generate_today_care_task_occurrences'
-            => Http::response('0', 200),
+        '*/rest/v1/rpc/generate_today_care_task_occurrences' => Http::response('0', 200),
 
         // Fallback for other Supabase REST endpoints.
         '*/rest/v1/*' => Http::response([], 200),
@@ -225,8 +224,7 @@ test('expired sessions rotate refresh tokens and validate the identity', functio
         ->assertOk();
 
     Http::assertSent(
-        fn ($request) =>
-            str_contains($request->url(), 'grant_type=refresh_token')
+        fn ($request) => str_contains($request->url(), 'grant_type=refresh_token')
             && $request['refresh_token'] === 'user-refresh'
     );
 });
@@ -289,8 +287,7 @@ test('role comes from profile and not editable auth metadata', function () {
     ])->assertRedirect('/family');
 
     Http::assertSent(
-        fn ($request) =>
-            str_contains($request->url(), '/rest/v1/profiles')
+        fn ($request) => str_contains($request->url(), '/rest/v1/profiles')
             && $request->hasHeader('Authorization', 'Bearer user-access')
             && $request['select'] === 'id,full_name,email,role,is_active'
     );
