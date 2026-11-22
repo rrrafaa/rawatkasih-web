@@ -356,8 +356,6 @@ class FamilyUpdateController extends Controller
 
             // Dan izin foto masih berstatus granted saat file diakses
             abort_unless($consents->hasPhotoConsent($residentId), 403);
-        } elseif ($user->role() !== Role::Admin) {
-            abort(403);
         }
 
         // 2. Cek keberadaan file di private disk

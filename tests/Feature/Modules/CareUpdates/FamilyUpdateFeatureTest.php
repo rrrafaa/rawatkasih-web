@@ -1,10 +1,6 @@
 <?php
 
-use App\Models\CaregiverAssignment;
 use App\Models\Consent;
-use App\Models\FamilyLink;
-use App\Models\FamilyUpdate;
-use App\Models\Resident;
 use App\Models\SupabaseUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -35,9 +31,9 @@ function loginCaregiver(string $id = '10000000-0000-4000-8000-000000000001'): Su
         ],
     ]);
 
-    $request = test()->app->make('request');
+    $request = app('request');
     $request->setLaravelSession(
-        test()->app->make('session')->driver()
+        app('session')->driver()
     );
 
     return $user;
@@ -123,7 +119,7 @@ test('caregiver can save family update as draft with optional photo without cons
         ], 201),
     ]);
 
-    $file = UploadedFile::fake()->image('eyang-taman.jpg', 600, 400)->size(1500);
+    $file = UploadedFile::fake()->create('eyang-taman.jpg', 1500, 'image/jpeg');
 
     $response = $this->post(route('care-updates.family-updates.store'), [
         'resident_id' => $residentId,
@@ -164,10 +160,19 @@ test('caregiver cannot publish family update with photo if photo consent is not 
                 'end_date' => null,
             ],
         ], 200),
-        '*/rest/v1/consents*' => Http::response([], 200), // No photo consent
+        '*/rest/v1/consents*scope=eq.family_visibility*' => Http::response([
+            [
+                'id' => '70000000-0000-4000-8000-000000000001',
+                'resident_id' => $residentId,
+                'scope' => 'family_visibility',
+                'status' => 'granted',
+            ],
+        ], 200),
+        '*/rest/v1/consents*scope=eq.photo_share*' => Http::response([], 200), // No photo consent
+        '*/rest/v1/consents*' => Http::response([], 200),
     ]);
 
-    $file = UploadedFile::fake()->image('eyang-senam.jpg', 600, 400);
+    $file = UploadedFile::fake()->create('eyang-senam.jpg', 1200, 'image/jpeg');
 
     $response = $this->from(route('care-updates.family-updates.index'))->post(route('care-updates.family-updates.store'), [
         'resident_id' => $residentId,
@@ -208,7 +213,7 @@ test('caregiver can publish family update with photo when photo consent is grant
         ], 201),
     ]);
 
-    $file = UploadedFile::fake()->image('eyang-senam.jpg', 600, 400);
+    $file = UploadedFile::fake()->create('eyang-senam.jpg', 1200, 'image/jpeg');
 
     $response = $this->post(route('care-updates.family-updates.store'), [
         'resident_id' => $residentId,

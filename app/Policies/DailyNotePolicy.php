@@ -31,10 +31,6 @@ class DailyNotePolicy
             return true;
         }
 
-        if ($user->role() !== Role::Caregiver) {
-            return false;
-        }
-
         $noteData = is_array($note)
             ? $note
             : app(DailyNote::class)->findForCurrentUser($note);
