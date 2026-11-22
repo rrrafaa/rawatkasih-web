@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\FamilyVisits\AdminVisitController;
-use App\Http\Controllers\FamilyVisits\FamilyPortalController;
 use App\Http\Controllers\FamilyVisits\FamilyMediaController;
+use App\Http\Controllers\FamilyVisits\FamilyPortalController;
 use App\Http\Controllers\FamilyVisits\FamilyVisitController;
 use Illuminate\Support\Facades\Route;
 

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class FamilyMediaStorage
 {
+    /** @return array{string, string, string} */
     private function credentials(): array
     {
         $token = request()->session()->get('supabase.access_token');
@@ -79,7 +80,7 @@ class FamilyMediaStorage
         if (! $response->successful()) {
             throw new SupabaseUnavailable;
         }
-        $mime = strtolower(trim(explode(';', $response->header('Content-Type', ''), 2)[0]));
+        $mime = strtolower(trim(explode(';', $response->header('Content-Type'), 2)[0]));
         abort_unless(in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true), 502);
 
         return response($response->body(), 200, [

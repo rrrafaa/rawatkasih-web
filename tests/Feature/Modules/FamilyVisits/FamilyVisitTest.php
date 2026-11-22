@@ -298,7 +298,6 @@ test('the module two provider can supply real published news without dummy label
     $this->get('/family/kabar')->assertOk()->assertSee('Penerbit: Caregiver Uji')->assertDontSee('Contoh penerbit')->assertDontSee('/family/contoh-media/');
 });
 
-
 test('real published update uses secure media route and photo caption without dummy stories', function () {
     $updateId = '70000000-0000-4000-8000-000000000001';
     $this->fake->updates = [[
@@ -315,7 +314,7 @@ test('real published update uses secure media route and photo caption without du
         ->assertSee($url)->assertDontSee('Data dummy sementara');
     Auth::forgetGuards();
     $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/jpeg')
-        ->assertHeader('Cache-Control', 'private, no-store');
+        ->assertHeader('Cache-Control', 'no-store, private');
 
     $this->fake->photoConsent = false;
     Auth::forgetGuards();
