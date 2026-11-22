@@ -92,6 +92,8 @@ class FamilyVisitData
         $query = ['select' => self::VISIT_COLUMNS, 'id' => 'eq.'.$id, 'limit' => 1];
         if ($this->user()->role() === Role::Family) {
             $query['requester_id'] = 'eq.'.$this->user()->id();
+        } elseif ($this->user()->role() === Role::Admin) {
+            $query['select'] .= ',reviewer:profiles!visit_requests_reviewed_by_fkey(id,full_name)';
         }
         $row = $this->send('GET', 'visit_requests', $query)->json('0');
         abort_unless(is_array($row), 404);
@@ -189,10 +191,13 @@ class FamilyVisitData
     {
         $resident = $row['resident'] ?? null;
         $requester = $row['requester'] ?? null;
-        unset($row['resident'], $row['requester']);
+        $reviewer = $row['reviewer'] ?? null;
+        unset($row['resident'], $row['requester'], $row['reviewer']);
         $visit = $this->hydrate(VisitRequest::class, $row);
         $visit->setRelation('resident', is_array($resident) ? $this->hydrate(Resident::class, $resident) : null);
         $visit->setRelation('requester', is_array($requester) ? $this->hydrate(AccountProfile::class, $requester) : null);
+
+        $visit->setRelation('reviewer', is_array($reviewer) ? $this->hydrate(AccountProfile::class, $reviewer) : null);
 
         return $visit;
     }

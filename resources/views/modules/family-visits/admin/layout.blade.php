@@ -1,6 +1,17 @@
-@extends('layouts.rawatkasih')
-@section('title', 'Persetujuan Kunjungan — RawatKasih')
-@section('content')
-<link rel="stylesheet" href="{{ asset('css/family-visits.css') }}?v={{ filemtime(public_path('css/family-visits.css')) }}"><script src="{{ asset('js/family-visits.js') }}" defer></script>
-<div class="fv-admin-shell"><aside class="fv-admin-sidebar"><a class="fv-brand" href="{{ route('admin.dashboard') }}"><img src="{{ asset('images/rawatkasih-mark.svg') }}" width="39" height="41" alt=""><strong>RawatKasih</strong></a><p>Portal Admin</p><nav aria-label="Menu admin"><a href="{{ route('admin.dashboard') }}">◦ Dashboard</a>@foreach(['Lansia', 'Pengguna', 'Penugasan', 'Tugas', 'Insiden'] as $label)<span aria-disabled="true">◦ {{ $label }}</span>@endforeach<a class="is-active" aria-current="page" href="{{ route('admin.visits.index') }}">• Kunjungan</a></nav><form method="post" action="{{ route('logout') }}">@csrf<button type="submit" class="fv-logout">Keluar akun</button></form></aside><div class="fv-admin-main"><header class="fv-admin-header"><p>RawatKasih / Admin / Kunjungan</p><span>{{ $user->name() }}</span></header><main id="main" class="fv-admin-content">@if(session('status'))<div class="fv-alert fv-alert-success" role="status">{{ session('status') }}</div>@endif @yield('admin-content')</main></div></div>
+@extends('layouts.admin')
+
+@section('title', 'Manajemen Kunjungan — RawatKasih')
+
+@section('admin-page-styles')
+    <link rel="stylesheet" href="{{ asset('css/family-visits.css') }}?v={{ filemtime(public_path('css/family-visits.css')) }}">
+    <script src="{{ asset('js/family-visits.js') }}" defer></script>
+@endsection
+
+@section('admin-content')
+    <div class="adm-visits">
+        @if (session('status'))
+            <div class="fv-alert fv-alert-success" role="status">{{ session('status') }}</div>
+        @endif
+        @yield('visit-content')
+    </div>
 @endsection

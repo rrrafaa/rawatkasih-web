@@ -80,6 +80,13 @@ class FamilyVisitFake
                 && (! isset($request['id']) || $request['id'] === 'eq.'.$r['id'])
                 && (! isset($request['resident_id']) || $request['resident_id'] === 'eq.'.$r['resident_id'])
                 && (! isset($request['status']) || $request['status'] === 'eq.'.$r['status'])));
+            if (! str_contains((string) ($request['select'] ?? ''), 'reviewer:')) {
+                $rows = array_map(function (array $row): array {
+                    unset($row['reviewer']);
+
+                    return $row;
+                }, $rows);
+            }
             $total = count($rows);
             $rows = array_slice($rows, (int) ($request['offset'] ?? 0), (int) ($request['limit'] ?? 25));
 
@@ -120,6 +127,10 @@ class FamilyVisitFake
                     $row['status'] = $path === '/rest/v1/rpc/cancel_family_visit' ? 'cancelled' : $request['p_decision'];
                     $row['review_note'] = $request['p_review_note'] ?? null;
                     $row['reviewed_at'] = $row['status'] === 'cancelled' ? null : '2026-11-17T01:00:00Z';
+                    if ($row['reviewed_at'] !== null) {
+                        $row['reviewed_by'] = self::FAMILY;
+                        $row['reviewer'] = ['id' => self::FAMILY, 'full_name' => 'Sari Admin'];
+                    }
 
                     return Http::response($row);
                 }

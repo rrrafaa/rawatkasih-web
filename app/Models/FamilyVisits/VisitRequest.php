@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property VisitStatus $status
  * @property CarbonImmutable $requested_at
  * @property CarbonImmutable|null $requested_end_at
+ * @property string|null $reviewed_by
  * @property CarbonImmutable|null $reviewed_at
  * @property int $visitor_count
  * @property string|null $primary_visitor_name
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $review_note
  * @property Resident|null $resident
  * @property AccountProfile|null $requester
+ * @property AccountProfile|null $reviewer
  */
 class VisitRequest extends Model
 {

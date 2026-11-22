@@ -141,10 +141,22 @@ test('role middleware protects all family and admin visit endpoints', function (
 test('admin sees real counts and can decide a pending visit', function (string $decision) {
     $this->fake->role = 'admin';
     $this->fake->rows[] = $this->fake->row();
-    $this->get('/admin/kunjungan')->assertOk()->assertSee('Persetujuan Kunjungan')->assertSee('Rina Wulandari');
+    $this->get('/admin/kunjungan?status=pending')->assertOk()->assertSee('Manajemen Kunjungan')->assertSee('Rina Wulandari');
+    Auth::forgetGuards();
+    $url = '/admin/kunjungan/'.FamilyVisitFake::VISIT;
+    $this->get($url)->assertOk()->assertSee('Simpan keputusan');
     Auth::forgetGuards();
     $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => $decision, 'review_note' => $decision === 'rejected' ? 'Kegiatan panti berlangsung.' : null])->assertRedirect()->assertSessionHas('status');
     expect($this->fake->rows[0]['status'])->toBe($decision);
+
+    Auth::forgetGuards();
+    $this->get($url)->assertOk()->assertSee('Sari Admin')->assertSee('17 November 2026, 08.00')
+        ->assertDontSee('Simpan keputusan');
+
+    $this->fake->role = 'family';
+    Auth::forgetGuards();
+    $response = $this->get('/family/kunjungan/'.FamilyVisitFake::VISIT)->assertOk()->assertDontSee('Sari Admin');
+    $response->assertSee($decision === 'approved' ? 'Disetujui' : 'Kegiatan panti berlangsung.');
 })->with(['approved', 'rejected']);
 
 test('admin rejection requires a nonblank note', function () {
