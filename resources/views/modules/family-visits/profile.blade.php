@@ -9,6 +9,17 @@
         </div>
     </section>
 
+    <div class="fv-card" style="padding:20px;margin-bottom:20px">
+        <form method="post" action="{{ route('family.avatar.upload') }}" enctype="multipart/form-data" class="fv-form">
+            @csrf
+            <h2>Ubah foto profil</h2>
+            <label class="adm-form-label" for="account-photo">Pilih foto (JPEG, PNG, WebP; maksimal 3 MiB)</label>
+            <input id="account-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+            @error('photo') <p class="adm-form-error">{{ $message }}</p> @enderror
+            <button class="adm-primary-button" type="submit">Simpan foto</button>
+        </form>
+    </div>
+
     <div class="fv-profile-grid">
         <form class="fv-card fv-form" method="post"
               action="{{ route('family.profile.update', $resident ? ['resident' => $resident->id] : []) }}">

@@ -26,6 +26,12 @@ class FamilyVisitFake
 
     public array $rows = [];
 
+    public array $updates = [];
+
+    public ?string $residentPhotoPath = null;
+
+    public ?string $avatarPath = null;
+
     public array $calls = [];
 
     public const FAMILY = '20000000-0000-4000-8000-000000000001';
@@ -44,12 +50,12 @@ class FamilyVisitFake
 
     public function profile(): array
     {
-        return ['id' => self::FAMILY, 'full_name' => $this->familyName, 'email' => 'rina@example.test', 'phone' => $this->familyPhone, 'role' => $this->role, 'is_active' => true];
+        return ['id' => self::FAMILY, 'full_name' => $this->familyName, 'email' => 'rina@example.test', 'phone' => $this->familyPhone, 'role' => $this->role, 'is_active' => true, 'avatar_path' => $this->avatarPath];
     }
 
     public function resident(): array
     {
-        return ['id' => self::RESIDENT, 'full_name' => $this->residentName, 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active'];
+        return ['id' => self::RESIDENT, 'full_name' => $this->residentName, 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active', 'profile_photo_path' => $this->residentPhotoPath];
     }
 
     public function row(array $overrides = []): array
@@ -74,6 +80,13 @@ class FamilyVisitFake
         }
         if ($path === '/rest/v1/consents') {
             return Http::response($this->photoConsent ? [['id' => 'consent']] : []);
+        }
+        if ($path === '/rest/v1/family_updates') {
+            $rows = $this->updates;
+            if (isset($request['id'])) {
+                $rows = array_values(array_filter($rows, fn ($r) => $request['id'] === 'eq.'.$r['id']));
+            }
+            return Http::response($rows);
         }
         if ($path === '/rest/v1/visit_requests') {
             $rows = array_values(array_filter($this->rows, fn ($r) => ($this->role === 'admin' || ($this->linked && $r['requester_id'] === self::FAMILY))

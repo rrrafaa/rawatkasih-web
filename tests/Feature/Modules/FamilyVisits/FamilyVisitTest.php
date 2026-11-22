@@ -28,7 +28,8 @@ function validFamilyVisit(): array
 test('family dashboard uses related profile and clearly marks module two dummy data', function () {
     $this->get('/family')->assertOk()->assertSee('Rina')->assertSee('Eyang Hartono Soedirdjo')->assertSee('Data dummy sementara')->assertDontSee('family-token')->assertDontSee('internal_note');
     Http::assertSent(fn ($r) => str_contains($r->url(), '/family_links') && $r['user_id'] === 'eq.'.FamilyVisitFake::FAMILY && $r['status'] === 'eq.verified' && $r->hasHeader('Authorization', 'Bearer family-token'));
-    Http::assertNotSent(fn ($r) => str_contains($r->url(), '/family_updates') || str_contains($r->url(), '/daily_notes'));
+    Http::assertSent(fn ($r) => str_contains($r->url(), '/family_updates') && $r['resident_id'] === 'eq.'.FamilyVisitFake::RESIDENT && $r['status'] === 'eq.published');
+    Http::assertNotSent(fn ($r) => str_contains($r->url(), '/daily_notes'));
 });
 
 test('family can open v2 pages and empty visits', function (string $path, string $text) {

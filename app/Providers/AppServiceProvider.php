@@ -7,7 +7,7 @@ use App\Models\FamilyVisits\VisitRequest;
 use App\Models\Resident;
 use App\Policies\FamilyVisitPolicy;
 use App\Policies\ResidentPolicy;
-use App\Services\FamilyVisits\DummyFamilyNewsProvider;
+use App\Services\FamilyVisits\PublishedFamilyNewsProvider;
 use App\Services\SupabaseSession;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         Fortify::ignoreRoutes();
-        $this->app->bind(FamilyNewsProvider::class, DummyFamilyNewsProvider::class);
+        $this->app->bind(FamilyNewsProvider::class, PublishedFamilyNewsProvider::class);
     }
 
     /**

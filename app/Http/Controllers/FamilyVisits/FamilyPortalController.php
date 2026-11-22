@@ -8,12 +8,15 @@ use App\Models\FamilyVisits\FamilyVisitData;
 use App\Models\FamilyVisits\Resident;
 use App\Models\FamilyVisits\VisitRequest;
 use App\Services\FamilyVisits\PortalContext;
+use App\Services\FamilyVisits\FamilyMediaStorage;
+use App\Services\SupabaseClient;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class FamilyPortalController extends Controller
 {
@@ -26,7 +29,8 @@ class FamilyPortalController extends Controller
         $visits = $resident ? $data->visits($resident->id, null, 1) : null;
 
         return view('modules.family-visits.home', [...$vars, 'stories' => $stories, 'visits' => $visits,
-            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident), 'activeNav' => 'home']);
+            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident),
+            'realPortrait' => $photoConsent && $resident && filled($resident->profile_photo_path), 'activeNav' => 'home']);
     }
 
     public function news(Request $request, PortalContext $context, FamilyVisitData $data, FamilyNewsProvider $news): View
@@ -49,7 +53,8 @@ class FamilyPortalController extends Controller
         }
 
         return view('modules.family-visits.news', [...$vars, 'stories' => $visibleStories, 'dates' => $dates,
-            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident), 'activeNav' => 'news']);
+            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident),
+            'realPortrait' => $photoConsent && $resident && filled($resident->profile_photo_path), 'activeNav' => 'news']);
     }
 
     public function profile(Request $request, PortalContext $context, FamilyVisitData $data): View
@@ -90,19 +95,24 @@ class FamilyPortalController extends Controller
         return $this->photoResponse(resource_path($file));
     }
 
-    public function avatar(Request $request): BinaryFileResponse
+    public function avatar(Request $request, FamilyVisitData $data, FamilyMediaStorage $media): Response
     {
-        return $this->familyAvatar((string) $request->user()->getAuthIdentifier());
+        return $this->familyAvatar((string) $request->user()->getAuthIdentifier(), $data, $media);
     }
 
-    public function requesterAvatar(VisitRequest $visit): BinaryFileResponse
+    public function requesterAvatar(VisitRequest $visit, FamilyVisitData $data, FamilyMediaStorage $media): Response
     {
-        return $this->familyAvatar($visit->requester_id);
+        return $this->familyAvatar($visit->requester_id, $data, $media);
     }
 
-    private function familyAvatar(string $id): BinaryFileResponse
+    private function familyAvatar(string $id, FamilyVisitData $data, FamilyMediaStorage $media): Response
     {
         abort_unless(Str::isUuid($id), 404);
+        $path = $data->avatarPath($id);
+        if (is_string($path) && str_starts_with($path, 'profiles/'.$id.'/avatar/')) {
+            return $media->download($path);
+        }
+        // Backwards-compatible local illustration for profiles without uploaded photos.
         $photo = resource_path('keluarga/'.$id.'.jpg');
 
         return $this->photoResponse(is_file($photo) ? $photo : resource_path('keluarga/ilustrasi-profil.jpg'));

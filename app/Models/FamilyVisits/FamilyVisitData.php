@@ -58,7 +58,7 @@ class FamilyVisitData
     public function residents(): array
     {
         $rows = $this->send('GET', 'family_links', [
-            'select' => 'id,user_id,resident_id,relationship,status,verified_at,resident:residents!family_links_resident_id_fkey(id,full_name,birth_date,room,status)',
+            'select' => 'id,user_id,resident_id,relationship,status,verified_at,resident:residents!family_links_resident_id_fkey(id,full_name,birth_date,room,status,profile_photo_path)',
             'user_id' => 'eq.'.$this->user()->id(), 'status' => 'eq.verified', 'order' => 'verified_at.desc', 'limit' => 25,
         ])->json();
         $residents = [];
@@ -143,7 +143,17 @@ class FamilyVisitData
     /** @return array<string, mixed> */
     public function account(): array
     {
-        return $this->send('GET', 'profiles', ['select' => 'id,full_name,email,phone', 'id' => 'eq.'.$this->user()->id(), 'limit' => 1])->json('0') ?? [];
+        return $this->send('GET', 'profiles', ['select' => 'id,full_name,email,phone,avatar_path', 'id' => 'eq.'.$this->user()->id(), 'limit' => 1])->json('0') ?? [];
+    }
+
+    public function avatarPath(string $profileId): ?string
+    {
+        abort_unless(Str::isUuid($profileId), 404);
+        $row = $this->send('GET', 'profiles', [
+            'select' => 'avatar_path', 'id' => 'eq.'.$profileId, 'limit' => 1,
+        ])->json('0');
+
+        return is_string($row['avatar_path'] ?? null) ? $row['avatar_path'] : null;
     }
 
     public function updateAccount(string $name, ?string $phone): void

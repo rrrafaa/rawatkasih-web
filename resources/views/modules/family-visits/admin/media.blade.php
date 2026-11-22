@@ -1,7 +1,7 @@
-@extends('layouts.admin')
+@extends('modules.family-visits.admin.layout')
 @section('title', 'Kelola Foto Resident — RawatKasih')
-@section('content')
-<main id="main" class="adm-main" style="max-width:1000px;margin:auto;padding:32px">
+@section('visit-content')
+<div style="max-width:1000px;margin:auto">
     <h1>Kelola foto keluarga dan lansia</h1>
     <p>Semua foto disimpan di Supabase Storage privat, maksimal 3 MiB (JPEG, PNG, WebP). Foto kabar hanya dapat dilihat keluarga jika kabar telah dipublikasikan dan izin foto aktif.</p>
     @if(session('status'))<p role="status">{{ session('status') }}</p>@endif
@@ -36,5 +36,5 @@
             <button type="submit" class="adm-primary-button">Simpan foto kabar</button>
         </form>
     </section>
-</main>
+</div>
 @endsection
