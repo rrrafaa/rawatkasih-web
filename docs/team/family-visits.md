@@ -119,7 +119,7 @@ Branch lanjutan anggota: `feat/family-visits/nama-fitur`. Gunakan PR, sertakan p
 
 ### Aset profil
 
-Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang sudah dipakai aplikasi. Foto akun keluarga disimpan sebagai `resources/keluarga/<uuid-profil>.jpg`. Portal memakai ilustrasi bawaan jika akun belum memiliki berkas foto. Keluarga hanya dapat membuka foto akunnya sendiri, dan admin dapat membuka foto pengaju melalui detail kunjungan. Penempatan foto dilakukan melalui repositori sehingga tidak memerlukan kolom baru di database.
+Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang sudah dipakai aplikasi. Foto akun keluarga disimpan sebagai `resources/keluarga/<uuid-profil>.jpg`. Portal memakai ilustrasi bawaan jika akun belum memiliki berkas foto. Keluarga hanya dapat membuka foto akunnya sendiri, dan admin dapat membuka foto pengaju melalui detail kunjungan. Pada tahap demo, penempatan foto masih melalui repositori. Untuk media produksi, kolom referensi foto telah ditambahkan pada migration Tahap 2 sebagaimana dijelaskan di bawah.
 
 ## Tahap 2 — Kontrak metadata foto
 
