@@ -111,7 +111,7 @@ class FamilyPortalController extends Controller
         if (is_string($path) && str_starts_with($path, 'profiles/'.$id.'/avatar/')) {
             return $media->download($path);
         }
-        // Backwards-compatible local illustration for profiles without uploaded photos.
+        // Gunakan ilustrasi lokal sebagai cadangan untuk profil tanpa foto unggahan.
         $photo = resource_path('keluarga/'.$id.'.jpg');
 
         return $this->photoResponse(is_file($photo) ? $photo : resource_path('keluarga/ilustrasi-profil.jpg'));

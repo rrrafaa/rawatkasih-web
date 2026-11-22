@@ -29,7 +29,7 @@ class LoginController extends Controller
             throw ValidationException::withMessages(['email' => 'Tidak dapat masuk. Periksa kredensial atau hubungi admin.']);
         }
 
-        // A role always lands on its own dashboard; ignore arbitrary intended URLs.
+        // Arahkan setiap peran ke dasbornya sendiri; abaikan URL tujuan lain.
         return redirect()->route($user->role()->value.'.dashboard');
     }
 

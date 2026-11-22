@@ -31,7 +31,7 @@ class VisitRequest extends Model
 
     public $incrementing = false;
 
-    // Actor, status, review and ID fields can never be mass-assigned from a form.
+    // Formulir tidak boleh mengisi massal kolom pelaku, status, tinjauan, dan ID.
     protected $fillable = ['requested_at', 'requested_end_at', 'visitor_count', 'primary_visitor_name', 'note'];
 
     protected function casts(): array
@@ -60,7 +60,7 @@ class VisitRequest extends Model
 
     public function resolveRouteBinding($value, $field = null): ?self
     {
-        // Implicit resource binding through the current user's JWT, not a privileged SQL connection.
+        // Pengikatan resource memakai JWT pengguna aktif, bukan koneksi SQL berhak istimewa.
         return app(FamilyVisitData::class)->findVisit((string) $value);
     }
 }

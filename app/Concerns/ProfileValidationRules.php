@@ -8,9 +8,7 @@ use Illuminate\Validation\Rule;
 
 trait ProfileValidationRules
 {
-    /**
-     * Get the validation rules used to validate user profiles.
-     *
+    /** Ambil aturan validasi profil pengguna.
      * @return array<string, array<int, ValidationRule|array<mixed>|string>>
      */
     protected function profileRules(?int $userId = null): array
@@ -21,9 +19,7 @@ trait ProfileValidationRules
         ];
     }
 
-    /**
-     * Get the validation rules used to validate user names.
-     *
+    /** Ambil aturan validasi nama pengguna.
      * @return array<int, ValidationRule|array<mixed>|string>
      */
     protected function nameRules(): array
@@ -31,9 +27,7 @@ trait ProfileValidationRules
         return ['required', 'string', 'max:255'];
     }
 
-    /**
-     * Get the validation rules used to validate user emails.
-     *
+    /** Ambil aturan validasi email pengguna.
      * @return array<int, ValidationRule|array<mixed>|string>
      */
     protected function emailRules(?int $userId = null): array

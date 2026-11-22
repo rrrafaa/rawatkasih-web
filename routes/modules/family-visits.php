@@ -6,8 +6,8 @@ use App\Http\Controllers\FamilyVisits\FamilyPortalController;
 use App\Http\Controllers\FamilyVisits\FamilyVisitController;
 use Illuminate\Support\Facades\Route;
 
-// PAWL02/04: named prefix groups + resource actions + implicit model binding.
-// This module is included inside the shared auth group.
+// PAWL02/04: kelompok rute bernama, aksi resource, dan pengikatan model implisit.
+// Modul ini dimuat dalam kelompok autentikasi bersama.
 Route::prefix('family')->name('family.')->middleware('role:family')->group(function () {
     Route::get('/', [FamilyPortalController::class, 'index'])->name('dashboard')->block(10, 10);
     Route::get('kabar', [FamilyPortalController::class, 'news'])->name('news');

@@ -11,9 +11,7 @@ class ResetUserPassword implements ResetsUserPasswords
 {
     use PasswordValidationRules;
 
-    /**
-     * Validate and reset the user's forgotten password.
-     *
+    /** Validasi dan atur ulang kata sandi pengguna.
      * @param  array<string, string>  $input
      */
     public function reset(User $user, array $input): void

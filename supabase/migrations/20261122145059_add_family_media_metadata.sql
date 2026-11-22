@@ -1,20 +1,19 @@
 BEGIN;
 
--- The files themselves stay in private storage; these columns hold object keys,
--- never binary data or long-lived public/signed URLs.
+-- Berkas tetap di penyimpanan privat; kolom ini hanya menyimpan kunci objek, bukan data biner atau URL publik.
 ALTER TABLE public.residents
     ADD COLUMN IF NOT EXISTS profile_photo_path text;
 
 ALTER TABLE public.profiles
     ADD COLUMN IF NOT EXISTS avatar_path text;
 
--- Nullable to preserve existing family updates created before the new UI.
+-- Boleh kosong agar kabar keluarga lama tetap didukung.
 ALTER TABLE public.family_updates
     ADD COLUMN IF NOT EXISTS title text,
     ADD COLUMN IF NOT EXISTS category text,
     ADD COLUMN IF NOT EXISTS photo_caption text;
 
--- Current Kabar Harian filter values; NULL represents legacy, uncategorized rows.
+-- Nilai filter Kabar Harian; NULL menandai data lama tanpa kategori.
 DO $$
 BEGIN
     IF NOT EXISTS (

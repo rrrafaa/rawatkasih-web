@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\Role;
 use Illuminate\Auth\GenericUser;
 
-/** Auth identity from auth.users + the RLS-protected public.profiles row. */
+/** Identitas autentikasi berasal dari auth.users dan public.profiles yang dilindungi RLS. */
 class SupabaseUser extends GenericUser
 {
     public function role(): Role

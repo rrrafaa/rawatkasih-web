@@ -45,7 +45,7 @@ class SupabaseSession
                 ]);
                 $this->store($request, $tokens);
             }
-            // Validate with the Auth server; never trust a decoded JWT or cached role.
+            // Validasi melalui server Auth; jangan percaya JWT hasil dekode atau peran dari cache.
             $identity = $this->client->auth('GET', 'user', [], $tokens['access_token']);
             if (! isset($identity['id']) || ! is_string($identity['id'])) {
                 throw new InvalidCredentials;
@@ -76,7 +76,7 @@ class SupabaseSession
         try {
             $this->client->auth('POST', 'logout?scope=local', [], $token);
         } catch (InvalidCredentials|SupabaseUnavailable) {
-            // Local session is always destroyed, even if remote logout is unavailable.
+            // Hapus sesi lokal meskipun proses keluar dari server gagal.
         }
     }
 

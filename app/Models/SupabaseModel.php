@@ -5,10 +5,7 @@ namespace App\Models;
 use App\Exceptions\SupabaseUnavailable;
 use App\Services\SupabaseClient;
 
-/**
- * Read foundation for modules. All data access uses the caller's JWT and RLS.
- * Add writes only with FormRequest, Policy and domain transaction/RPC tests.
- */
+/** Dasar akses baca modul: seluruh data memakai JWT pengguna dan RLS. Tambahkan operasi tulis hanya dengan FormRequest, Policy, serta pengujian transaksi/RPC domain. */
 abstract class SupabaseModel
 {
     protected string $table;

@@ -223,12 +223,12 @@ test('fictional resident portrait is selected by UUID, not by name, and requires
     $portrait = '/family/contoh-media/sulastri?resident='.FamilyVisitFake::RESIDENT;
     $this->get($portrait)->assertNotFound();
 
-    // A matching display name alone must never assign someone else's photo.
+    // Kesamaan nama tampilan tidak boleh mengaitkan foto milik orang lain.
     $this->fake->residentName = 'Ibu Sulastri (Dummy)';
     Auth::forgetGuards();
     $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
 
-    // The mapped UUID continues to work after a resident's name changes.
+    // UUID yang dipetakan tetap berlaku meski nama penghuni berubah.
     config(['family_visits.demo_portrait_resident_id' => FamilyVisitFake::RESIDENT]);
     $this->fake->residentName = 'Nama Eyang Berubah';
     Auth::forgetGuards();

@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
         ->name('dashboard')
         ->block(10, 10);
 
-    // Shared dashboards for admin and family.
+    // Dasbor bersama untuk admin dan keluarga.
     foreach (['admin', 'family'] as $role) {
         Route::prefix($role)
             ->name($role.'.')
@@ -60,7 +60,7 @@ Route::middleware('auth')->group(function () {
             });
     }
 
-    // Dedicated dashboard for caregiver.
+    // Dasbor khusus pendamping.
     Route::prefix('caregiver')
         ->name('caregiver.')
         ->middleware('role:caregiver')
@@ -70,8 +70,7 @@ Route::middleware('auth')->group(function () {
                 ->block(10, 10);
         });
 
-    // Each module owns a separate route file,
-    // keeping shared auth routes stable.
+    // Setiap modul memiliki file rute sendiri agar rute autentikasi bersama tetap stabil.
     foreach ([
         'care-tasks',
         'care-updates',

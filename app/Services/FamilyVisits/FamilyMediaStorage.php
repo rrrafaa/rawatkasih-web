@@ -27,7 +27,7 @@ class FamilyMediaStorage
 
     public function upload(UploadedFile $file, string $namespace): string
     {
-        // Namespace is chosen by the controller, not supplied by a browser.
+        // Ruang penyimpanan ditentukan controller, bukan masukan browser.
         abort_unless(
             preg_match('~\\A(?:[0-9a-f-]{36}/(?:profile|updates)|profiles/[0-9a-f-]{36}/avatar)\\z~D', $namespace) === 1,
             422
@@ -61,7 +61,7 @@ class FamilyMediaStorage
 
     public function download(string $path): SymfonyResponse
     {
-        // Never accept an arbitrary user URL; only validated private object keys.
+        // Terima hanya kunci objek privat tervalidasi, bukan URL bebas dari pengguna.
         abort_unless(
             preg_match('~\\A(?:[0-9a-f-]{36}/(?:profile|updates)|profiles/[0-9a-f-]{36}/avatar)/[0-9a-f-]{36}\\.(?:jpg|png|webp)\\z~D', $path) === 1,
             404

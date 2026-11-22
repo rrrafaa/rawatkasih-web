@@ -10,7 +10,7 @@ class ResidentPolicy
 {
     public function view(SupabaseUser $user, string $residentId): bool
     {
-        // RLS enforces active caregiver assignment / verified family link + consent.
+        // RLS mewajibkan penugasan pendamping aktif atau relasi keluarga terverifikasi beserta persetujuan.
         return app(Resident::class)->findForCurrentUser($residentId) !== null;
     }
 

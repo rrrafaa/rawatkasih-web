@@ -1,4 +1,4 @@
-// Use native controls as the fallback when JavaScript is disabled.
+// Gunakan kontrol bawaan jika JavaScript dinonaktifkan.
 const visitForm = document.querySelector('[data-visit-form]');
 if (visitForm) {
     const { visit_date: date, start_time: start, end_time: end, visitor_count: count,

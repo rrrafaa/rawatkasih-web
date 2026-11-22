@@ -27,7 +27,7 @@ class PasswordController extends Controller
         try {
             $client->auth('POST', 'recover', ['email' => strtolower(trim($data['email']))]);
         } catch (InvalidCredentials) {
-            // Same message whether or not the email exists.
+            // Gunakan pesan yang sama, baik email terdaftar maupun tidak.
         }
 
         return back()->with('status', 'Jika akun terdaftar, tautan pemulihan akan dikirim ke email Anda.');
@@ -60,7 +60,7 @@ class PasswordController extends Controller
             $request->session()->forget('supabase_recovery');
             throw ValidationException::withMessages(['token_hash' => 'Tautan tidak valid, sudah digunakan, atau kedaluwarsa. Minta tautan baru.']);
         } catch (SupabaseUnavailable $exception) {
-            // Keep the verified recovery session so a temporary network failure is retryable.
+            // Pertahankan sesi pemulihan terverifikasi agar dapat dicoba kembali saat jaringan terganggu.
             throw $exception;
         }
         $session->revoke($recovery['token']);

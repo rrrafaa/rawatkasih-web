@@ -7,8 +7,8 @@ use App\Exceptions\SupabaseUnavailable;
 use App\Services\SupabaseClient;
 
 /**
- * Read-only published updates using the signed-in user's JWT and Supabase RLS.
- * Dummy stories only appear if there are no actual published records and demo is enabled.
+ * Baca kabar terpublikasi menggunakan JWT pengguna aktif dan RLS Supabase.
+ * Kabar demo hanya muncul jika belum ada publikasi asli dan mode demo aktif.
  */
 class PublishedFamilyNewsProvider implements FamilyNewsProvider
 {

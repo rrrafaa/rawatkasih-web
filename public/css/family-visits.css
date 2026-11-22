@@ -84,7 +84,7 @@
     }
 }
 
-/* Family content uses the same controls, surfaces and table as the admin portal. */
+/* Konten keluarga menggunakan kontrol, tampilan, dan tabel yang sama dengan portal admin. */
 .fv-main {
     padding: 42px clamp(24px, 3.2vw, 48px);
 }
@@ -352,7 +352,7 @@
     }
 }
 
-/* White dropdown surfaces match the admin action menu. */
+/* Latar putih menu tarik-turun mengikuti menu tindakan admin. */
 @supports (appearance: base-select) {
     .fv-select,
     .fv-select::picker(select) {
@@ -570,7 +570,7 @@
     }
 }
 
-/* Administrative visit screens use the shared admin shell and controls. */
+/* Halaman kunjungan admin memakai tata letak dan kontrol admin bersama. */
 .adm-visits {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
