@@ -14,7 +14,7 @@ Modul `FamilyVisits` mengimplementasikan portal keluarga dan alur `visit_request
 
 Sumber persyaratan adalah PDF **Projek Akhir PemWeb Lanjut (3)** yang diunggah pengguna. Pembagian tugas pada permintaan pengguna menjadi batas implementasi; perbedaan nomor PRD dipetakan berdasarkan nama fitur seperti pada [TEAM.md](../TEAM.md). Modul ini tidak menyatakan seluruh PRD aplikasi sudah selesai.
 
-Desain: [Figma v2 — Portal Keluarga](https://www.figma.com/design/dEsADF72zaAkTdeS8brN6b/PAWL---Rawat-Kasih?node-id=160-1205). Frame acuan: beranda `160:1205`, kabar `160:1290`, kunjungan kosong `160:1365`, form `160:1426`, diajukan `160:1501`, profil `160:1572`, dan admin `99:374`. Warna, font, susunan kartu, sidebar, dan aset contoh mengikuti desain; layar kecil menggunakan susunan responsif. Nama/kamar berasal dari Supabase. Avatar memakai inisial karena kontrak foto profil nyata belum tersedia. Angka contoh pada desain diganti angka aktual atau diberi label contoh.
+Desain: [Figma v2 — Portal Keluarga](https://www.figma.com/design/dEsADF72zaAkTdeS8brN6b/PAWL---Rawat-Kasih?node-id=160-1205). Frame acuan: beranda `160:1205`, kabar `160:1290`, kunjungan kosong `160:1365`, form `160:1426`, diajukan `160:1501`, profil `160:1572`, dan admin `99:374`. Warna, font, susunan kartu, sidebar, dan aset contoh mengikuti desain; layar kecil menggunakan susunan responsif. Nama/kamar berasal dari Supabase. Foto resident demo dipilih menggunakan UUID yang dikonfigurasi (bukan nama); avatar keluarga memakai route privat dan gambar ilustrasi saat file `<user_uuid>.jpg` belum tersedia. Foto profil nyata dari Supabase masih menunggu kontrak storage. Angka contoh pada desain diganti angka aktual atau diberi label contoh.
 
 ## MVC dan materi perkuliahan
 
@@ -86,6 +86,7 @@ Konfigurasi `.env` opsional:
 
 ```dotenv
 FAMILY_DEMO_NEWS=true
+FAMILY_DEMO_PORTRAIT_RESIDENT_ID=11111111-1111-4111-8111-111111111111
 FAMILY_FACILITY_NAME="Wisma Kasih Utama"
 ```
 
@@ -93,7 +94,7 @@ Set `FAMILY_DEMO_NEWS=false` untuk mengosongkan kabar contoh. Lalu jalankan `php
 
 Orang 2 cukup mengganti binding `FamilyNewsProvider` pada `AppServiceProvider` dengan implementasi produksinya. Method `publishedFor($residentId, $photoConsent)` mengembalikan daftar DTO terurut terbaru dengan field `id`, `title`, `summary`, `category`, `published_at` (ISO 8601), `author`, `media` (ID aset untuk dummy; URL privat untuk kabar nyata; atau null), `is_demo` (false untuk kabar nyata). Implementasi produksi wajib memakai JWT pengguna, hanya memuat kabar terpublikasi yang berizin, serta memeriksa consent pada setiap akses media. Kategori UI saat ini `aktivitas` dan `kebersamaan`; perluas kontrak/filter bersama jika kategori modul 2 berbeda.
 
-Foto dan aset kabar dummy berada di `resources/resident/`, bukan direktori `public`. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
+Aset kabar demo berada di `resources/resident/contoh-kabar/`, foto resident demo di `resources/resident/sulastri/profil.jpg`, dan avatar ilustrasi di `resources/keluarga/`. UUID `FAMILY_DEMO_PORTRAIT_RESIDENT_ID` harus cocok dengan resident dummy yang terkait; nama tidak digunakan untuk menentukan foto. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
 
 ## Menjalankan dan memverifikasi
 

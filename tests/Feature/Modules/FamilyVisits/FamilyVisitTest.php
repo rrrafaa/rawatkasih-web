@@ -218,19 +218,51 @@ test('news filters use the temporary provider without querying module two', func
         ->assertSee('Cerita dan kenangan pagi')->assertDontSee('Makan siang bersama teman');
 });
 
-test('the fictional Sulastri portrait belongs to the selected dummy resident and requires photo consent', function () {
+test('fictional resident portrait is selected by UUID, not by name, and requires photo consent', function () {
     $portrait = '/family/contoh-media/sulastri?resident='.FamilyVisitFake::RESIDENT;
     $this->get($portrait)->assertNotFound();
+
+    // A matching display name alone must never assign someone else's photo.
     $this->fake->residentName = 'Ibu Sulastri (Dummy)';
     Auth::forgetGuards();
-    $this->get('/family/kabar')->assertOk()->assertSee('Foto ilustrasi Ibu Sulastri')->assertSee($portrait);
+    $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
+
+    // The mapped UUID continues to work after a resident's name changes.
+    config(['family_visits.demo_portrait_resident_id' => FamilyVisitFake::RESIDENT]);
+    $this->fake->residentName = 'Nama Eyang Berubah';
+    Auth::forgetGuards();
+    $this->get('/family')->assertOk()->assertSee($portrait);
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee('Foto ilustrasi Nama Eyang Berubah')->assertSee($portrait);
     Auth::forgetGuards();
     $this->get($portrait)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+
     $this->fake->photoConsent = false;
+    Auth::forgetGuards();
+    $this->get('/family')->assertOk()->assertDontSee($portrait);
     Auth::forgetGuards();
     $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
     Auth::forgetGuards();
     $this->get($portrait)->assertForbidden();
+
+    $this->fake->photoConsent = true;
+    config(['family_visits.demo_news' => false]);
+    Auth::forgetGuards();
+    $this->get($portrait)->assertNotFound();
+});
+
+test('family avatar uses the private local fallback on sidebar and profile', function () {
+    $avatar = '/family/foto-profil';
+    foreach (['/family', '/family/kabar', '/family/profil'] as $page) {
+        Auth::forgetGuards();
+        $this->get($page)->assertOk()->assertSee('src="'.$avatar.'"', false);
+    }
+
+    Auth::forgetGuards();
+    $response = $this->get($avatar)->assertOk()->assertHeader('Content-Type', 'image/jpeg')
+        ->assertHeader('Cache-Control', 'no-store, private');
+    expect(realpath($response->baseResponse->getFile()->getPathname()))
+        ->toBe(realpath(resource_path('keluarga/ilustrasi-profil.jpg')));
 });
 
 test('Eloquent relationships match the Supabase foreign keys and protected fields', function () {

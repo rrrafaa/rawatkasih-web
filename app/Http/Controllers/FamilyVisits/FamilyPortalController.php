@@ -85,6 +85,8 @@ class FamilyPortalController extends Controller
 
         $file = $asset === 'sulastri' ? 'resident/sulastri/profil.jpg' : 'resident/contoh-kabar/'.$asset.'.jpg';
 
+        abort_unless(is_file(resource_path($file)), 404);
+
         return $this->photoResponse(resource_path($file));
     }
 
@@ -116,6 +118,12 @@ class FamilyPortalController extends Controller
 
     private function hasDemoPortrait(Resident $resident): bool
     {
-        return config('family_visits.demo_news') && strcasecmp(trim($resident->full_name), 'Ibu Sulastri (Dummy)') === 0;
+        $demoResidentId = config('family_visits.demo_portrait_resident_id');
+
+        return config('family_visits.demo_news')
+            && is_string($demoResidentId)
+            && $demoResidentId !== ''
+            && $resident->id === $demoResidentId
+            && is_file(resource_path('resident/sulastri/profil.jpg'));
     }
 }
