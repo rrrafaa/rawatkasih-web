@@ -8,6 +8,7 @@
     <title>@yield('title', 'RawatKasih')</title>
     {{-- Load the self-contained Figma styling first, even without npm/Vite. --}}
     <link rel="stylesheet" href="{{ asset('css/rawatkasih.css') }}?v={{ filemtime(public_path('css/rawatkasih.css')) }}">
+    @yield('page-styles')
     {{-- The optional bundled CSS provides local fonts and Flux/Tailwind assets. --}}
     @if (is_file(public_path('hot')) || is_file(public_path('build/manifest.json')))
         @vite('resources/css/app.css')
