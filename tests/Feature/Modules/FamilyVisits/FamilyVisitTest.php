@@ -297,3 +297,42 @@ test('the module two provider can supply real published news without dummy label
     Auth::forgetGuards();
     $this->get('/family/kabar')->assertOk()->assertSee('Penerbit: Caregiver Uji')->assertDontSee('Contoh penerbit')->assertDontSee('/family/contoh-media/');
 });
+
+
+test('real published update uses secure media route and photo caption without dummy stories', function () {
+    $updateId = '70000000-0000-4000-8000-000000000001';
+    $this->fake->updates = [[
+        'id' => $updateId, 'resident_id' => FamilyVisitFake::RESIDENT,
+        'title' => 'Berkebun bersama', 'summary' => 'Catatan kegiatan.',
+        'category' => 'aktivitas', 'status' => 'published',
+        'photo_path' => FamilyVisitFake::RESIDENT.'/updates/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg',
+        'photo_caption' => 'Eyang sedang menyiram tanaman.',
+        'published_at' => '2026-11-17T01:00:00Z', 'created_at' => '2026-11-17T01:00:00Z',
+    ]];
+    $url = '/family/kabar/'.$updateId.'/foto?resident='.FamilyVisitFake::RESIDENT;
+    $this->get('/family/kabar')->assertOk()->assertSee('Berkebun bersama')
+        ->assertSee('Eyang sedang menyiram tanaman.')
+        ->assertSee($url)->assertDontSee('Data dummy sementara');
+    Auth::forgetGuards();
+    $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/jpeg')
+        ->assertHeader('Cache-Control', 'private, no-store');
+
+    $this->fake->photoConsent = false;
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee('Berkebun bersama')->assertDontSee($url);
+    Auth::forgetGuards();
+    $this->get($url)->assertForbidden();
+});
+
+test('real resident portrait uses current UUID and consent, not a name or demo path', function () {
+    $this->fake->residentPhotoPath = FamilyVisitFake::RESIDENT.'/profile/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg';
+    $photo = '/family/resident/'.FamilyVisitFake::RESIDENT.'/foto';
+    $this->get('/family')->assertOk()->assertSee($photo);
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee($photo);
+    Auth::forgetGuards();
+    $this->get($photo)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    $this->fake->linked = false;
+    Auth::forgetGuards();
+    $this->get($photo)->assertNotFound();
+});

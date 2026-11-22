@@ -83,10 +83,18 @@ class FamilyVisitFake
         }
         if ($path === '/rest/v1/family_updates') {
             $rows = $this->updates;
-            if (isset($request['id'])) {
-                $rows = array_values(array_filter($rows, fn ($r) => $request['id'] === 'eq.'.$r['id']));
+            foreach (['id','resident_id','status'] as $field) {
+                if (isset($request[$field])) {
+                    $rows = array_values(array_filter($rows, fn ($r) => ($request[$field] === 'eq.'.($r[$field] ?? ''))));
+                }
+            }
+            if (isset($request['select']) && $request['select'] === 'photo_path') {
+                $rows = array_map(fn ($r) => ['photo_path' => $r['photo_path'] ?? null], $rows);
             }
             return Http::response($rows);
+        }
+        if (str_starts_with($path, '/storage/v1/object/authenticated/rawatkasih-private/')) {
+            return Http::response('binary-photo-bytes', 200, ['Content-Type' => 'image/jpeg']);
         }
         if ($path === '/rest/v1/visit_requests') {
             $rows = array_values(array_filter($this->rows, fn ($r) => ($this->role === 'admin' || ($this->linked && $r['requester_id'] === self::FAMILY))

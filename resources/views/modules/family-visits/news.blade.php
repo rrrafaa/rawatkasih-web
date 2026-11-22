@@ -44,6 +44,9 @@
                                  alt="{{ $story['photo_caption'] ?? (($story['is_demo'] ? 'Ilustrasi: ' : 'Dokumentasi: ').$story['title']) }}" loading="lazy">
                         @endif
                         <div class="fv-news-card-body">
+                            @if(!empty($story['photo_caption']) && $story['media'])
+                                <p class="fv-story-photo-caption">{{ $story['photo_caption'] }}</p>
+                            @endif
                             <p class="fv-story-meta">{{ ucfirst($story['category']) }} · <time datetime="{{ $story['publishedAt']->toIso8601String() }}">{{ $story['publishedAt']->translatedFormat('d F Y, H.i') }} WIB</time></p>
                             <h2>{{ $story['title'] }}</h2>
                             <details>

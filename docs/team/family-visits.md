@@ -126,3 +126,7 @@ Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang 
 Sejak 22 November 2026, Supabase bersama memiliki kolom nullable `residents.profile_photo_path`, `profiles.avatar_path`, serta `family_updates.title`, `family_updates.category`, `family_updates.photo_caption` dari migration `20261122145059_add_family_media_metadata.sql`. `family_updates.photo_path` telah tersedia sebelumnya. `daily_notes` tidak dimodifikasi.
 
 Perubahan pada `App\\Models\\FamilyUpdate` menambahkan kolom-kolom tersebut ke proyeksi pembacaan; portal keluarga masih menggunakan provider dummy sampai tahap integrasi storage dan provider produksi. Jangan menampilkan object key privat langsung di view atau mengubah `family_updates` menjadi daftar catatan perawatan internal.
+
+## Tahap 3 — Media privat
+
+Foto asli ditampilkan lewat route privat dari bucket `rawatkasih-private`. Menu admin `/admin/foto-keluarga` menyediakan upload foto resident dan kabar; halaman profil keluarga menyediakan upload avatar akun sendiri. Avatar dan foto resident yang belum diunggah tetap memakai fallback lokal (ilustrasi/demo). Provider produksi membaca `family_updates` terpublikasi lewat RLS, sementara provider dummy hanya digunakan jika tidak ada kabar nyata. Migration dan kebijakan aktif tercatat dalam `docs/SUPABASE.md`. Pengujian browser end-to-end dan upload sungguhan masih diperlukan dengan akun admin/keluarga yang berizin.

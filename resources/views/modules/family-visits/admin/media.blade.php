@@ -31,6 +31,16 @@
                     <option value="{{ $update['id'] }}">{{ ucfirst($update['status']) }} — {{ Str::limit($update['summary'], 100) }}</option>
                 @endforeach
             </select>
+            <label for="update-title">Judul kabar (opsional)</label>
+            <input id="update-title" name="title" maxlength="160" placeholder="Kegiatan hari ini">
+            <label for="update-category">Kategori</label>
+            <select id="update-category" name="category">
+                <option value="">Belum ditentukan</option>
+                <option value="aktivitas">Aktivitas</option>
+                <option value="kebersamaan">Kebersamaan</option>
+            </select>
+            <label for="update-caption">Deskripsi foto (opsional)</label>
+            <textarea id="update-caption" name="photo_caption" maxlength="500" rows="3"></textarea>
             <label for="update-photo">Foto</label>
             <input type="file" id="update-photo" name="photo" accept="image/jpeg,image/png,image/webp" required>
             <button type="submit" class="adm-primary-button">Simpan foto kabar</button>

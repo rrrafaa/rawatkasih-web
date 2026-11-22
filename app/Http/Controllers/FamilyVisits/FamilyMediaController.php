@@ -117,6 +117,9 @@ class FamilyMediaController extends Controller
     {
         $input = $request->validate([
             'update_id' => ['required', 'uuid'],
+            'title' => ['nullable', 'string', 'max:160'],
+            'category' => ['nullable', 'in:aktivitas,kebersamaan'],
+            'photo_caption' => ['nullable', 'string', 'max:500'],
             'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
         ]);
         $token = $this->token($request);
@@ -126,7 +129,8 @@ class FamilyMediaController extends Controller
         abort_unless($row->successful() && is_string($row->json('0.resident_id')), 404);
         $path = $media->upload($request->file('photo'), $row->json('0.resident_id').'/updates');
         $result = $client->request('PATCH', '/rest/v1/family_updates?id=eq.'.$input['update_id'],
-            ['photo_path' => $path], $token, ['Prefer' => 'return=representation']);
+            ['photo_path' => $path, 'title' => $input['title'] ?? null,
+                'category' => $input['category'] ?? null, 'photo_caption' => $input['photo_caption'] ?? null], $token, ['Prefer' => 'return=representation']);
         abort_if(in_array($result->status(), [401, 403], true), 403);
         if (! $result->successful()) {
             throw new SupabaseUnavailable;
