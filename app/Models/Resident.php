@@ -9,7 +9,7 @@ class Resident extends SupabaseModel
     protected string $columns = 'id,full_name,room,status';
 
     /**
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      * @return list<array<string, mixed>>
      */
     public function activeResidents(array $params = []): array
@@ -31,7 +31,7 @@ class Resident extends SupabaseModel
     }
 
     /**
-     * @param list<string> $residentIds
+     * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
      */
     public function forAssignedResidents(array $residentIds): array
@@ -85,6 +85,7 @@ class Resident extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return $rows[0] ?? null;
     }
 }

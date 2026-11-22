@@ -26,7 +26,7 @@ class IncidentPolicy
      * - Admin: lihat semua insiden
      * - Family: ditolak (false)
      *
-     * @param array<string, mixed>|string $incident
+     * @param  array<string, mixed>|string  $incident
      */
     public function view(SupabaseUser $user, array|string $incident): bool
     {
@@ -54,7 +54,7 @@ class IncidentPolicy
     /**
      * Update status insiden - hanya untuk role yang boleh.
      *
-     * @param array<string, mixed>|string $incident
+     * @param  array<string, mixed>|string  $incident
      */
     public function update(SupabaseUser $user, array|string $incident): bool
     {
@@ -74,7 +74,7 @@ class IncidentPolicy
     /**
      * Cek apakah caregiver memiliki lansia yang ditugaskan hari ini.
      *
-     * @param array<string, mixed> $incidentData
+     * @param  array<string, mixed>  $incidentData
      */
     protected function canViewResidentIncident(SupabaseUser $user, array $incidentData): bool
     {

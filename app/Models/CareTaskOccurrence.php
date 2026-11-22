@@ -11,7 +11,7 @@ class CareTaskOccurrence extends SupabaseModel
     protected string $columns = 'id,template_id,task_date,title,category,scheduled_time,instructions,status,reason,completed_by,completed_at,created_at,updated_at';
 
     /**
-     * @param list<string> $templateIds
+     * @param  list<string>  $templateIds
      * @return list<array<string, mixed>>
      */
     public function forTemplatesOnDate(array $templateIds, string $date): array

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CaregiverAssignment;
 use App\Models\CareTaskOccurrence;
 use App\Models\CareTaskTemplate;
-use App\Models\CaregiverAssignment;
+use App\Models\FamilyVisits\FamilyVisitData;
 use App\Models\Incident;
 use App\Models\SupabaseUser;
-use App\Models\FamilyVisits\FamilyVisitData;
-use App\Models\FamilyVisits\Resident;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 

@@ -30,6 +30,7 @@ class Consent extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return count($rows) > 0;
     }
 
@@ -55,6 +56,7 @@ class Consent extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return count($rows) > 0;
     }
 }

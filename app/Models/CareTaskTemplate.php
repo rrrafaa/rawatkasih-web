@@ -11,7 +11,7 @@ class CareTaskTemplate extends SupabaseModel
     protected string $columns = 'id,resident_id,title,category,scheduled_time,instructions,is_active,frequency,days_of_week,created_at,updated_at';
 
     /**
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      * @return list<array<string, mixed>>
      */
     public function allForAdmin(array $params = []): array

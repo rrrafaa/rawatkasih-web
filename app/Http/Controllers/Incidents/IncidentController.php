@@ -9,6 +9,7 @@ use App\Models\Incident;
 use App\Models\Resident;
 use App\Models\SupabaseUser;
 use App\Services\AuditLogger;
+use App\Services\SupabaseClient;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -177,7 +178,7 @@ class IncidentController extends Controller
         }
 
         // Catat audit log
-        $auditLogger = new AuditLogger(app(\App\Services\SupabaseClient::class));
+        $auditLogger = new AuditLogger(app(SupabaseClient::class));
         $auditLogger->log('create', 'Incident', $incidentId);
 
         return redirect()
@@ -287,7 +288,7 @@ class IncidentController extends Controller
         ]);
 
         // Catat audit log
-        $auditLogger = new AuditLogger(app(\App\Services\SupabaseClient::class));
+        $auditLogger = new AuditLogger(app(SupabaseClient::class));
         $auditLogger->log('update', 'Incident', $incidentId);
 
         return redirect()
@@ -368,7 +369,7 @@ class IncidentController extends Controller
      * Mengganti array resident/reporter dengan nama lengkap string.
      * Menyediakan alias initial_action untuk action_taken.
      *
-     * @param array<int, array<string, mixed>> $incidents
+     * @param  array<int, array<string, mixed>>  $incidents
      * @return array<int, array<string, mixed>>
      */
     protected function flattenIncidents(array $incidents): array

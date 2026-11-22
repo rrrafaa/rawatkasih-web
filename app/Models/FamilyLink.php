@@ -36,6 +36,7 @@ class FamilyLink extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return count($rows) > 0;
     }
 }

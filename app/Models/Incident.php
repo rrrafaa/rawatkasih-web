@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class Incident extends SupabaseModel
@@ -19,7 +18,7 @@ class Incident extends SupabaseModel
     /**
      * Ambil semua insiden (untuk admin) dengan data resident.
      *
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      * @return list<array<string, mixed>>
      */
     public function all(array $params = [], int $limit = 50): array
@@ -41,7 +40,7 @@ class Incident extends SupabaseModel
     }
 
     /**
-     * @param array<string> $residentIds
+     * @param  array<string>  $residentIds
      * @return list<array<string, mixed>>
      */
     public function forResidents(array $residentIds, int $page = 1, int $perPage = 50): array
@@ -129,13 +128,14 @@ class Incident extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return $rows[0] ?? null;
     }
 
     /**
      * Buat insiden baru.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function create(array $data): array
     {
@@ -159,13 +159,14 @@ class Incident extends SupabaseModel
         }
 
         $result = $response->json();
+
         return is_array($result) && isset($result[0]) ? $result[0] : (array) $result;
     }
 
     /**
      * Update incident (untuk admin).
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function update(string $id, array $data): array
     {
@@ -190,6 +191,7 @@ class Incident extends SupabaseModel
         }
 
         $result = $response->json();
+
         return is_array($result) && isset($result[0]) ? $result[0] : (array) $result;
     }
 

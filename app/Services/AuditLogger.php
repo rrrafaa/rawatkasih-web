@@ -13,6 +13,7 @@ use App\Models\SupabaseUser;
 class AuditLogger
 {
     protected SupabaseClient $client;
+
     protected ?string $token;
 
     public function __construct(SupabaseClient $client, ?string $token = null)

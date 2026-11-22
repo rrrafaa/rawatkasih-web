@@ -51,10 +51,10 @@ abstract class SupabaseModel
         abort_if(in_array($response->status(), [401, 403], true), 403);
         if (! $response->successful()) {
             \Log::error('Supabase query failed', [
-        'table'  => $this->table,
-        'status' => $response->status(),
-        'body'   => $response->body(),
-    ]);
+                'table' => $this->table,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             throw new SupabaseUnavailable;
         }
 

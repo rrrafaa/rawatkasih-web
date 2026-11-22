@@ -9,7 +9,7 @@ class CaregiverAssignment extends SupabaseModel
     protected string $columns = 'id,user_id,resident_id,start_date,end_date';
 
     /**
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      * @return list<array<string, mixed>>
      */
     public function activeForCurrentCaregiver(string $date, array $params = []): array
@@ -67,6 +67,7 @@ class CaregiverAssignment extends SupabaseModel
         );
 
         $rows = $response->json() ?? [];
+
         return count($rows) > 0;
     }
 }
