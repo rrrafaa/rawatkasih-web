@@ -10,7 +10,8 @@ class CareTaskOccurrence extends SupabaseModel
 
     protected string $columns = 'id,template_id,task_date,title,category,scheduled_time,instructions,status,reason,completed_by,completed_at,created_at,updated_at';
 
-    /** @param list<string> $templateIds
+    /**
+     * @param list<string> $templateIds
      * @return list<array<string, mixed>>
      */
     public function forTemplatesOnDate(array $templateIds, string $date): array
@@ -24,11 +25,21 @@ class CareTaskOccurrence extends SupabaseModel
             return [];
         }
 
-        return $this->read([
-            'template_id' => 'in.('.implode(',', $ids).')',
-            'task_date' => 'eq.'.$date,
-            'order' => 'scheduled_time.asc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/care_task_occurrences',
+            [
+                'select' => $this->columns,
+                'template_id' => 'in.('.implode(',', $ids).')',
+                'task_date' => 'eq.'.$date,
+                'order' => 'scheduled_time.asc',
+            ],
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 
     /** @param array{status: string, reason: ?string} $data */
@@ -78,9 +89,19 @@ class CareTaskOccurrence extends SupabaseModel
             return [];
         }
 
-        return $this->read([
-            'id' => 'in.('.implode(',', $ids).')',
-            'order' => 'task_date.desc,scheduled_time.asc',
-        ]);
+        $token = request()->session()->get('supabase.access_token');
+
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/care_task_occurrences',
+            [
+                'select' => $this->columns,
+                'id' => 'in.('.implode(',', $ids).')',
+                'order' => 'task_date.desc,scheduled_time.asc',
+            ],
+            $token
+        );
+
+        return $response->json() ?? [];
     }
 }

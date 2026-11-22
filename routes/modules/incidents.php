@@ -23,6 +23,7 @@ Route::prefix('admin/incidents')->name('admin.incidents.')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/', [IncidentController::class, 'adminIndex'])->name('index');
         Route::get('/{incident}', [IncidentController::class, 'showAdmin'])->name('show');
+        Route::patch('/{incident}', [IncidentController::class, 'update'])->name('update');
         Route::get('/{incident}/audit-log', [IncidentController::class, 'auditLog'])->name('audit-log');
     });
 });

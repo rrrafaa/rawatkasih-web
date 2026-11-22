@@ -16,12 +16,12 @@
 
     {{-- Filter --}}
     <div class="adm-toolbar adm-visit-toolbar" style="margin-bottom: 20px;">
-        <form method="get" action="{{ route('incidents.admin.index') }}" class="adm-visit-filter">
+        <form method="get" action="{{ route('admin.incidents.index') }}" class="adm-visit-filter">
             <label class="adm-form-label" for="admin-status">Status</label>
             <select id="admin-status" name="status" class="adm-filter fv-select">
                 <option value="">Semua status</option>
                 <option value="open" @selected(request('status') === 'open')>Terbuka</option>
-                <option value="handling" @selected(request('status') === 'handling')>Sedang ditindaklanjuti</option>
+                <option value="in_progress" @selected(request('status') === 'in_progress')>Sedang ditindaklanjuti</option>
                 <option value="closed" @selected(request('status') === 'closed')>Ditutup</option>
             </select>
             <button class="adm-secondary-button" type="submit">Tampilkan</button>
@@ -60,7 +60,7 @@
                             </span>
                         </td>
                         <td>
-                            <a class="adm-visit-link" href="{{ route('incidents.admin.show', $incident['id']) }}">
+                            <a class="adm-visit-link" href="{{ route('admin.incidents.show', $incident['id']) }}">
                                 Lihat detail
                             </a>
                         </td>
@@ -90,6 +90,7 @@
     background: #fff1e2;
     color: #926018;
 }
+.rk-result-in_progress,
 .rk-result-handling {
     background: #e5fcf0;
     color: #005338;

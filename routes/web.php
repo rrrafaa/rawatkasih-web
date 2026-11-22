@@ -1,11 +1,11 @@
 
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\CareTasks\CaregiverDashboardController;
 use App\Http\Controllers\DashboardController;
-use App\Models\SupabaseUser;
+use App\Http\Controllers\CareTasks\CaregiverDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
@@ -45,17 +45,25 @@ Route::middleware('auth')->group(function () {
         ->name('dashboard')
         ->block(10, 10);
 
-    // Shared dashboards for admin and family.
-    foreach (['admin', 'family'] as $role) {
-        Route::prefix($role)
-            ->name($role.'.')
-            ->middleware('role:'.$role)
-            ->group(function () {
-                Route::get('/', [DashboardController::class, 'show'])
-                    ->name('dashboard')
-                    ->block(10, 10);
-            });
-    }
+    // Admin dashboard with statistics.
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware('role:admin')
+        ->group(function () {
+            Route::get('/', [AdminDashboardController::class, 'index'])
+                ->name('dashboard')
+                ->block(10, 10);
+        });
+
+    // Shared dashboards for family.
+    Route::prefix('family')
+        ->name('family.')
+        ->middleware('role:family')
+        ->group(function () {
+            Route::get('/', [DashboardController::class, 'show'])
+                ->name('dashboard')
+                ->block(10, 10);
+        });
 
     // Dedicated dashboard for caregiver.
     Route::prefix('caregiver')
@@ -82,7 +90,7 @@ Route::middleware('auth')->group(function () {
 
 // Route tes cepat untuk melihat tampilan tanpa harus login Supabase:
 Route::get('/preview/daily-notes', function () {
-    $dummyUser = new SupabaseUser([
+    $dummyUser = new \App\Models\SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',
@@ -120,7 +128,7 @@ Route::get('/preview/daily-notes', function () {
 });
 
 Route::get('/preview/family-updates', function () {
-    $dummyUser = new SupabaseUser([
+    $dummyUser = new \App\Models\SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',

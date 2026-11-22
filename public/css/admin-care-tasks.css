@@ -572,7 +572,7 @@
 
 .adm-secondary-button {
     min-height: 44px;
-    padding: 0 18px;
+    padding: 14px 18px;
     border: 1px solid var(--adm-border);
     border-radius: 10px;
     background: white;

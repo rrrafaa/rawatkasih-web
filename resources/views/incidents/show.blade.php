@@ -130,6 +130,30 @@
                     </div>
                 </section>
             @endif
+
+            {{-- Form Ganti Status --}}
+            @if($user && $user->role()->value === 'admin')
+                <form method="POST" action="{{ route('admin.incidents.update', $incident['id'] ?? '') }}" style="margin-top: 24px;">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" id="status-input">
+
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <label for="status" style="font-size: 14px; font-weight: 500; color: #1b2420;">Ubah Status:</label>
+                        <select
+                            id="status"
+                            name="status"
+                            style="width: auto; min-height: 40px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;"
+                            onchange="document.getElementById('status-input').value = this.value; this.form.submit();"
+                        >
+                            <option value="open" {{ $status === 'open' ? 'selected' : '' }}>Terbuka</option>
+                            <option value="in_progress" {{ $status === 'in_progress' ? 'selected' : '' }}>Sedang ditindaklanjuti</option>
+                            <option value="closed" {{ $status === 'closed' ? 'selected' : '' }}>Ditutup</option>
+                        </select>
+                        <span style="font-size: 13px; color: #6b7280;">(Admin Only)</span>
+                    </div>
+                </form>
+            @endif
         </section>
 
         {{-- Action Links --}}
@@ -165,6 +189,35 @@
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
+}
+.rk-result-open {
+    background: #fff1e2;
+    color: #926018;
+}
+.rk-result-in_progress,
+.rk-result-handling {
+    background: #e5fcf0;
+    color: #005338;
+}
+.rk-result-closed {
+    background: #e8f5e9;
+    color: #247850;
+}
+.rk-result-medical {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.rk-result-security {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.rk-result-maintenance {
+    background: #dbeafe;
+    color: #1e40af;
+}
+.rk-result-other {
+    background: #f3f4f6;
+    color: #4b5563;
 }
 .rk-care-btn {
     display: inline-flex;
@@ -205,4 +258,3 @@
     }
 }
 </style>
-@endsection

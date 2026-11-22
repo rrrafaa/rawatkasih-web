@@ -20,13 +20,22 @@ class FamilyLink extends SupabaseModel
             return false;
         }
 
-        $rows = $this->read([
-            'user_id' => 'eq.'.$user->id(),
-            'resident_id' => 'eq.'.$residentId,
-            'status' => 'eq.verified',
-            'limit' => 1,
-        ]);
+        $token = request()->session()->get('supabase.access_token');
 
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/family_links',
+            [
+                'select' => $this->columns,
+                'user_id' => 'eq.'.$user->id(),
+                'resident_id' => 'eq.'.$residentId,
+                'status' => 'eq.verified',
+                'limit' => 1,
+            ],
+            $token
+        );
+
+        $rows = $response->json() ?? [];
         return count($rows) > 0;
     }
 }

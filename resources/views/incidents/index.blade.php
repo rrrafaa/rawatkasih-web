@@ -20,13 +20,26 @@
         <div class="rk-care-alert" role="status" aria-live="polite">
             <strong>Peringatan:</strong> Halaman ini bukan panggilan darurat otomatis. Jika situasi darurat, <strong>caregiver harus langsung melakukan tindakan sesuai SOP panti dan menghubungi petugas/tenaga medis terkini secara langsung.</div>
 
-        {{-- Filter Status --}}
-        <div class="rk-care-section-heading" style="margin-top: 24px;">
-            <h2>Insin yang Anda Laporkan</h2>
-        </div>
+        {{-- Statistik --}}
+        <section class="rk-care-section" style="margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <div class="rk-care-stat-card" style="background: #fff8e1; border-radius: 12px; padding: 16px; text-align: center; border-left: 4px solid #926018;">
+                    <h3 style="font-size: 14px; color: #68776f; margin: 0 0 8px 0;">Terbuka</h3>
+                    <span class="rk-stitch-status rk-result-open" style="font-size: 24px; font-weight: 600;">{{ count(array_filter($incidents, fn($i) => ($i['status'] ?? 'open') === 'open')) }}</span>
+                </div>
+                <div class="rk-care-stat-card" style="background: #e5fcf0; border-radius: 12px; padding: 16px; text-align: center; border-left: 4px solid #005338;">
+                    <h3 style="font-size: 14px; color: #68776f; margin: 0 0 8px 0;">Sedang ditindaklanjuti</h3>
+                    <span class="rk-stitch-status rk-result-in_progress" style="font-size: 24px; font-weight: 600;">{{ count(array_filter($incidents, fn($i) => ($i['status'] ?? 'open') === 'in_progress')) }}</span>
+                </div>
+                <div class="rk-care-stat-card" style="background: #e8f5e9; border-radius: 12px; padding: 16px; text-align: center; border-left: 4px solid #247850;">
+                    <h3 style="font-size: 14px; color: #68776f; margin: 0 0 8px 0;">Ditutup</h3>
+                    <span class="rk-stitch-status rk-result-closed" style="font-size: 24px; font-weight: 600;">{{ count(array_filter($incidents, fn($i) => ($i['status'] ?? 'open') === 'closed')) }}</span>
+                </div>
+            </div>
+        </section>
 
-        {{-- Tambah tombol untuk laporan baru --}}
-        <div class="rk-care-actions" style="margin-bottom: 16px;">
+        {{-- Aksi cepat --}}
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
             <a href="{{ route('incidents.create') }}" class="rk-care-btn rk-care-btn-primary">
                 + Laporkan Insiden
             </a>
@@ -70,20 +83,8 @@
                     </article>
                 @endforeach
             </div>
-
-            @if ($incidents->hasPages ?? false)
-                <nav class="rk-care-view-tabs" aria-label="Navigasi halaman">
-                    @if ($incidents->currentPage() > 1)
-                        <a href="{{ $incidents->previousPageUrl() }}" class="rk-care-view-tab">Sebelumnya</a>
-                    @endif
-                    <span class="rk-care-view-tab">Halaman {{ $incidents->currentPage() }}</span>
-                    @if ($incidents->hasMorePages())
-                        <a href="{{ $incidents->nextPageUrl() }}" class="rk-care-view-tab">Berikutnya</a>
-                    @endif
-                </nav>
-            @endif
         @else
-            <div class="rk-care-empty rk-stitch-empty-residents">
+            <div class="rk-care-empty" style="margin-top: 24px;">
                 <h2>Belum ada insiden yang dilaporkan</h2>
                 <p>Gunakan tombol "Laporkan Insiden" untuk melayangkan insiden pertama Anda.</p>
             </div>
@@ -97,6 +98,18 @@
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+.rk-care-stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.rk-care-statistics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
 }
 .rk-care-btn {
     display: inline-flex;
@@ -114,7 +127,7 @@
 }
 .rk-care-btn-primary {
     background: #005338;
-    color: white;
+    color: white !important;
 }
 .rk-care-btn-primary:hover {
     background: #003e2a;
@@ -129,19 +142,18 @@
 .rk-care-view-link:hover {
     text-decoration: underline;
 }
-.rk-care-view-tab {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #68776f;
-    background: transparent;
-    border: 1px solid #dce7e0;
+.rk-result-open {
+    background: #fff1e2;
+    color: #926018;
 }
-.rk-care-view-tab:hover {
-    background: #f7f8f7;
+.rk-result-in_progress,
+.rk-result-handling {
+    background: #e5fcf0;
+    color: #005338;
+}
+.rk-result-closed {
+    background: #e8f5e9;
+    color: #247850;
 }
 @media (max-width: 760px) {
     .rk-care-alert {

@@ -296,5 +296,33 @@
 .rk-care-view-link:hover {
     text-decoration: underline;
 }
+.rk-result-open {
+    background: #fff1e2;
+    color: #926018;
+}
+.rk-result-in_progress,
+.rk-result-handling {
+    background: #e5fcf0;
+    color: #005338;
+}
+.rk-result-closed {
+    background: #e8f5e9;
+    color: #247850;
+}
+.rk-result-medical {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.rk-result-security {
+    background: #fee2e2;
+    color: #991b1b;
+}
+.rk-result-maintenance {
+    background: #dbeafe;
+    color: #1e40af;
+}
+.rk-result-other {
+    background: #f3f4f6;
+    color: #4b5563;
+}
 </style>
-@endsection

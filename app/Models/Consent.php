@@ -14,13 +14,22 @@ class Consent extends SupabaseModel
             return false;
         }
 
-        $rows = $this->read([
-            'resident_id' => 'eq.'.$residentId,
-            'scope' => 'eq.photo_share',
-            'status' => 'eq.granted',
-            'limit' => 1,
-        ]);
+        $token = request()->session()->get('supabase.access_token');
 
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/consents',
+            [
+                'select' => $this->columns,
+                'resident_id' => 'eq.'.$residentId,
+                'scope' => 'eq.photo_share',
+                'status' => 'eq.granted',
+                'limit' => 1,
+            ],
+            $token
+        );
+
+        $rows = $response->json() ?? [];
         return count($rows) > 0;
     }
 
@@ -30,13 +39,22 @@ class Consent extends SupabaseModel
             return false;
         }
 
-        $rows = $this->read([
-            'resident_id' => 'eq.'.$residentId,
-            'scope' => 'eq.family_visibility',
-            'status' => 'eq.granted',
-            'limit' => 1,
-        ]);
+        $token = request()->session()->get('supabase.access_token');
 
+        $response = $this->client->request(
+            'GET',
+            '/rest/v1/consents',
+            [
+                'select' => $this->columns,
+                'resident_id' => 'eq.'.$residentId,
+                'scope' => 'eq.family_visibility',
+                'status' => 'eq.granted',
+                'limit' => 1,
+            ],
+            $token
+        );
+
+        $rows = $response->json() ?? [];
         return count($rows) > 0;
     }
 }

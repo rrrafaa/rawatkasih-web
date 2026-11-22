@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\Role;
+use App\Models\CaregiverAssignment;
 use App\Models\Incident;
 use App\Models\SupabaseUser;
 
@@ -24,12 +25,20 @@ class IncidentPolicy
      *   yang dalam penugasan aktif (caregiver_assignments hari ini)
      * - Admin: lihat semua insiden
      * - Family: ditolak (false)
+     *
+     * @param array<string, mixed>|string $incident
      */
-    public function view(SupabaseUser $user, Incident $incident): bool
+    public function view(SupabaseUser $user, array|string $incident): bool
     {
+        $incidentData = is_array($incident) ? $incident : app(Incident::class)->find($incident);
+
+        if ($incidentData === null) {
+            return false;
+        }
+
         return match ($user->role()) {
             Role::Admin => true,
-            Role::Caregiver => $this->canViewResidentIncident($user, $incident),
+            Role::Caregiver => $this->canViewResidentIncident($user, $incidentData),
             Role::Family => false,
         };
     }
@@ -44,37 +53,50 @@ class IncidentPolicy
 
     /**
      * Update status insiden - hanya untuk role yang boleh.
+     *
+     * @param array<string, mixed>|string $incident
      */
-    public function update(SupabaseUser $user, Incident $incident): bool
+    public function update(SupabaseUser $user, array|string $incident): bool
     {
+        $incidentData = is_array($incident) ? $incident : app(Incident::class)->find($incident);
+
+        if ($incidentData === null) {
+            return false;
+        }
+
         return match ($user->role()) {
             Role::Admin => true,
-            Role::Caregiver => $this->canViewResidentIncident($user, $incident),
+            Role::Caregiver => $this->canViewResidentIncident($user, $incidentData),
             Role::Family => false,
         };
     }
 
     /**
      * Cek apakah caregiver memiliki lansia yang ditugaskan hari ini.
+     *
+     * @param array<string, mixed> $incidentData
      */
-    protected function canViewResidentIncident(SupabaseUser $user, Incident $incident): bool
+    protected function canViewResidentIncident(SupabaseUser $user, array $incidentData): bool
     {
         // Jika incident belum memiliki resident_id, tolak
-        if (! isset($incident->resident_id)) {
+        $residentId = $incidentData['resident_id'] ?? null;
+        if (! is_string($residentId) || $residentId === '') {
             return false;
         }
 
         // Cek caregiver_assignments - penugasan hari ini di Asia/Jakarta
-        $today = now('Asia/Jakarta')->format('Y-m-d');
+        $today = now('Asia/Jakarta')->toDateString();
 
-        $assignment = app(\App\Models\CaregiverAssignment::class)->read([
-            'user_id' => 'eq.'.$user->id(),
-            'resident_id' => 'eq.'.$incident->resident_id,
-            'start_date' => 'lte.'.$today,
-            'or' => '(end_date.is.null,end_date.gte.'.$today.')',
-            'limit' => 1,
-        ]);
+        $assignments = app(CaregiverAssignment::class)->isAssignedToResident($residentId, $today);
 
-        return count($assignment) > 0;
+        return $assignments;
+    }
+
+    /**
+     * Admin bisa melihat semua insiden.
+     */
+    public function viewAny(SupabaseUser $user): bool
+    {
+        return in_array($user->role(), [Role::Admin, Role::Caregiver], true);
     }
 }
