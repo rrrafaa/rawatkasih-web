@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Exceptions\SupabaseUnavailable;
+use Illuminate\Support\Facades\Log;
 
 class FamilyUpdate extends SupabaseModel
 {
@@ -32,11 +33,12 @@ class FamilyUpdate extends SupabaseModel
         abort_if(in_array($response->status(), [401, 403], true), 403);
 
         if (! $response->successful()) {
-            \Illuminate\Support\Facades\Log::error('Supabase family_updates error: ' . $response->status() . ' - ' . $response->body());
+            Log::error('Supabase family_updates error: '.$response->status().' - '.$response->body());
             throw new SupabaseUnavailable;
         }
 
         $result = $response->json();
+
         return is_array($result) && isset($result[0]) ? $result[0] : (array) $result;
     }
 
@@ -66,11 +68,12 @@ class FamilyUpdate extends SupabaseModel
         abort_if(in_array($response->status(), [401, 403], true), 403);
 
         if (! $response->successful()) {
-            \Illuminate\Support\Facades\Log::error('Supabase family_updates update error: ' . $response->status() . ' - ' . $response->body());
+            Log::error('Supabase family_updates update error: '.$response->status().' - '.$response->body());
             throw new SupabaseUnavailable;
         }
 
         $result = $response->json();
+
         return is_array($result) && isset($result[0]) ? $result[0] : (array) $result;
     }
 
@@ -95,7 +98,7 @@ class FamilyUpdate extends SupabaseModel
 
         // Jika Supabase RLS melarang DELETE (HTTP 401/403/404), lakukan SOFT DELETE (archived) sesuai PRD 8.5
         if (! $response->successful()) {
-            \Illuminate\Support\Facades\Log::info("Supabase DELETE family_updates returned {$response->status()}, falling back to soft-delete (status='archived')");
+            Log::info("Supabase DELETE family_updates returned {$response->status()}, falling back to soft-delete (status='archived')");
             $response = $this->client->request(
                 'PATCH',
                 '/rest/v1/'.$this->table.'?id=eq.'.$id,
@@ -110,7 +113,7 @@ class FamilyUpdate extends SupabaseModel
         abort_if(in_array($response->status(), [401, 403], true), 403);
 
         if (! $response->successful()) {
-            \Illuminate\Support\Facades\Log::error('Supabase family_updates delete error: ' . $response->status() . ' - ' . $response->body());
+            Log::error('Supabase family_updates delete error: '.$response->status().' - '.$response->body());
             throw new SupabaseUnavailable;
         }
     }

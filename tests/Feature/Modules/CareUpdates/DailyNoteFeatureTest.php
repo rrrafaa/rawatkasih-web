@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\CaregiverAssignment;
-use App\Models\DailyNote;
-use App\Models\Resident;
 use App\Models\SupabaseUser;
 use Illuminate\Support\Facades\Http;
 
@@ -30,9 +27,9 @@ function loginAsCaregiver(string $id = '10000000-0000-4000-8000-000000000001'): 
         ],
     ]);
 
-    $request = test()->app->make('request');
+    $request = app('request');
     $request->setLaravelSession(
-        test()->app->make('session')->driver()
+        app('session')->driver()
     );
 
     return $user;

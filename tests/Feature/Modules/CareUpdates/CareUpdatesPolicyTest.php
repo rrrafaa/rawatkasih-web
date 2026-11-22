@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\CaregiverAssignment;
 use App\Models\DailyNote;
-use App\Models\FamilyLink;
 use App\Models\FamilyUpdate;
 use App\Models\SupabaseUser;
 use Illuminate\Support\Facades\Gate;
@@ -32,9 +30,9 @@ function actingAsUser(string $id, string $role, string $token): SupabaseUser
         ],
     ]);
 
-    $request = test()->app->make('request');
+    $request = app('request');
     $request->setLaravelSession(
-        test()->app->make('session')->driver()
+        app('session')->driver()
     );
 
     return $user;

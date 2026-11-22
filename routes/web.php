@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\CareTasks\CaregiverDashboardController;
 use App\Http\Controllers\DashboardController;
+use App\Models\SupabaseUser;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
@@ -80,7 +81,7 @@ Route::middleware('auth')->group(function () {
 
 // Route tes cepat untuk melihat tampilan tanpa harus login Supabase:
 Route::get('/preview/daily-notes', function () {
-    $dummyUser = new \App\Models\SupabaseUser([
+    $dummyUser = new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',
@@ -118,7 +119,7 @@ Route::get('/preview/daily-notes', function () {
 });
 
 Route::get('/preview/family-updates', function () {
-    $dummyUser = new \App\Models\SupabaseUser([
+    $dummyUser = new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',

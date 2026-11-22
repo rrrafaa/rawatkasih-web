@@ -34,25 +34,12 @@ class FamilyUpdatePolicy
             return false;
         }
 
-        if ($user->role() === Role::Admin) {
-            return true;
-        }
-
-        if ($user->role() === Role::Caregiver) {
-            return app(CaregiverAssignment::class)->isAssignedToResident($residentId);
-        }
-
-        if ($user->role() === Role::Family) {
-            // Matriks akses PRD: keluarga hanya bisa melihat FamilyUpdate
-            // berstatus 'published' untuk lansia dengan family_links terverifikasi.
-            if (($updateData['status'] ?? null) !== 'published') {
-                return false;
-            }
-
-            return app(FamilyLink::class)->isVerifiedForResident($residentId);
-        }
-
-        return false;
+        return match ($user->role()) {
+            Role::Admin => true,
+            Role::Caregiver => app(CaregiverAssignment::class)->isAssignedToResident($residentId),
+            Role::Family => (($updateData['status'] ?? null) === 'published')
+                && app(FamilyLink::class)->isVerifiedForResident($residentId),
+        };
     }
 
     /**

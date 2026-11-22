@@ -3,7 +3,6 @@
 namespace App\Http\Requests\CareUpdates;
 
 use App\Enums\Role;
-use App\Models\CaregiverAssignment;
 use App\Models\DailyNote;
 use App\Models\SupabaseUser;
 use Illuminate\Foundation\Http\FormRequest;
