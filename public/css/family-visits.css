@@ -513,3 +513,59 @@
 .fv-form .adm-form-error:empty {
     margin: 0;
 }
+
+.fv-visit-facts {
+    margin: 0;
+    width: 100%;
+}
+
+.fv-visit-facts > div {
+    display: grid;
+    grid-template-columns: minmax(128px, 160px) minmax(0, 1fr);
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--adm-border);
+}
+
+.fv-visit-facts > div:last-child {
+    border-bottom: 0;
+}
+
+.fv-visit-facts dt {
+    color: var(--adm-muted);
+    font-weight: 600;
+}
+
+.fv-visit-facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.fv-visit-process {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    padding-top: 16px;
+    border-top: 1px solid var(--adm-border);
+}
+
+.fv-visit-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.fv-visit-status h3 {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--adm-ink);
+}
+
+@media (max-width: 480px) {
+    .fv-visit-facts > div {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+}
