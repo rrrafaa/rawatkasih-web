@@ -803,8 +803,16 @@ img[data-story-photo][hidden] {
     display: none;
 }
 
-.fv-verification {
-    justify-content: flex-end;
+.fv-heading-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.fv-page-heading .fv-heading-row h1 {
+    margin: 0;
 }
 
 .adm-visits .adm-table-wrap:has([data-action-menu-toggle][aria-expanded="true"]) {

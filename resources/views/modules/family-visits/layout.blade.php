@@ -47,8 +47,13 @@
         </div>
     </aside>
     <main id="main" class="fv-main">
-        <div class="fv-context fv-verification"><span class="fv-badge {{ $resident ? 'fv-badge-success' : 'fv-badge-pending' }}">{{ $resident ? 'Terverifikasi' : 'Menunggu verifikasi' }}</span></div>
-        <header class="fv-page-heading"><h1 class="adm-page-title">{{ $pageTitle }}</h1><p>{{ $pageDescription }}</p></header>
+        <header class="fv-page-heading">
+            <div class="fv-heading-row">
+                <h1 class="adm-page-title">{{ $pageTitle }}</h1>
+                <span class="fv-badge {{ $resident ? 'fv-badge-success' : 'fv-badge-pending' }}">{{ $resident ? 'Terverifikasi' : 'Menunggu verifikasi' }}</span>
+            </div>
+            <p>{{ $pageDescription }}</p>
+        </header>
         @include('modules.family-visits.partials.notification')
         @if (count($residents) > 1)<form method="get" action="{{ route('family.dashboard') }}" class="adm-toolbar fv-filter-bar"><div class="fv-filter-field"><label class="adm-form-label" for="resident-selector">Orang tersayang</label><select class="adm-filter fv-select" id="resident-selector" name="resident">@foreach ($residents as $linked)<option value="{{ $linked->id }}" @selected($resident?->id === $linked->id)>{{ $linked->full_name }}</option>@endforeach</select></div><button class="adm-secondary-button" type="submit">Tampilkan</button></form>@endif
         @yield('portal-content')
