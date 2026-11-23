@@ -60,3 +60,17 @@ test('non-admin cannot manage members and admin cannot provision an admin role',
 
     Http::assertNothingSent();
 });
+
+test('member validation returns to the selected form even when the previous URL is the logo', function () {
+    $this->from('/images/rawatkasih-mark.svg')->post('/admin/anggota', [
+        'role' => 'family',
+    ])->assertRedirect(route('admin.members.index', ['tambah' => 'family']))
+        ->assertSessionHasErrors(['email', 'resident_id']);
+
+    Http::fake(['*/auth/v1/admin/users' => Http::response(['error_code' => 'email_exists'], 422)]);
+    $this->from('/images/rawatkasih-mark.svg')->post('/admin/anggota', [
+        'role' => 'caregiver', 'full_name' => 'Pendamping Demo', 'email' => 'member@example.test',
+        'password' => 'test-password', 'password_confirmation' => 'test-password',
+    ])->assertRedirect(route('admin.members.index', ['tambah' => 'caregiver']))
+        ->assertSessionHasErrors('email');
+});

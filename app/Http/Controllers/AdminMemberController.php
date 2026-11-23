@@ -48,6 +48,18 @@ class AdminMemberController extends Controller
 
     public function store(Request $request, SupabaseClient $client): RedirectResponse
     {
+        try {
+            return $this->createMember($request, $client);
+        } catch (ValidationException $exception) {
+            $role = $request->input('role');
+            $query = in_array($role, ['family', 'caregiver'], true) ? ['tambah' => $role] : [];
+
+            throw $exception->redirectTo(route('admin.members.index', $query));
+        }
+    }
+
+    private function createMember(Request $request, SupabaseClient $client): RedirectResponse
+    {
         $token = $this->token($request);
         $input = $request->validate([
             'role' => ['required', Rule::in(['family', 'caregiver'])],
