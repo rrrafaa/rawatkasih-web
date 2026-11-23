@@ -31,6 +31,18 @@ class Resident extends SupabaseModel
     }
 
     /**
+     * Mengambil seluruh data lansia untuk kebutuhan filter admin.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function allForAdmin(): array
+    {
+        return $this->read([
+            'order' => 'full_name.asc',
+        ]);
+    }
+
+    /**
      * @param  list<string>  $residentIds
      * @return list<array<string, mixed>>
      */

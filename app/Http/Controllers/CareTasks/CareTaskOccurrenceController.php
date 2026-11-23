@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CareTasks;
 
+use App\Exceptions\SupabaseUnavailable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CareTasks\UpdateCareTaskOccurrenceRequest;
 use App\Models\CareTaskOccurrence;
@@ -15,17 +16,35 @@ class CareTaskOccurrenceController extends Controller
         string $occurrenceId,
         CareTaskOccurrence $occurrences
     ): RedirectResponse {
-        Gate::authorize('update', [CareTaskOccurrence::class, $occurrenceId]);
+        Gate::authorize(
+            'update',
+            [CareTaskOccurrence::class, $occurrenceId]
+        );
 
         $data = $request->validated();
 
-        $occurrences->updateStatus($occurrenceId, [
-            'status' => $data['status'],
-            'reason' => $data['reason'] ?? null,
-        ]);
+        try {
+            $occurrences->updateStatus($occurrenceId, [
+                'status' => $data['status'],
+                'reason' => $data['reason'] ?? null,
+            ]);
+
+        } catch (SupabaseUnavailable) {
+            return back()
+                ->withInput()
+                ->with('task_feedback', [
+                    'type' => 'error',
+                    'title' => 'Gagal mengubah status',
+                    'message' => 'Status tugas belum berhasil diperbarui. Silakan coba kembali.',
+                ]);
+        }
 
         return redirect()
             ->route('caregiver.dashboard')
-            ->with('status', 'Status tugas berhasil diperbarui.');
+            ->with('task_feedback', [
+                'type' => 'success',
+                'title' => 'Status berhasil diperbarui',
+                'message' => 'Perubahan status tugas berhasil disimpan.',
+            ]);
     }
 }
