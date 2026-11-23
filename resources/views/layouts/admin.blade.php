@@ -67,6 +67,15 @@
                     <span>Insiden</span>
                 </a>
 
+                <a href="{{ route('admin.members.index') }}"
+                   @class(['adm-nav-link', 'is-active' => request()->routeIs('admin.members.*')])
+                   @if (request()->routeIs('admin.members.*')) aria-current="page" @endif>
+                    <svg class="w-5 h-5 stroke-current" fill="none" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18-13v6m-3-3h6M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
+                    </svg>
+                    <span>Manajemen Anggota</span>
+                </a>
+
                 <a href="{{ route('admin.family-media') }}" class="adm-nav-link {{ request()->routeIs('admin.family-media*') ? 'is-active' : '' }}">
                     <span>Foto keluarga</span>
                 </a>

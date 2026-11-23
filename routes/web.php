@@ -2,6 +2,7 @@
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminMemberController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\CareTasks\CaregiverDashboardController;
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [AdminDashboardController::class, 'index'])
                 ->name('dashboard')
                 ->block(10, 10);
+
+            Route::get('/anggota', [AdminMemberController::class, 'index'])->name('members.index');
+            Route::post('/anggota', [AdminMemberController::class, 'store'])->middleware('throttle:10,1')->name('members.store');
+            Route::patch('/anggota/relasi/{link}', [AdminMemberController::class, 'verify'])->whereUuid('link')->name('members.verify');
         });
 
     // Dasbor keluarga untuk memantau penghuni.
