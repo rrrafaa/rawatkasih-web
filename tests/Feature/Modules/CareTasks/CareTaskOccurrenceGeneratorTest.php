@@ -55,7 +55,11 @@ test('caregiver can complete an assigned task occurrence', function () {
             'status' => 'completed',
         ])
         ->assertRedirect(route('caregiver.dashboard'))
-        ->assertSessionHas('status', 'Status tugas berhasil diperbarui.');
+        ->assertSessionHas('task_feedback', [
+            'type' => 'success',
+            'title' => 'Status berhasil diperbarui',
+            'message' => 'Perubahan status tugas berhasil disimpan.',
+        ]);
 
     Http::assertSent(function ($request) use ($occurrenceId) {
         return $request->method() === 'PATCH'

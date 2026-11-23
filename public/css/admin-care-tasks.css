@@ -845,3 +845,155 @@
     font-size: 15px;
     line-height: 1.6;
 }
+
+/* =========================================================
+   FILTER STATUS DAN LANSIA TEMPLATE
+   ========================================================= */
+
+.adm-resident-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adm-filter-apply {
+    min-height: 42px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--adm-primary);
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.adm-filter-apply:hover {
+    opacity: 0.9;
+}
+
+.adm-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.adm-page-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* =========================================================
+   MODAL KONFIRMASI NONAKTIFKAN TEMPLATE
+   ========================================================= */
+
+.adm-template-confirm-dialog {
+    position: fixed;
+    inset: 0;
+    width: min(420px, calc(100% - 32px));
+    max-width: none;
+    margin: auto;
+    padding: 28px 24px 24px;
+    border: 1px solid var(--adm-border);
+    border-radius: 16px;
+    background: var(--adm-surface);
+    color: var(--adm-ink);
+    text-align: center;
+    box-shadow: 0 16px 48px rgb(27 36 32 / 20%);
+}
+
+.adm-template-confirm-dialog::backdrop {
+    background: rgb(27 36 32 / 55%);
+}
+
+.adm-template-confirm-dialog form {
+    position: relative;
+}
+
+.adm-template-confirm-icon {
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #fff3df;
+    color: #a96313;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.adm-template-confirm-close {
+    position: absolute;
+    top: -22px;
+    right: -18px;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--adm-muted);
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.adm-template-confirm-dialog h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.adm-template-confirm-dialog p {
+    margin: 10px 0 0;
+    color: var(--adm-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.adm-template-confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.adm-template-confirm-button {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 9px;
+    background: #9d3634;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.adm-template-confirm-button:hover {
+    background: #812b29;
+}
+
+@media (max-width: 760px) {
+    .adm-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .adm-resident-filter {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .adm-resident-filter .adm-filter {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .adm-tabs {
+        width: 100%;
+    }
+}

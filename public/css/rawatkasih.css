@@ -1711,3 +1711,221 @@
     font-size: 1.25rem;
     line-height: 1;
 }
+
+/* =========================================================
+   TASK FEEDBACK: POPUP + TOAST
+   ========================================================= */
+
+.rk-task-feedback-dialog {
+    width: min(400px, calc(100% - 32px));
+    max-width: none;
+    margin: auto;
+    padding: 30px 26px 26px;
+    border: 1px solid #e2e9e4;
+    border-radius: 18px;
+    background: #ffffff;
+    color: #1b2420;
+    text-align: center;
+    box-shadow: 0 16px 48px rgba(27, 36, 32, 0.20);
+}
+
+.rk-task-feedback-dialog::backdrop {
+    background: rgba(27, 36, 32, 0.55);
+}
+
+.rk-task-feedback-symbol {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.rk-task-feedback-dialog[data-type="success"]
+.rk-task-feedback-symbol {
+    background: #e5f6eb;
+    color: #16834b;
+}
+
+.rk-task-feedback-dialog[data-type="error"]
+.rk-task-feedback-symbol {
+    background: #fdeaea;
+    color: #b42318;
+}
+
+.rk-task-feedback-dialog h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.rk-task-feedback-dialog p {
+    margin: 10px 0 0;
+    color: #68776f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Toast */
+
+.rk-task-feedback-toast {
+    position: fixed;
+    z-index: 9999;
+    top: 24px;
+    right: 24px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    width: min(380px, calc(100vw - 32px));
+    padding: 15px;
+
+    border: 1px solid #e2e9e4;
+    border-radius: 13px;
+    background: #ffffff;
+
+    box-shadow: 0 8px 28px rgba(27, 36, 32, 0.14);
+
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.rk-task-feedback-toast[hidden] {
+    display: none;
+}
+
+.rk-task-feedback-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rk-task-feedback-toast-symbol {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.rk-task-feedback-toast[data-type="success"]
+.rk-task-feedback-toast-symbol {
+    color: #16834b;
+    background: #e5f6eb;
+}
+
+.rk-task-feedback-toast[data-type="error"]
+.rk-task-feedback-toast-symbol {
+    color: #b42318;
+    background: #fdeaea;
+}
+
+.rk-task-feedback-toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.rk-task-feedback-toast-content strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.rk-task-feedback-toast-content p {
+    margin: 0;
+    color: #68776f;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.rk-task-feedback-toast[data-type="success"] {
+    border-color: #b9e2c8;
+}
+
+.rk-task-feedback-toast[data-type="error"] {
+    border-color: #efc4c1;
+}
+
+#rk-task-feedback-toast-close {
+    border: 0;
+    background: transparent;
+    color: #68776f;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .rk-task-feedback-toast {
+        top: 12px;
+        right: 12px;
+        width: calc(100vw - 24px);
+    }
+}
+/* =========================================================
+   CAREGIVER HISTORY FILTER
+   ========================================================= */
+
+.rk-history-filter {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding: 16px;
+    border: 1px solid #e2e9e4;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.rk-history-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 190px;
+}
+
+.rk-history-filter-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1b2420;
+}
+
+.rk-history-filter-field select {
+    min-height: 42px;
+    padding: 0 12px;
+    border: 1px solid #dce5df;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1b2420;
+}
+
+.rk-history-filter-button {
+    min-height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 8px;
+    background: #005338;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rk-history-filter-button:hover {
+    background: #003e2a;
+}
+
+.rk-history-reset {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 13px;
+}

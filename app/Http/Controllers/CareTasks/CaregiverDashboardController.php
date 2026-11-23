@@ -62,13 +62,26 @@ class CaregiverDashboardController extends Controller
          */
         if ($viewMode === 'history') {
             $perPage = 50;
+            $statusFilter = $request->query('status');
+
+            $allowedStatuses = [
+                'pending',
+                'completed',
+                'postponed',
+                'missed',
+            ];
+
+            if (!in_array($statusFilter, $allowedStatuses, true)) {
+                $statusFilter = null;
+            }
 
             $historyRows = [];
 
             if ($residentRows !== [] && $templateRows !== []) {
                 $historyRows = $history->latestForCurrentCaregiver(
                     $page,
-                    $perPage
+                    $perPage,
+                    $statusFilter
                 );
             }
 
@@ -159,6 +172,7 @@ class CaregiverDashboardController extends Controller
                 'historyRows' => $historyList,
                 'historyPage' => $page,
                 'hasMoreHistory' => count($historyRows) === $perPage,
+                'historyStatusFilter' => $statusFilter,
             ]);
         }
 

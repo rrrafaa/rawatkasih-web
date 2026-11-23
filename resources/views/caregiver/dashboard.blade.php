@@ -57,6 +57,13 @@
                 $historyPage = $historyPage ?? 1;
                 $hasMoreHistory = $hasMoreHistory ?? false;
 
+                $historyStatusFilter = $historyStatusFilter
+                    ?? request()->query('status', '');
+
+                $historyStatusFilter = is_string($historyStatusFilter)
+                    ? $historyStatusFilter
+                    : '';
+
                 $historyStatusLabels = [
                     'pending' => 'Belum',
                     'completed' => 'Selesai',
@@ -64,6 +71,81 @@
                     'missed' => 'Terlewat',
                 ];
             @endphp
+
+            {{-- FILTER RIWAYAT --}}
+            <form
+                method="GET"
+                action="{{ route('caregiver.dashboard') }}"
+                class="rk-history-filter"
+            >
+                <input
+                    type="hidden"
+                    name="view"
+                    value="history"
+                >
+
+                <div class="rk-history-filter-field">
+                    <label for="history-status">
+                        Filter status
+                    </label>
+
+                    <select
+                        name="status"
+                        id="history-status"
+                    >
+                        <option
+                            value=""
+                            @selected($historyStatusFilter === '')
+                        >
+                            Semua status
+                        </option>
+
+                        <option
+                            value="pending"
+                            @selected($historyStatusFilter === 'pending')
+                        >
+                            Belum
+                        </option>
+
+                        <option
+                            value="completed"
+                            @selected($historyStatusFilter === 'completed')
+                        >
+                            Selesai
+                        </option>
+
+                        <option
+                            value="postponed"
+                            @selected($historyStatusFilter === 'postponed')
+                        >
+                            Ditunda
+                        </option>
+
+                        <option
+                            value="missed"
+                            @selected($historyStatusFilter === 'missed')
+                        >
+                            Terlewat
+                        </option>
+                    </select>
+                </div>
+
+                <button
+                    type="submit"
+                    class="rk-history-filter-button"
+                >
+                    Terapkan
+                </button>
+
+                @if ($historyStatusFilter !== '')
+                    <a
+                        href="{{ route('caregiver.dashboard', ['view' => 'history']) }}"
+                        class="rk-history-reset"
+                    >
+                        Reset
+                    </a>
+                @endif
+            </form>
 
             @if (count($historyRows) > 0)
 
@@ -156,7 +238,7 @@
 
                 </section>
 
-                {{-- Pagination riwayat --}}
+                {{-- PAGINATION RIWAYAT --}}
                 @if ($historyPage > 1 || $hasMoreHistory)
                     <nav
                         class="rk-care-view-tabs"
@@ -168,6 +250,7 @@
                                 href="{{ route('caregiver.dashboard', [
                                     'view' => 'history',
                                     'page' => $historyPage - 1,
+                                    'status' => $historyStatusFilter,
                                 ]) }}"
                                 class="rk-care-view-tab"
                             >
@@ -184,6 +267,7 @@
                                 href="{{ route('caregiver.dashboard', [
                                     'view' => 'history',
                                     'page' => $historyPage + 1,
+                                    'status' => $historyStatusFilter,
                                 ]) }}"
                                 class="rk-care-view-tab"
                             >
@@ -197,9 +281,16 @@
             @else
 
                 <div class="rk-care-empty rk-stitch-empty-residents">
-                    <h2>Belum ada riwayat perubahan</h2>
+                    <h2>
+                        {{ $historyStatusFilter !== ''
+                            ? 'Tidak ada riwayat dengan status tersebut'
+                            : 'Belum ada riwayat perubahan' }}
+                    </h2>
+
                     <p>
-                        Riwayat perubahan status tugas perawatan akan muncul di sini.
+                        {{ $historyStatusFilter !== ''
+                            ? 'Coba pilih status lain atau reset filter untuk melihat seluruh riwayat.'
+                            : 'Riwayat perubahan status tugas perawatan akan muncul di sini.' }}
                     </p>
                 </div>
 
@@ -706,4 +797,8 @@
             </section>
         </div>
     @endif
+
+    {{-- Popup hasil dan toast --}}
+    <x-task-feedback />
+
 @endsection

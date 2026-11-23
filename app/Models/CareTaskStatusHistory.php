@@ -43,15 +43,30 @@ class CareTaskStatusHistory extends SupabaseModel
      */
     public function latestForCurrentCaregiver(
         int $page = 1,
-        int $perPage = 50
+        int $perPage = 50,
+        ?string $status = null
     ): array {
         $page = max(1, $page);
         $perPage = max(1, min(100, $perPage));
 
-        return $this->read([
+        $query = [
             'order' => 'changed_at.desc',
             'limit' => $perPage,
             'offset' => ($page - 1) * $perPage,
-        ]);
+        ];
+
+        // Filter berdasarkan status terbaru.
+        $allowedStatuses = [
+            'pending',
+            'completed',
+            'postponed',
+            'missed',
+        ];
+
+        if (in_array($status, $allowedStatuses, true)) {
+            $query['new_status'] = 'eq.'.$status;
+        }
+
+        return $this->read($query);
     }
 }

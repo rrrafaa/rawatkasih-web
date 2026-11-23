@@ -89,17 +89,37 @@ dayButtons.forEach((button) => {
 const templateForm = document.getElementById('template-form');
 
 if (templateForm) {
+    let nativeInvalidTimer = null;
+
+    templateForm.addEventListener('invalid', () => {
+        if (nativeInvalidTimer !== null) {
+            return;
+        }
+
+        window.showTaskFeedback?.({
+            type: 'error',
+            title: 'Data belum lengkap',
+            message: 'Lengkapi seluruh kolom wajib sebelum menyimpan template.',
+        });
+
+        nativeInvalidTimer = window.setTimeout(() => {
+            nativeInvalidTimer = null;
+        }, 1500);
+
+    }, true);
     templateForm.addEventListener('submit', (event) => {
         templateForm.querySelectorAll('[data-validation-error]').forEach((error) => {
             error.remove();
         });
 
         let isValid = true;
+        const validationMessages = [];
 
         const showError = (container, message) => {
             const error = document.createElement('p');
             error.className = 'adm-form-error';
             error.dataset.validationError = 'true';
+            validationMessages.push(message);
             error.textContent = message;
             container.appendChild(error);
             isValid = false;
@@ -126,6 +146,13 @@ if (templateForm) {
 
         if (!isValid) {
             event.preventDefault();
+
+            window.showTaskFeedback?.({
+                type: 'error',
+                title: 'Data belum lengkap',
+                message: validationMessages.join(' '),
+            });
+
             return;
         }
 
@@ -600,6 +627,12 @@ if (openDrawerButton && templateForm) {
             reasonError.hidden = false;
             reasonTextarea.focus();
 
+            window.showTaskFeedback?.({
+                type: 'error',
+                title: 'Gagal mengubah status',
+                message: 'Alasan wajib diisi untuk tugas yang ditunda atau terlewat.',
+            });
+
             return;
         }
 
@@ -611,3 +644,212 @@ if (openDrawerButton && templateForm) {
 document.querySelectorAll('[data-dismiss-notice]').forEach((button) => {
     button.addEventListener('click', () => button.closest('.rk-corner-notice').remove());
 });
+
+// =========================================================
+// TASK FEEDBACK: POPUP KEMUDIAN TOAST
+// =========================================================
+
+(function () {
+    const dialog = document.getElementById(
+        'rk-task-feedback-dialog'
+    );
+
+    const toast = document.getElementById(
+        'rk-task-feedback-toast'
+    );
+
+    if (!dialog || !toast) {
+        return;
+    }
+
+    const dialogTitle = document.getElementById(
+        'rk-task-feedback-title'
+    );
+
+    const dialogMessage = document.getElementById(
+        'rk-task-feedback-message'
+    );
+
+    const dialogSymbol = document.getElementById(
+        'rk-task-feedback-dialog-symbol'
+    );
+
+    const toastTitle = document.getElementById(
+        'rk-task-feedback-toast-title'
+    );
+
+    const toastMessage = document.getElementById(
+        'rk-task-feedback-toast-message'
+    );
+
+    const toastSymbol = document.getElementById(
+        'rk-task-feedback-toast-symbol'
+    );
+
+    const closeToast = document.getElementById(
+        'rk-task-feedback-toast-close'
+    );
+
+    let popupTimer = null;
+    let toastTimer = null;
+    let toastHideTimer = null;
+
+    function hideToast() {
+        toast.classList.remove('is-visible');
+
+        toastHideTimer = window.setTimeout(() => {
+            toast.hidden = true;
+        }, 250);
+    }
+
+    function showTaskFeedback(feedback) {
+        const type = feedback.type === 'success'
+            ? 'success'
+            : 'error';
+
+        const title = feedback.title || 'Terjadi kesalahan';
+        const message = feedback.message || '';
+
+        // Bersihkan timer sebelumnya.
+        window.clearTimeout(popupTimer);
+        window.clearTimeout(toastTimer);
+        window.clearTimeout(toastHideTimer);
+
+        toast.classList.remove('is-visible');
+        toast.hidden = true;
+
+        // Atur isi popup.
+        dialog.dataset.type = type;
+        dialogTitle.textContent = title;
+        dialogMessage.textContent = message;
+
+        dialogSymbol.textContent = type === 'success'
+            ? '✓'
+            : '!';
+
+        // Atur isi toast.
+        toast.dataset.type = type;
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        toastSymbol.textContent = type === 'success'
+            ? '✓'
+            : '!';
+
+        // Tampilkan popup di tengah layar.
+        if (dialog.open) {
+            dialog.close();
+        }
+
+        dialog.showModal();
+
+        // Setelah 1,3 detik, tutup popup.
+        popupTimer = window.setTimeout(() => {
+            if (dialog.open) {
+                dialog.close();
+            }
+
+            // Baru tampilkan toast.
+            toast.hidden = false;
+
+            window.requestAnimationFrame(() => {
+                toast.classList.add('is-visible');
+            });
+
+            // Toast menghilang setelah 5 detik.
+            toastTimer = window.setTimeout(() => {
+                hideToast();
+            }, 5000);
+
+        }, 1300);
+    }
+
+    // Bisa dipanggil dari validasi JavaScript.
+    window.showTaskFeedback = showTaskFeedback;
+
+    // Tutup toast secara manual.
+    closeToast.addEventListener('click', () => {
+        window.clearTimeout(toastTimer);
+        window.clearTimeout(toastHideTimer);
+
+        hideToast();
+    });
+
+    // Tampilkan otomatis jika server mengirim flash message.
+    if (dialog.dataset.showOnLoad === 'true') {
+        showTaskFeedback({
+            type: dialog.dataset.type,
+            title: dialogTitle.textContent.trim(),
+            message: dialogMessage.textContent.trim(),
+        });
+    }
+})();
+
+// =========================================================
+// ADMIN — KONFIRMASI NONAKTIFKAN TEMPLATE
+// =========================================================
+
+(function () {
+    const dialog = document.getElementById(
+        'template-deactivation-dialog'
+    );
+
+    if (!dialog) {
+        return;
+    }
+
+    const templateName = document.getElementById(
+        'template-deactivation-name'
+    );
+
+    let pendingForm = null;
+
+    // Tombol Nonaktifkan pada setiap template.
+    document.querySelectorAll('[data-template-deactivate]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+
+            const formId = button.dataset.templateFormId;
+            const form = document.getElementById(formId);
+
+            if (!form) {
+                return;
+            }
+
+            pendingForm = form;
+
+            templateName.textContent =
+                button.dataset.templateTitle || 'template tugas ini';
+
+            // Jika browser mendukung dialog HTML.
+            if (typeof dialog.showModal === 'function') {
+                dialog.returnValue = '';
+                dialog.showModal();
+                return;
+            }
+
+            // Fallback apabila dialog tidak tersedia.
+            const confirmed = window.confirm(
+                `Apakah kamu yakin ingin menonaktifkan ${button.dataset.templateTitle}?`
+            );
+
+            if (confirmed) {
+                pendingForm.requestSubmit();
+            }
+
+            pendingForm = null;
+        });
+    });
+
+    // Form baru dikirim setelah tombol konfirmasi dipilih.
+    dialog.addEventListener('close', () => {
+        const shouldDeactivate = dialog.returnValue === 'confirm';
+        const form = pendingForm;
+
+        pendingForm = null;
+
+        if (shouldDeactivate && form) {
+            form.requestSubmit();
+        }
+    });
+})();
