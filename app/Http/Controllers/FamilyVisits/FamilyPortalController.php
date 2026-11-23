@@ -5,7 +5,6 @@ namespace App\Http\Controllers\FamilyVisits;
 use App\Contracts\FamilyNewsProvider;
 use App\Http\Controllers\Controller;
 use App\Models\FamilyVisits\FamilyVisitData;
-use App\Models\FamilyVisits\Resident;
 use App\Models\FamilyVisits\VisitRequest;
 use App\Services\FamilyVisits\FamilyMediaStorage;
 use App\Services\FamilyVisits\PortalContext;
@@ -21,23 +20,22 @@ class FamilyPortalController extends Controller
 {
     public function index(Request $request, PortalContext $context, FamilyVisitData $data, FamilyNewsProvider $news): View
     {
-        $vars = $context->for($request);
+        $vars = $context->for($request, withPortrait: true);
         $resident = $vars['resident'];
-        $photoConsent = $resident !== null && $data->photoConsent($resident->id);
+        $photoConsent = $vars['photoConsent'];
         $stories = $resident ? $news->publishedFor($resident->id, $photoConsent) : [];
         $visits = $resident ? $data->visits($resident->id, null, 1) : null;
 
         return view('modules.family-visits.home', [...$vars, 'stories' => $stories, 'visits' => $visits,
-            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident),
-            'realPortrait' => $photoConsent && $resident && filled($resident->profile_photo_path), 'activeNav' => 'home']);
+            'activeNav' => 'home']);
     }
 
-    public function news(Request $request, PortalContext $context, FamilyVisitData $data, FamilyNewsProvider $news): View
+    public function news(Request $request, PortalContext $context, FamilyNewsProvider $news): View
     {
         $filters = $request->validate(['category' => ['nullable', 'in:semua,aktivitas,kebersamaan'], 'date' => ['nullable', 'date_format:Y-m-d']]);
-        $vars = $context->for($request);
+        $vars = $context->for($request, withPortrait: true);
         $resident = $vars['resident'];
-        $photoConsent = $resident !== null && $data->photoConsent($resident->id);
+        $photoConsent = $vars['photoConsent'];
         $stories = $resident ? $news->publishedFor($resident->id, $photoConsent) : [];
         $dates = [];
         $visibleStories = [];
@@ -52,8 +50,7 @@ class FamilyPortalController extends Controller
         }
 
         return view('modules.family-visits.news', [...$vars, 'stories' => $visibleStories, 'dates' => $dates,
-            'demoPortrait' => $photoConsent && $this->hasDemoPortrait($resident),
-            'realPortrait' => $photoConsent && $resident && filled($resident->profile_photo_path), 'activeNav' => 'news']);
+            'activeNav' => 'news']);
     }
 
     public function profile(Request $request, PortalContext $context, FamilyVisitData $data): View
@@ -84,7 +81,7 @@ class FamilyPortalController extends Controller
         abort_unless(config('family_visits.demo_news') && in_array($asset, ['garden', 'lunch', 'morning', 'sulastri'], true), 404);
         $vars = $context->for($request);
         $resident = $vars['resident'];
-        abort_unless($resident !== null && ($asset !== 'sulastri' || $this->hasDemoPortrait($resident)), 404);
+        abort_unless($resident !== null && ($asset !== 'sulastri' || $context->hasDemoPortrait($resident)), 404);
         abort_unless($data->photoConsent($resident->id), 403);
 
         $file = $asset === 'sulastri' ? 'resident/sulastri/profil.jpg' : 'resident/contoh-kabar/'.$asset.'.jpg';
@@ -123,16 +120,5 @@ class FamilyPortalController extends Controller
             'Content-Type' => 'image/jpeg', 'Cache-Control' => 'no-store, private',
             'X-Content-Type-Options' => 'nosniff',
         ]);
-    }
-
-    private function hasDemoPortrait(Resident $resident): bool
-    {
-        $demoResidentId = config('family_visits.demo_portrait_resident_id');
-
-        return config('family_visits.demo_news')
-            && is_string($demoResidentId)
-            && $demoResidentId !== ''
-            && $resident->id === $demoResidentId
-            && is_file(resource_path('resident/sulastri/profil.jpg'));
     }
 }

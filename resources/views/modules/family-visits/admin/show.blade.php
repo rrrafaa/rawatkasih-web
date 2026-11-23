@@ -40,9 +40,6 @@
                 @if ($expired)
                     <p class="adm-visit-warning">Jadwal sudah lewat. Pengajuan ini hanya bisa ditolak.</p>
                 @endif
-                @error('visit')
-                    <p class="adm-form-error" role="alert">{{ $message }}</p>
-                @enderror
                 <form method="post" action="{{ route('admin.visits.update', $visit->id) }}"
                       class="adm-visit-decision" data-review-form>
                     @csrf

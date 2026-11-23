@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ asset('css/family-visits.css') }}?v={{ filemtime(public_path('css/family-visits.css')) }}">
 @endsection
 @section('content')
-<script src="{{ asset('js/family-visits.js') }}" defer></script>
+<script src="{{ asset('js/family-visits.js') }}?v={{ filemtime(public_path('js/family-visits.js')) }}" defer></script>
 <div class="fv-shell">
     <aside class="adm-sidebar fv-sidebar" aria-label="Navigasi ruang keluarga">
         <a class="adm-sidebar-brand" href="{{ route('family.dashboard') }}">
@@ -40,7 +40,7 @@
                 <p class="adm-profile-name">{{ $user->name() }}</p>
                 <p class="adm-profile-role">{{ $resident ? 'Keluarga terverifikasi' : 'Menunggu verifikasi' }}</p>
             </div>
-            <form method="post" action="{{ route('logout') }}">
+            <form method="post" action="{{ route('logout') }}" data-confirm="Keluar dari akun keluarga?">
                 @csrf
                 <button type="submit" class="adm-sidebar-logout" aria-label="Keluar akun" title="Keluar akun">↪</button>
             </form>
@@ -49,11 +49,11 @@
     <main id="main" class="fv-main">
         <div class="fv-context"><p>{{ config('family_visits.facility_name') }} <span>/</span> {{ $breadcrumb ?? 'Beranda' }}</p><span class="fv-badge {{ $resident ? 'fv-badge-success' : 'fv-badge-pending' }}">{{ $resident ? 'Terverifikasi' : 'Menunggu verifikasi' }}</span></div>
         <header class="fv-page-heading"><h1 class="adm-page-title">{{ $pageTitle }}</h1><p>{{ $pageDescription }}</p></header>
-        @if (session('status'))<div class="fv-alert fv-alert-success" role="status">{{ session('status') }}</div>@endif
-        @if ($errors->has('visit'))<div class="fv-alert fv-alert-error" role="alert">{{ $errors->first('visit') }}</div>@endif
+        @include('modules.family-visits.partials.notification')
         @if (count($residents) > 1)<form method="get" action="{{ route('family.dashboard') }}" class="adm-toolbar fv-filter-bar"><div class="fv-filter-field"><label class="adm-form-label" for="resident-selector">Orang tersayang</label><select class="adm-filter fv-select" id="resident-selector" name="resident">@foreach ($residents as $linked)<option value="{{ $linked->id }}" @selected($resident?->id === $linked->id)>{{ $linked->full_name }}</option>@endforeach</select></div><button class="adm-secondary-button" type="submit">Tampilkan</button></form>@endif
         @yield('portal-content')
         <p class="fv-footer">Privasi Eyang terjaga. Hanya kabar terpublikasi yang ditampilkan kepada keluarga terverifikasi.</p>
     </main>
 </div>
+@include('modules.family-visits.partials.confirmation')
 @endsection

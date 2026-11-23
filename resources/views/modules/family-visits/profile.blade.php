@@ -10,7 +10,7 @@
     </section>
 
     <div class="fv-card" style="padding:20px;margin-bottom:20px">
-        <form method="post" action="{{ route('family.avatar.upload') }}" enctype="multipart/form-data" class="fv-form">
+        <form method="post" action="{{ route('family.avatar.upload') }}" enctype="multipart/form-data" class="fv-form" data-confirm="Simpan foto profil baru?">
             @csrf
             <h2>Ubah foto profil</h2>
             <label class="adm-form-label" for="account-photo">Pilih foto (JPEG, PNG, WebP; maksimal 3 MiB)</label>
@@ -21,7 +21,7 @@
     </div>
 
     <div class="fv-profile-grid">
-        <form class="fv-card fv-form" method="post"
+        <form class="fv-card fv-form" method="post" data-confirm="Simpan perubahan profil akun?"
               action="{{ route('family.profile.update', $resident ? ['resident' => $resident->id] : []) }}">
             @csrf
             @method('PATCH')

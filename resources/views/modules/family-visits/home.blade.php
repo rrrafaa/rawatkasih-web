@@ -16,7 +16,7 @@
     <div class="fv-home-columns">
         <section class="fv-card fv-latest-story">
             @if($latest)
-                @if($latest['media'])<img class="fv-latest-photo" src="{{ $latest['is_demo'] ? route('family.demo-media', ['asset' => $latest['media'], 'resident' => $resident->id], absolute: false) : $latest['media'] }}" alt="{{ $latest['is_demo'] ? 'Ilustrasi kabar contoh: ' : 'Dokumentasi kabar: ' }}{{ $latest['title'] }}">@endif
+                @if($latest['media'])<img data-story-photo class="fv-latest-photo" src="{{ $latest['is_demo'] ? route('family.demo-media', ['asset' => $latest['media'], 'resident' => $resident->id], absolute: false) : $latest['media'] }}" alt="{{ $latest['is_demo'] ? 'Ilustrasi kabar contoh: ' : 'Dokumentasi kabar: ' }}{{ $latest['title'] }}"><p class="fv-story-photo-caption" hidden>Foto kegiatan belum tersedia.</p>@endif
                 @if(!empty($latest['photo_caption']) && $latest['media'])<p class="fv-story-photo-caption">{{ $latest['photo_caption'] }}</p>@endif
                 <p class="fv-eyebrow">{{ $latest['is_demo'] ? 'KABAR CONTOH' : 'KABAR KELUARGA' }} / {{ \Carbon\CarbonImmutable::parse($latest['published_at'])->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M · H.i') }} WIB</p><h2>{{ $latest['title'] }}</h2><p>{{ $latest['summary'] }}</p>
             @else<h2>Menunggu kabar keluarga</h2><p>Kabar yang dibagikan panti akan tersedia di sini.</p>@endif

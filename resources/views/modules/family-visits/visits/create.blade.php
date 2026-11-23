@@ -4,7 +4,7 @@
     @include('modules.family-visits.partials.resident')
 
     <div class="fv-form-columns">
-        <form class="fv-card fv-form" method="post" action="{{ route('family.visits.store') }}" data-visit-form>
+        <form class="fv-card fv-form" method="post" action="{{ route('family.visits.store') }}" data-visit-form data-confirm="Ajukan kunjungan dengan jadwal ini?">
             @csrf
             <input type="hidden" name="resident_id" value="{{ $resident->id }}">
             <input type="hidden" name="submission_key" value="{{ old('submission_key', $submissionKey) }}">

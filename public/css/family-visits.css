@@ -798,3 +798,7 @@ a.adm-visit-card[aria-current] {
     align-items: center;
     gap: 8px;
 }
+
+img[data-story-photo][hidden] {
+    display: none;
+}

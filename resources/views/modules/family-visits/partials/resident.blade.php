@@ -2,7 +2,7 @@
     @if ($realPortrait ?? false)
         <img class="fv-resident-photo" src="{{ route('family.resident-photo', ['resident' => $resident->id], absolute: false) }}"
              alt="Foto {{ $resident->full_name }}" width="56" height="56">
-    @elseif ($showDemoPortrait ?? false)
+    @elseif ($demoPortrait ?? false)
         <img class="fv-resident-photo"
              src="{{ route('family.demo-media', ['asset' => 'sulastri', 'resident' => $resident->id], absolute: false) }}"
              alt="Foto ilustrasi {{ $resident->full_name }}" width="56" height="56">

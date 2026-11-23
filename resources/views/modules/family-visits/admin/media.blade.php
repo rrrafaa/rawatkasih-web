@@ -4,11 +4,9 @@
 <div style="max-width:1000px;margin:auto">
     <h1>Kelola foto keluarga dan lansia</h1>
     <p>Semua foto disimpan di Supabase Storage privat, maksimal 3 MiB (JPEG, PNG, WebP). Foto kabar hanya dapat dilihat keluarga jika kabar telah dipublikasikan dan izin foto aktif.</p>
-    @if(session('status'))<p role="status">{{ session('status') }}</p>@endif
-    @if($errors->any())<div role="alert">{{ $errors->first() }}</div>@endif
     <section class="adm-visit-card" style="padding:24px;margin-top:24px">
         <h2>Unggah foto profil lansia</h2>
-        <form method="POST" action="{{ route('admin.family-media.resident') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.family-media.resident') }}" data-confirm="Simpan foto profil lansia ini?" enctype="multipart/form-data">
             @csrf
             <label for="resident-photo-id">Resident</label>
             <select id="resident-photo-id" name="resident_id" required>
@@ -23,7 +21,7 @@
     </section>
     <section class="adm-visit-card" style="padding:24px;margin-top:24px">
         <h2>Unggah dokumentasi Kabar Harian</h2>
-        <form method="POST" action="{{ route('admin.family-media.update') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.family-media.update') }}" data-confirm="Simpan dokumentasi kabar ini?" enctype="multipart/form-data">
             @csrf
             <label for="update-photo-id">Kabar</label>
             <select id="update-photo-id" name="update_id" required>

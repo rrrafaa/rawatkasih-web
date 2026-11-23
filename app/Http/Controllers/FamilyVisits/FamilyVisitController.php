@@ -20,7 +20,7 @@ class FamilyVisitController extends Controller
     public function index(Request $request, PortalContext $context, FamilyVisitData $data): View
     {
         $filters = $request->validate(['status' => ['nullable', 'in:pending,approved,rejected,cancelled'], 'page' => ['nullable', 'integer', 'min:1', 'max:100000']]);
-        $vars = $context->for($request);
+        $vars = $context->for($request, withPortrait: true);
         $visits = $vars['resident'] ? $data->visits($vars['resident']->id, $filters['status'] ?? null, (int) ($filters['page'] ?? 1)) : null;
 
         return view('modules.family-visits.visits.index', [...$vars, 'visits' => $visits, 'activeNav' => 'visits']);
@@ -28,7 +28,7 @@ class FamilyVisitController extends Controller
 
     public function create(Request $request, PortalContext $context): View
     {
-        $vars = $context->for($request);
+        $vars = $context->for($request, withPortrait: true);
         abort_unless($vars['resident'] !== null, 404);
         Gate::authorize('create', [VisitRequest::class, $vars['resident']]);
 
@@ -54,7 +54,7 @@ class FamilyVisitController extends Controller
         Gate::authorize('view', $visit);
         $request->query->set('resident', $visit->resident_id);
 
-        return view('modules.family-visits.visits.show', [...$context->for($request), 'visit' => $visit, 'activeNav' => 'visits']);
+        return view('modules.family-visits.visits.show', [...$context->for($request, withPortrait: true), 'visit' => $visit, 'activeNav' => 'visits']);
     }
 
     public function cancel(VisitRequest $visit, FamilyVisitData $data): RedirectResponse

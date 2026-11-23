@@ -4,7 +4,7 @@
     @if (!$resident)
         @include('modules.family-visits.partials.unlinked')
     @else
-        @include('modules.family-visits.partials.resident', ['showDemoPortrait' => $demoPortrait, 'realPortrait' => $realPortrait])
+        @include('modules.family-visits.partials.resident')
         @include('modules.family-visits.partials.demo-notice')
 
         <form method="get" action="{{ route('family.news') }}" class="adm-toolbar fv-filter-bar">
@@ -40,8 +40,9 @@
                 @foreach ($stories as $story)
                     <article class="fv-card fv-news-card">
                         @if ($story['media'])
-                            <img src="{{ $story['is_demo'] ? route('family.demo-media', ['asset' => $story['media'], 'resident' => $resident->id], absolute: false) : $story['media'] }}"
+                            <img data-story-photo src="{{ $story['is_demo'] ? route('family.demo-media', ['asset' => $story['media'], 'resident' => $resident->id], absolute: false) : $story['media'] }}"
                                  alt="{{ $story['photo_caption'] ?? (($story['is_demo'] ? 'Ilustrasi: ' : 'Dokumentasi: ').$story['title']) }}" loading="lazy">
+                            <p class="fv-story-photo-caption" hidden>Foto kegiatan belum tersedia.</p>
                         @endif
                         <div class="fv-news-card-body">
                             @if(!empty($story['photo_caption']) && $story['media'])
