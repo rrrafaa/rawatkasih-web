@@ -26,7 +26,7 @@ class FamilyVisitPolicy
             return false;
         }
 
-        // Fresh verified relation and consent, even when an old URL or form is reused.
+        // Periksa ulang relasi terverifikasi dan persetujuan, termasuk saat URL atau formulir lama digunakan.
         return app(FamilyVisitData::class)->resident($visit->resident_id)->id === $visit->resident_id;
     }
 
@@ -37,6 +37,8 @@ class FamilyVisitPolicy
 
     public function review(SupabaseUser $user, VisitRequest $visit): bool
     {
-        return $user->role() === Role::Admin && $visit->status === VisitStatus::Pending;
+        return $user->role() === Role::Admin
+            && $visit->status !== VisitStatus::Cancelled
+            && $visit->requested_at->isFuture();
     }
 }

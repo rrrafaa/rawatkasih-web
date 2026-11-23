@@ -32,9 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
+    /** Ambil atribut yang perlu dikonversi tipenya.
      * @return array<string, string>
      */
     protected function casts(): array
@@ -45,9 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
+    /** Ambil inisial pengguna. */
     public function initials(): string
     {
         $initials = Str::initials($this->name, true);

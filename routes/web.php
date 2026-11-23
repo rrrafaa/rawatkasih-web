@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
@@ -10,6 +9,11 @@ use App\Models\SupabaseUser;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
+
+Route::get('/images/rawatkasih-mark.svg', fn () => response()->file(resource_path('asset/rawatkasih-mark.svg'), [
+    'Content-Type' => 'image/svg+xml',
+    'Cache-Control' => 'public, max-age=3600',
+]));
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])
@@ -42,11 +46,12 @@ Route::post('/reset-password', [PasswordController::class, 'update'])
 
 Route::middleware('auth')->group(function () {
 
+    // Arahkan pengguna ke dasbor sesuai perannya.
     Route::get('/dashboard', [DashboardController::class, 'redirect'])
         ->name('dashboard')
         ->block(10, 10);
 
-    // Admin dashboard with statistics.
+    // Dasbor admin dengan statistik khusus.
     Route::prefix('admin')
         ->name('admin.')
         ->middleware('role:admin')
@@ -56,7 +61,7 @@ Route::middleware('auth')->group(function () {
                 ->block(10, 10);
         });
 
-    // Shared dashboards for family.
+    // Dasbor keluarga untuk memantau penghuni.
     Route::prefix('family')
         ->name('family.')
         ->middleware('role:family')
@@ -66,7 +71,7 @@ Route::middleware('auth')->group(function () {
                 ->block(10, 10);
         });
 
-    // Dedicated dashboard for caregiver.
+    // Dasbor khusus pendamping.
     Route::prefix('caregiver')
         ->name('caregiver.')
         ->middleware('role:caregiver')
@@ -76,8 +81,7 @@ Route::middleware('auth')->group(function () {
                 ->block(10, 10);
         });
 
-    // Each module owns a separate route file,
-    // keeping shared auth routes stable.
+    // Muat rute setiap modul secara terpisah.
     foreach ([
         'care-tasks',
         'care-updates',
@@ -89,18 +93,31 @@ Route::middleware('auth')->group(function () {
     }
 });
 
-// Route tes cepat untuk melihat tampilan tanpa harus login Supabase:
+// Pratinjau catatan harian tanpa autentikasi Supabase.
 Route::get('/preview/daily-notes', function () {
+    abort_unless(app()->environment('local'), 404);
+
     $dummyUser = new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',
     ]);
+
     auth()->setUser($dummyUser);
 
     $dummyResidents = [
-        ['id' => '30000000-0000-4000-8000-000000000001', 'full_name' => 'Eyang Hartono Soedirdjo', 'room' => 'Melati 01', 'photo_consent' => true],
-        ['id' => '30000000-0000-4000-8000-000000000002', 'full_name' => 'Ibu Sulastri', 'room' => 'Mawar 02', 'photo_consent' => false],
+        [
+            'id' => '30000000-0000-4000-8000-000000000001',
+            'full_name' => 'Eyang Hartono Soedirdjo',
+            'room' => 'Melati 01',
+            'photo_consent' => true,
+        ],
+        [
+            'id' => '30000000-0000-4000-8000-000000000002',
+            'full_name' => 'Ibu Sulastri',
+            'room' => 'Mawar 02',
+            'photo_consent' => false,
+        ],
     ];
 
     $dummyNotes = [
@@ -128,17 +145,31 @@ Route::get('/preview/daily-notes', function () {
     ]);
 });
 
+// Pratinjau kabar keluarga tanpa autentikasi Supabase.
 Route::get('/preview/family-updates', function () {
+    abort_unless(app()->environment('local'), 404);
+
     $dummyUser = new SupabaseUser([
         'id' => '10000000-0000-4000-8000-000000000001',
         'full_name' => 'Dewi Caregiver (Demo)',
         'role' => 'caregiver',
     ]);
+
     auth()->setUser($dummyUser);
 
     $dummyResidents = [
-        ['id' => '30000000-0000-4000-8000-000000000001', 'full_name' => 'Eyang Hartono Soedirdjo', 'room' => 'Melati 01', 'photo_consent' => true],
-        ['id' => '30000000-0000-4000-8000-000000000002', 'full_name' => 'Ibu Sulastri', 'room' => 'Mawar 02', 'photo_consent' => false],
+        [
+            'id' => '30000000-0000-4000-8000-000000000001',
+            'full_name' => 'Eyang Hartono Soedirdjo',
+            'room' => 'Melati 01',
+            'photo_consent' => true,
+        ],
+        [
+            'id' => '30000000-0000-4000-8000-000000000002',
+            'full_name' => 'Ibu Sulastri',
+            'room' => 'Mawar 02',
+            'photo_consent' => false,
+        ],
     ];
 
     $dummyUpdates = [

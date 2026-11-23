@@ -13,17 +13,13 @@ use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+    /** Daftarkan layanan aplikasi. */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+    /** Siapkan layanan aplikasi. */
     public function boot(): void
     {
         $this->configureActions();
@@ -31,18 +27,14 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
     }
 
-    /**
-     * Configure Fortify actions.
-     */
+    /** Atur aksi Fortify. */
     private function configureActions(): void
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
     }
 
-    /**
-     * Configure Fortify views.
-     */
+    /** Atur tampilan Fortify. */
     private function configureViews(): void
     {
         Fortify::loginView(fn () => view('pages::auth.login'));
@@ -52,9 +44,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::requestPasswordResetLinkView(fn () => view('pages::auth.forgot-password'));
     }
 
-    /**
-     * Configure rate limiting.
-     */
+    /** Atur pembatasan permintaan. */
     private function configureRateLimiting(): void
     {
         RateLimiter::for('two-factor', function (Request $request) {

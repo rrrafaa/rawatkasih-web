@@ -1,4 +1,4 @@
--- Run only against an authorized test project. Every mutation below is rolled back.
+-- Jalankan hanya pada proyek uji resmi; seluruh perubahan di bawah akan dibatalkan.
 BEGIN;
 SELECT set_config('rk_test.family', (SELECT id::text FROM public.profiles WHERE role='family' AND is_active LIMIT 1), true);
 SELECT set_config('rk_test.admin', (SELECT id::text FROM public.profiles WHERE role='admin' AND is_active LIMIT 1), true);

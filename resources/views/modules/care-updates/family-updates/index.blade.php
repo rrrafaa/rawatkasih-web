@@ -223,11 +223,7 @@
             </div>
         </header>
 
-        @if (session('status'))
-            <div class="rk-care-alert" role="status" style="margin-top: 16px;">
-                {{ session('status') }}
-            </div>
-        @endif
+        @include('modules.family-visits.partials.notification')
 
         @if (empty($residents))
             <div class="rk-care-empty" style="margin-top: 24px;">
@@ -327,17 +323,17 @@
                             @enderror
                         </div>
 
-                        {{-- Unggah Foto Opsional --}}
+                        {{-- Unggah Foto Wajib --}}
                         <div class="rk-field-group">
                             <label for="photo" class="rk-field-label">
-                                Foto Dokumentasi (Opsional)
+                                Foto Dokumentasi (Wajib)
                             </label>
                             <input
                                 type="file"
                                 id="photo"
                                 name="photo"
                                 accept="image/jpeg,image/png,image/webp"
-                                class="rk-field-file"
+                                class="rk-field-file" required
                                 @error('photo') aria-invalid="true" @enderror
                             >
                             <p style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">

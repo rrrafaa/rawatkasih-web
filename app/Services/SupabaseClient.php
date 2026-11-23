@@ -43,7 +43,7 @@ class SupabaseClient
                 $request = $request->withToken($token);
             }
 
-            // Never retry token rotation, password changes, or writes automatically.
+            // Jangan ulangi pergantian token, perubahan kata sandi, atau operasi tulis secara otomatis.
             $response = $request->send($method, $path, [
                 strtoupper($method) === 'GET' ? 'query' : 'json' => $data,
             ]);

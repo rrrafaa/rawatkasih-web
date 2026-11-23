@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** @property string $id
  * @property string $full_name
  * @property string|null $room
+ * @property string|null $profile_photo_path
  * @property string $status
  * @property CarbonImmutable|null $birth_date
  * @property FamilyLink $familyLink

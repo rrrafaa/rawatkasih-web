@@ -11,7 +11,7 @@ use App\Policies\DailyNotePolicy;
 use App\Policies\FamilyUpdatePolicy;
 use App\Policies\FamilyVisitPolicy;
 use App\Policies\ResidentPolicy;
-use App\Services\FamilyVisits\DummyFamilyNewsProvider;
+use App\Services\FamilyVisits\PublishedFamilyNewsProvider;
 use App\Services\SupabaseSession;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -28,18 +28,14 @@ use Laravel\Fortify\Fortify;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+    /** Daftarkan layanan aplikasi. */
     public function register(): void
     {
         Fortify::ignoreRoutes();
-        $this->app->bind(FamilyNewsProvider::class, DummyFamilyNewsProvider::class);
+        $this->app->bind(FamilyNewsProvider::class, PublishedFamilyNewsProvider::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+    /** Siapkan layanan aplikasi. */
     public function boot(): void
     {
         Gate::policy(Resident::class, ResidentPolicy::class);
@@ -52,9 +48,8 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * PAWL12: a credential attempt is limited per normalized email + client IP.
-     * Middleware emits HTTP 429 and Retry-After instead of a validation redirect.
-     * Hash cache keys to avoid storing raw email addresses in cache metadata.
+     * PAWL12: batasi percobaan berdasarkan hash email ternormalisasi dan IP.
+     * Middleware mengirim HTTP 429 dan Retry-After tanpa menyimpan email asli.
      */
     protected function configureAuthRateLimiters(): void
     {
@@ -77,9 +72,7 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Configure default behaviors for production-ready applications.
-     */
+    /** Atur perilaku bawaan untuk lingkungan produksi. */
     protected function configureDefaults(): void
     {
         Date::use(CarbonImmutable::class);

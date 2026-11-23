@@ -14,7 +14,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-/** Database boundary: eager-load safe relationships through PostgREST + caller JWT/RLS. */
+/** Batas akses data: muat relasi aman melalui PostgREST dengan JWT pengguna dan RLS. */
 class FamilyVisitData
 {
     private const VISIT_COLUMNS = 'id,resident_id,requester_id,requested_at,requested_end_at,visitor_count,primary_visitor_name,note,status,reviewed_by,reviewed_at,review_note,created_at,resident:residents!visit_requests_resident_id_fkey(id,full_name,room,status),requester:profiles!visit_requests_requester_id_fkey(id,full_name)';
@@ -58,12 +58,12 @@ class FamilyVisitData
     public function residents(): array
     {
         $rows = $this->send('GET', 'family_links', [
-            'select' => 'id,user_id,resident_id,relationship,status,verified_at,resident:residents!family_links_resident_id_fkey(id,full_name,birth_date,room,status)',
+            'select' => 'id,user_id,resident_id,relationship,status,verified_at,resident:residents!family_links_resident_id_fkey(id,full_name,birth_date,room,status,profile_photo_path)',
             'user_id' => 'eq.'.$this->user()->id(), 'status' => 'eq.verified', 'order' => 'verified_at.desc', 'limit' => 25,
         ])->json();
         $residents = [];
         foreach ($rows as $row) {
-            // The nested resident is null if RLS/consent no longer permits access.
+            // Data penghuni kosong jika RLS atau persetujuan tidak lagi mengizinkan akses.
             if (! is_array($row['resident'] ?? null) || $row['resident']['status'] !== 'active') {
                 continue;
             }
@@ -115,7 +115,7 @@ class FamilyVisitData
             $query['status'] = 'eq.'.$status;
         }
         $response = $this->send('GET', 'visit_requests', $query);
-        // PostgREST exact count is requested through a query-independent header in the client.
+        // Jumlah data persis diminta lewat header klien PostgREST, bukan parameter kueri.
         $total = (int) substr(strrchr($response->header('Content-Range') ?: '0/0', '/') ?: '/0', 1);
         $rows = $response->json();
         if ($response->header('Content-Range') === '') {
@@ -143,7 +143,17 @@ class FamilyVisitData
     /** @return array<string, mixed> */
     public function account(): array
     {
-        return $this->send('GET', 'profiles', ['select' => 'id,full_name,email,phone', 'id' => 'eq.'.$this->user()->id(), 'limit' => 1])->json('0') ?? [];
+        return $this->send('GET', 'profiles', ['select' => 'id,full_name,email,phone,avatar_path', 'id' => 'eq.'.$this->user()->id(), 'limit' => 1])->json('0') ?? [];
+    }
+
+    public function avatarPath(string $profileId): ?string
+    {
+        abort_unless(Str::isUuid($profileId), 404);
+        $row = $this->send('GET', 'profiles', [
+            'select' => 'avatar_path', 'id' => 'eq.'.$profileId, 'limit' => 1,
+        ])->json('0');
+
+        return is_string($row['avatar_path'] ?? null) ? $row['avatar_path'] : null;
     }
 
     public function updateAccount(string $name, ?string $phone): void

@@ -183,17 +183,14 @@
                             <div style="max-width: 200px; max-height: 140px; overflow: hidden; border-radius: 6px; margin: 8px 0;">
                                 <img src="{{ $photoUrl }}" alt="Foto draf" style="width: 100%; height: auto; object-fit: cover;">
                             </div>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: #4b5563; cursor: pointer; margin-top: 6px;">
-                                <input type="checkbox" name="remove_photo" value="1" {{ old('remove_photo') ? 'checked' : '' }}>
-                                <span>Hapus foto saat ini</span>
-                            </label>
+
                         </div>
                     @endif
 
                     {{-- Ganti / Unggah Foto Baru --}}
                     <div class="rk-field-group">
                         <label for="photo" class="rk-field-label">
-                            {{ $photoUrl ? 'Ganti Foto Dokumentasi (Opsional)' : 'Tambah Foto Dokumentasi (Opsional)' }}
+                            {{ $photoUrl ? 'Ganti Foto Dokumentasi (Opsional)' : 'Tambah Foto Dokumentasi (Wajib)' }}
                         </label>
                         <input
                             type="file"
@@ -201,6 +198,7 @@
                             name="photo"
                             accept="image/jpeg,image/png,image/webp"
                             class="rk-field-file"
+                            @required(! $photoUrl)
                             @error('photo') aria-invalid="true" @enderror
                         >
                         <p style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">

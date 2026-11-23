@@ -3,4 +3,6 @@
 return [
     'facility_name' => env('FAMILY_FACILITY_NAME', 'Wisma Kasih Utama'),
     'demo_news' => env('FAMILY_DEMO_NEWS', true),
+    // UUID penghuni fiktif dari data awal; jangan tentukan foto berdasarkan nama.
+    'demo_portrait_resident_id' => env('FAMILY_DEMO_PORTRAIT_RESIDENT_ID', '11111111-1111-4111-8111-111111111111'),
 ];

@@ -37,7 +37,7 @@ class StoreFamilyUpdateRequest extends FormRequest
             'summary' => ['required', 'string', 'min:5', 'max:2000'],
             'action' => ['required', 'in:draft,publish'],
             'photo' => [
-                'nullable',
+                'required',
                 'file',
                 'mimes:jpeg,jpg,png,webp',
                 'max:3072', // 3 MB = 3072 KB
@@ -58,6 +58,7 @@ class StoreFamilyUpdateRequest extends FormRequest
             'summary.max' => 'Ringkasan kabar maksimal 2000 karakter.',
             'action.required' => 'Pilih tindakan simpan sebagai draft atau terbitkan.',
             'action.in' => 'Tindakan publikasi tidak valid.',
+            'photo.required' => 'Foto dokumentasi wajib diunggah.',
             'photo.file' => 'Berkas foto tidak valid.',
             'photo.mimes' => 'Format foto harus berupa JPEG, PNG, atau WebP.',
             'photo.max' => 'Ukuran foto maksimal 3 MB.',

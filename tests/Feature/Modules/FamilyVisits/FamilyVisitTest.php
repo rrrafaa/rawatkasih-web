@@ -28,7 +28,8 @@ function validFamilyVisit(): array
 test('family dashboard uses related profile and clearly marks module two dummy data', function () {
     $this->get('/family')->assertOk()->assertSee('Rina')->assertSee('Eyang Hartono Soedirdjo')->assertSee('Data dummy sementara')->assertDontSee('family-token')->assertDontSee('internal_note');
     Http::assertSent(fn ($r) => str_contains($r->url(), '/family_links') && $r['user_id'] === 'eq.'.FamilyVisitFake::FAMILY && $r['status'] === 'eq.verified' && $r->hasHeader('Authorization', 'Bearer family-token'));
-    Http::assertNotSent(fn ($r) => str_contains($r->url(), '/family_updates') || str_contains($r->url(), '/daily_notes'));
+    Http::assertSent(fn ($r) => str_contains($r->url(), '/family_updates') && $r['resident_id'] === 'eq.'.FamilyVisitFake::RESIDENT && $r['status'] === 'eq.published');
+    Http::assertNotSent(fn ($r) => str_contains($r->url(), '/daily_notes'));
 });
 
 test('family can open v2 pages and empty visits', function (string $path, string $text) {
@@ -73,7 +74,7 @@ test('an unlinked resident ID cannot be selected or submitted', function () {
 });
 
 test('a valid visit is persisted with current actor and times converted from WIB', function () {
-    $this->post('/family/kunjungan', [...validFamilyVisit(), 'requester_id' => 'attacker', 'status' => 'approved', 'reviewed_by' => 'attacker'])->assertRedirect()->assertSessionHas('status');
+    $this->post('/family/kunjungan', [...validFamilyVisit(), 'requester_id' => 'attacker', 'status' => 'approved', 'reviewed_by' => 'attacker'])->assertRedirect('/family/kunjungan?resident='.FamilyVisitFake::RESIDENT)->assertSessionHas('status');
     expect($this->fake->rows)->toHaveCount(1);
     $call = $this->fake->calls[0]['data'];
     expect($call['p_requested_at'])->toBe('2026-11-19T02:00:00+00:00')
@@ -146,12 +147,16 @@ test('admin sees real counts and can decide a pending visit', function (string $
     $url = '/admin/kunjungan/'.FamilyVisitFake::VISIT;
     $this->get($url)->assertOk()->assertSee('Simpan keputusan');
     Auth::forgetGuards();
-    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => $decision, 'review_note' => $decision === 'rejected' ? 'Kegiatan panti berlangsung.' : null])->assertRedirect()->assertSessionHas('status');
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => $decision, 'review_note' => $decision === 'rejected' ? 'Kegiatan panti berlangsung.' : null])->assertRedirect('/admin/kunjungan')->assertSessionHas('status');
     expect($this->fake->rows[0]['status'])->toBe($decision);
 
     Auth::forgetGuards();
-    $this->get($url)->assertOk()->assertSee('Sari Admin')->assertSee('17 November 2026, 08.00')
-        ->assertDontSee('Simpan keputusan');
+    $this->get('/admin/kunjungan')->assertOk()->assertSeeInOrder([
+        'Manajemen Kunjungan', 'Keputusan kunjungan berhasil disimpan.', 'Ringkasan status',
+    ]);
+
+    Auth::forgetGuards();
+    $this->get($url)->assertOk()->assertSee('Simpan keputusan');
 
     $this->fake->role = 'family';
     Auth::forgetGuards();
@@ -166,11 +171,31 @@ test('admin rejection requires a nonblank note', function () {
     expect($this->fake->calls)->toBeEmpty();
 });
 
-test('admin cannot decide an already decided visit', function () {
+test('admin can edit an existing decision before the visit starts', function () {
     $this->fake->role = 'admin';
     $this->fake->rows[] = $this->fake->row(['status' => 'approved']);
-    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => 'rejected', 'review_note' => 'late change'])->assertForbidden();
+    $this->get('/admin/kunjungan')->assertOk()->assertSee('Edit keputusan');
+    Auth::forgetGuards();
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, [
+        'decision' => 'rejected', 'review_note' => 'Jadwal panti berubah.',
+    ])->assertRedirect('/admin/kunjungan')->assertSessionHas('status');
+    expect($this->fake->rows[0]['status'])->toBe('rejected');
 });
+
+test('admin cannot change status after the visit starts or after family cancellation', function (string $status, string $requestedAt) {
+    $this->fake->role = 'admin';
+    $this->fake->rows[] = $this->fake->row(['status' => $status, 'requested_at' => $requestedAt]);
+    $this->get('/admin/kunjungan')->assertOk()->assertDontSee('Edit keputusan');
+    Auth::forgetGuards();
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, [
+        'decision' => 'rejected', 'review_note' => 'Jadwal panti berubah.',
+    ])->assertForbidden();
+    expect(array_column($this->fake->calls, 'path'))->not->toContain('/rest/v1/rpc/review_family_visit');
+})->with([
+    ['pending', '2026-11-17T01:00:00+00:00'],
+    ['approved', '2026-11-16T01:00:00+00:00'],
+    ['cancelled', '2026-11-19T02:00:00+00:00'],
+]);
 
 test('database race conflicts return HTTP 409 without a success message', function () {
     $this->fake->conflict = true;
@@ -190,6 +215,18 @@ test('published dummy text remains visible when photo permission is revoked', fu
     $this->get('/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT)->assertForbidden();
 });
 
+test('family images use the page origin and serve JPEG files', function () {
+    $avatar = '/family/foto-profil';
+    $story = '/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT;
+
+    $this->get('/family')->assertOk()->assertSee('src="'.$avatar.'"', false)
+        ->assertSee('src="'.$story.'"', false);
+    foreach ([$avatar, $story] as $image) {
+        Auth::forgetGuards();
+        $this->get($image)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    }
+});
+
 test('demo media requires auth, a verified relation and fresh photo permission', function () {
     $this->get('/family/contoh-media/garden?resident='.FamilyVisitFake::RESIDENT)->assertOk()->assertHeader('Content-Type', 'image/jpeg')->assertHeader('Cache-Control', 'no-store, private');
     $this->fake->linked = false;
@@ -206,19 +243,58 @@ test('news filters use the temporary provider without querying module two', func
         ->assertSee('Cerita dan kenangan pagi')->assertDontSee('Makan siang bersama teman');
 });
 
-test('the fictional Sulastri portrait belongs to the selected dummy resident and requires photo consent', function () {
+test('fictional resident portrait is selected by UUID, not by name, and requires photo consent', function () {
     $portrait = '/family/contoh-media/sulastri?resident='.FamilyVisitFake::RESIDENT;
     $this->get($portrait)->assertNotFound();
+
+    // Kesamaan nama tampilan tidak boleh mengaitkan foto milik orang lain.
     $this->fake->residentName = 'Ibu Sulastri (Dummy)';
     Auth::forgetGuards();
-    $this->get('/family/kabar')->assertOk()->assertSee('Foto ilustrasi Ibu Sulastri')->assertSee($portrait);
+    $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
+
+    // UUID yang dipetakan tetap berlaku meski nama penghuni berubah.
+    config(['family_visits.demo_portrait_resident_id' => FamilyVisitFake::RESIDENT]);
+    $this->fake->residentName = 'Nama Eyang Berubah';
+    Auth::forgetGuards();
+    $this->get('/family')->assertOk()->assertSee($portrait);
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee('Foto ilustrasi Nama Eyang Berubah')->assertSee($portrait);
     Auth::forgetGuards();
     $this->get($portrait)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+
     $this->fake->photoConsent = false;
+    Auth::forgetGuards();
+    $this->get('/family')->assertOk()->assertDontSee($portrait);
     Auth::forgetGuards();
     $this->get('/family/kabar')->assertOk()->assertDontSee($portrait);
     Auth::forgetGuards();
     $this->get($portrait)->assertForbidden();
+
+    $this->fake->photoConsent = true;
+    config(['family_visits.demo_news' => false]);
+    Auth::forgetGuards();
+    $this->get($portrait)->assertNotFound();
+});
+
+test('family avatar uses the private local fallback on sidebar and profile', function () {
+    $avatar = '/family/foto-profil';
+    foreach (['/family', '/family/kabar', '/family/profil'] as $page) {
+        Auth::forgetGuards();
+        $this->get($page)->assertOk()->assertSee('src="'.$avatar.'"', false);
+    }
+
+    Auth::forgetGuards();
+    $response = $this->get($avatar)->assertOk()->assertHeader('Content-Type', 'image/jpeg')
+        ->assertHeader('Cache-Control', 'no-store, private');
+    expect(realpath($response->baseResponse->getFile()->getPathname()))
+        ->toBe(realpath(resource_path('keluarga/ilustrasi-profil.jpg')));
+});
+
+test('stored avatar is served inline with image bytes and detected MIME type', function () {
+    $this->fake->avatarPath = 'profiles/'.FamilyVisitFake::FAMILY.'/avatar/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg';
+    $response = $this->get('/family/foto-profil')->assertOk()
+        ->assertHeader('Content-Type', 'image/jpeg')->assertHeader('Content-Disposition', 'inline');
+    expect($response->getContent())->toBe(file_get_contents(resource_path('resident/sulastri/profil.jpg')));
 });
 
 test('Eloquent relationships match the Supabase foreign keys and protected fields', function () {
@@ -251,4 +327,42 @@ test('the module two provider can supply real published news without dummy label
     $this->get('/family')->assertOk()->assertSee('Kabar terpublikasi dari provider')->assertSee('/media/private/published-fixture')->assertSee('09.00')->assertDontSee('KABAR CONTOH')->assertDontSee('Data dummy sementara');
     Auth::forgetGuards();
     $this->get('/family/kabar')->assertOk()->assertSee('Penerbit: Caregiver Uji')->assertDontSee('Contoh penerbit')->assertDontSee('/family/contoh-media/');
+});
+
+test('real published update uses secure media route and photo caption without dummy stories', function () {
+    $updateId = '70000000-0000-4000-8000-000000000001';
+    $this->fake->updates = [[
+        'id' => $updateId, 'resident_id' => FamilyVisitFake::RESIDENT,
+        'title' => 'Berkebun bersama', 'summary' => 'Catatan kegiatan.',
+        'category' => 'aktivitas', 'status' => 'published',
+        'photo_path' => FamilyVisitFake::RESIDENT.'/updates/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg',
+        'photo_caption' => 'Eyang sedang menyiram tanaman.',
+        'published_at' => '2026-11-17T01:00:00Z', 'created_at' => '2026-11-17T01:00:00Z',
+    ]];
+    $url = '/family/kabar/'.$updateId.'/foto?resident='.FamilyVisitFake::RESIDENT;
+    $this->get('/family/kabar')->assertOk()->assertSee('Berkebun bersama')
+        ->assertSee('Eyang sedang menyiram tanaman.')
+        ->assertSee($url)->assertDontSee('Data dummy sementara');
+    Auth::forgetGuards();
+    $this->get($url)->assertOk()->assertHeader('Content-Type', 'image/jpeg')
+        ->assertHeader('Cache-Control', 'no-store, private');
+
+    $this->fake->photoConsent = false;
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee('Berkebun bersama')->assertDontSee($url);
+    Auth::forgetGuards();
+    $this->get($url)->assertForbidden();
+});
+
+test('real resident portrait uses current UUID and consent, not a name or demo path', function () {
+    $this->fake->residentPhotoPath = FamilyVisitFake::RESIDENT.'/profile/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa.jpg';
+    $photo = '/family/resident/'.FamilyVisitFake::RESIDENT.'/foto';
+    $this->get('/family')->assertOk()->assertSee($photo);
+    Auth::forgetGuards();
+    $this->get('/family/kabar')->assertOk()->assertSee($photo);
+    Auth::forgetGuards();
+    $this->get($photo)->assertOk()->assertHeader('Content-Type', 'image/jpeg');
+    $this->fake->linked = false;
+    Auth::forgetGuards();
+    $this->get($photo)->assertNotFound();
 });

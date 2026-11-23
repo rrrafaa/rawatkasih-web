@@ -14,7 +14,7 @@ Modul `FamilyVisits` mengimplementasikan portal keluarga dan alur `visit_request
 
 Sumber persyaratan adalah PDF **Projek Akhir PemWeb Lanjut (3)** yang diunggah pengguna. Pembagian tugas pada permintaan pengguna menjadi batas implementasi; perbedaan nomor PRD dipetakan berdasarkan nama fitur seperti pada [TEAM.md](../TEAM.md). Modul ini tidak menyatakan seluruh PRD aplikasi sudah selesai.
 
-Desain: [Figma v2 — Portal Keluarga](https://www.figma.com/design/dEsADF72zaAkTdeS8brN6b/PAWL---Rawat-Kasih?node-id=160-1205). Frame acuan: beranda `160:1205`, kabar `160:1290`, kunjungan kosong `160:1365`, form `160:1426`, diajukan `160:1501`, profil `160:1572`, dan admin `99:374`. Warna, font, susunan kartu, sidebar, dan aset contoh mengikuti desain; layar kecil menggunakan susunan responsif. Nama/kamar berasal dari Supabase. Avatar memakai inisial karena kontrak foto profil nyata belum tersedia. Angka contoh pada desain diganti angka aktual atau diberi label contoh.
+Desain: [Figma v2 — Portal Keluarga](https://www.figma.com/design/dEsADF72zaAkTdeS8brN6b/PAWL---Rawat-Kasih?node-id=160-1205). Frame acuan: beranda `160:1205`, kabar `160:1290`, kunjungan kosong `160:1365`, form `160:1426`, diajukan `160:1501`, profil `160:1572`, dan admin `99:374`. Warna, font, susunan kartu, sidebar, dan aset contoh mengikuti desain; layar kecil menggunakan susunan responsif. Nama/kamar berasal dari Supabase. Foto resident demo dipilih menggunakan UUID yang dikonfigurasi (bukan nama); avatar keluarga memakai route privat dan gambar ilustrasi saat file `<user_uuid>.jpg` belum tersedia. Foto profil nyata dari Supabase masih menunggu kontrak storage. Angka contoh pada desain diganti angka aktual atau diberi label contoh.
 
 ## MVC dan materi perkuliahan
 
@@ -86,6 +86,7 @@ Konfigurasi `.env` opsional:
 
 ```dotenv
 FAMILY_DEMO_NEWS=true
+FAMILY_DEMO_PORTRAIT_RESIDENT_ID=11111111-1111-4111-8111-111111111111
 FAMILY_FACILITY_NAME="Wisma Kasih Utama"
 ```
 
@@ -93,7 +94,7 @@ Set `FAMILY_DEMO_NEWS=false` untuk mengosongkan kabar contoh. Lalu jalankan `php
 
 Orang 2 cukup mengganti binding `FamilyNewsProvider` pada `AppServiceProvider` dengan implementasi produksinya. Method `publishedFor($residentId, $photoConsent)` mengembalikan daftar DTO terurut terbaru dengan field `id`, `title`, `summary`, `category`, `published_at` (ISO 8601), `author`, `media` (ID aset untuk dummy; URL privat untuk kabar nyata; atau null), `is_demo` (false untuk kabar nyata). Implementasi produksi wajib memakai JWT pengguna, hanya memuat kabar terpublikasi yang berizin, serta memeriksa consent pada setiap akses media. Kategori UI saat ini `aktivitas` dan `kebersamaan`; perluas kontrak/filter bersama jika kategori modul 2 berbeda.
 
-Aset dummy berada di `resources/demo/family/`, bukan direktori `public`. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
+Aset kabar demo berada di `resources/resident/contoh-kabar/`, foto resident demo di `resources/resident/sulastri/profil.jpg`, dan avatar ilustrasi di `resources/keluarga/`. UUID `FAMILY_DEMO_PORTRAIT_RESIDENT_ID` harus cocok dengan resident dummy yang terkait; nama tidak digunakan untuk menentukan foto. Route `family.demo-media` memeriksa autentikasi, relasi dan consent foto terkini, mengirim `Cache-Control: no-store, private`. Ketika izin foto dicabut, gambar disembunyikan dan akses langsung ditolak; teks tetap dapat terlihat jika izin kabar masih berlaku. Penyimpanan/foto nyata tetap menjadi tanggung jawab modul Orang 2.
 
 ## Menjalankan dan memverifikasi
 
@@ -115,3 +116,17 @@ Hasil verifikasi implementasi:
 SQL ini hanya untuk operator pada lingkungan pengujian yang memiliki fixture profil/relasi/consent sesuai prasyarat file; jangan menjadikannya seed atau migrasi produksi. Akun dengan relasi/consent nyata tetap perlu menjalani UAT bersama pemilik akun sebelum rilis. Kabar produksi menunggu Orang 2; CRUD profil/relasi/consent dan modul lainnya tetap mengikuti pembagian tim.
 
 Branch lanjutan anggota: `feat/family-visits/nama-fitur`. Gunakan PR, sertakan perubahan kontrak/migrasi dan jalankan pemeriksaan di atas. Jangan mengubah file modul anggota lain atau menerapkan ulang migrasi yang sudah ada di proyek bersama.
+
+### Aset profil
+
+Logo RawatKasih disimpan di `resources/asset/` dan dilayani lewat URL logo yang sudah dipakai aplikasi. Foto akun keluarga disimpan sebagai `resources/keluarga/<uuid-profil>.jpg`. Portal memakai ilustrasi bawaan jika akun belum memiliki berkas foto. Keluarga hanya dapat membuka foto akunnya sendiri, dan admin dapat membuka foto pengaju melalui detail kunjungan. Pada tahap demo, penempatan foto masih melalui repositori. Untuk media produksi, kolom referensi foto telah ditambahkan pada migration Tahap 2 sebagaimana dijelaskan di bawah.
+
+## Tahap 2 — Kontrak metadata foto
+
+Sejak 22 November 2026, Supabase bersama memiliki kolom nullable `residents.profile_photo_path`, `profiles.avatar_path`, serta `family_updates.title`, `family_updates.category`, `family_updates.photo_caption` dari migration `20261122145059_add_family_media_metadata.sql`. `family_updates.photo_path` telah tersedia sebelumnya. `daily_notes` tidak dimodifikasi.
+
+Perubahan pada `App\\Models\\FamilyUpdate` menambahkan kolom-kolom tersebut ke proyeksi pembacaan; portal keluarga masih menggunakan provider dummy sampai tahap integrasi storage dan provider produksi. Jangan menampilkan object key privat langsung di view atau mengubah `family_updates` menjadi daftar catatan perawatan internal.
+
+## Tahap 3 — Media privat
+
+Foto asli ditampilkan lewat route privat dari bucket `rawatkasih-private`. Menu admin `/admin/foto-keluarga` menyediakan upload foto resident dan kabar; halaman profil keluarga menyediakan upload avatar akun sendiri. Avatar dan foto resident yang belum diunggah tetap memakai fallback lokal (ilustrasi/demo). Provider produksi membaca `family_updates` terpublikasi lewat RLS, sementara provider dummy hanya digunakan jika tidak ada kabar nyata. Migration dan kebijakan aktif tercatat dalam `docs/SUPABASE.md`. Pengujian browser end-to-end dan upload sungguhan masih diperlukan dengan akun admin/keluarga yang berizin.

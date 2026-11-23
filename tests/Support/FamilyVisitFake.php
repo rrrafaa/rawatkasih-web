@@ -26,6 +26,12 @@ class FamilyVisitFake
 
     public array $rows = [];
 
+    public array $updates = [];
+
+    public ?string $residentPhotoPath = null;
+
+    public ?string $avatarPath = null;
+
     public array $calls = [];
 
     public const FAMILY = '20000000-0000-4000-8000-000000000001';
@@ -44,12 +50,12 @@ class FamilyVisitFake
 
     public function profile(): array
     {
-        return ['id' => self::FAMILY, 'full_name' => $this->familyName, 'email' => 'rina@example.test', 'phone' => $this->familyPhone, 'role' => $this->role, 'is_active' => true];
+        return ['id' => self::FAMILY, 'full_name' => $this->familyName, 'email' => 'rina@example.test', 'phone' => $this->familyPhone, 'role' => $this->role, 'is_active' => true, 'avatar_path' => $this->avatarPath];
     }
 
     public function resident(): array
     {
-        return ['id' => self::RESIDENT, 'full_name' => $this->residentName, 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active'];
+        return ['id' => self::RESIDENT, 'full_name' => $this->residentName, 'birth_date' => '1947-05-10', 'room' => 'Melati 04', 'status' => 'active', 'profile_photo_path' => $this->residentPhotoPath];
     }
 
     public function row(array $overrides = []): array
@@ -74,6 +80,22 @@ class FamilyVisitFake
         }
         if ($path === '/rest/v1/consents') {
             return Http::response($this->photoConsent ? [['id' => 'consent']] : []);
+        }
+        if ($path === '/rest/v1/family_updates') {
+            $rows = $this->updates;
+            foreach (['id', 'resident_id', 'status'] as $field) {
+                if (isset($request[$field])) {
+                    $rows = array_values(array_filter($rows, fn ($r) => ($request[$field] === 'eq.'.($r[$field] ?? ''))));
+                }
+            }
+            if (isset($request['select']) && $request['select'] === 'photo_path') {
+                $rows = array_map(fn ($r) => ['photo_path' => $r['photo_path'] ?? null], $rows);
+            }
+
+            return Http::response($rows);
+        }
+        if (str_starts_with($path, '/storage/v1/object/authenticated/rawatkasih-private/')) {
+            return Http::response(file_get_contents(resource_path('resident/sulastri/profil.jpg')), 200, ['Content-Type' => 'application/octet-stream']);
         }
         if ($path === '/rest/v1/visit_requests') {
             $rows = array_values(array_filter($this->rows, fn ($r) => ($this->role === 'admin' || ($this->linked && $r['requester_id'] === self::FAMILY))

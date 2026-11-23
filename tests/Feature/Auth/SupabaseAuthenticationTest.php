@@ -50,13 +50,13 @@ function fakeIdentity(string $role = 'admin', bool $active = true): void
 
         '*/auth/v1/logout*' => Http::response([], 204),
 
-        // Family visits: preserve mock from HEAD.
+        // Kunjungan keluarga: pertahankan tiruan dari HEAD.
         '*/rest/v1/family_links*' => Http::response([], 200),
 
-        // Care tasks: preserve RPC mock from main.
+        // Tugas perawatan: pertahankan tiruan RPC dari main.
         '*/rest/v1/rpc/generate_today_care_task_occurrences' => Http::response('0', 200),
 
-        // Fallback for other Supabase REST endpoints.
+        // Respons cadangan untuk endpoint REST Supabase lainnya.
         '*/rest/v1/*' => Http::response([], 200),
     ]);
 }
@@ -149,7 +149,7 @@ test('login is rate limited by email and IP with HTTP 429 and Retry-After', func
 
     Http::assertSentCount(5);
 
-    // Throttle is keyed per normalized email + IP.
+    // Pembatasan percobaan menggunakan email ternormalisasi dan IP.
     $this->post('/login', [
         'email' => 'other@example.test',
         'password' => 'bad',

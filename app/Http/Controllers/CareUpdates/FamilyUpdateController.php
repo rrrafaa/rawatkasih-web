@@ -13,14 +13,14 @@ use App\Models\FamilyUpdate;
 use App\Models\Profile;
 use App\Models\Resident;
 use App\Models\SupabaseUser;
+use App\Services\FamilyVisits\FamilyMediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class FamilyUpdateController extends Controller
 {
@@ -100,7 +100,7 @@ class FamilyUpdateController extends Controller
             // URL foto privat via route terotorisasi
             $photoUrl = null;
             if (filled($photoPath)) {
-                $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $row['id']]);
+                $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $row['id']], absolute: false);
             }
 
             $updatesList[] = array_merge($row, [
@@ -132,7 +132,8 @@ class FamilyUpdateController extends Controller
     public function store(
         StoreFamilyUpdateRequest $request,
         FamilyUpdate $familyUpdates,
-        Consent $consents
+        Consent $consents,
+        FamilyMediaStorage $media
     ): RedirectResponse {
         /** @var SupabaseUser $user */
         $user = $request->user();
@@ -140,7 +141,6 @@ class FamilyUpdateController extends Controller
         $data = $request->validated();
         $residentId = $data['resident_id'];
         $action = $data['action']; // 'draft' or 'publish'
-        $hasPhoto = $request->hasFile('photo');
 
         $status = $action === 'publish' ? 'published' : 'draft';
 
@@ -152,21 +152,13 @@ class FamilyUpdateController extends Controller
                 ]);
             }
 
-            if ($hasPhoto && ! $consents->hasPhotoConsent($residentId)) {
+            if (! $consents->hasPhotoConsent($residentId)) {
                 throw ValidationException::withMessages([
                     'photo' => 'Lansia ini belum memiliki izin berbagi foto (consent photo_share aktif). Unggah foto tidak diperbolehkan.',
                 ]);
             }
         }
-        $photoPath = null;
-        if ($hasPhoto) {
-            $file = $request->file('photo');
-            $extension = $file->getClientOriginalExtension() ?: 'jpg';
-            $filename = Str::uuid().'.'.$extension;
-
-            // Simpan ke private disk (storage/app/private/family_updates)
-            $photoPath = $file->storeAs('family_updates', $filename, 'local');
-        }
+        $photoPath = $media->upload($request->file('photo'), $residentId.'/updates');
 
         $publishedAt = $status === 'published' ? now('Asia/Jakarta')->toIso8601String() : null;
 
@@ -210,7 +202,7 @@ class FamilyUpdateController extends Controller
 
         $photoUrl = null;
         if (filled($update['photo_path'] ?? null)) {
-            $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $update['id']]);
+            $photoUrl = route('care-updates.family-updates.photo', ['updateId' => $update['id']], absolute: false);
         }
 
         return view('modules.care-updates.family-updates.edit', [
@@ -228,7 +220,8 @@ class FamilyUpdateController extends Controller
         UpdateFamilyUpdateRequest $request,
         string $updateId,
         FamilyUpdate $familyUpdates,
-        Consent $consents
+        Consent $consents,
+        FamilyMediaStorage $media
     ): RedirectResponse {
         $update = $familyUpdates->findForCurrentUser($updateId);
         abort_unless(is_array($update), 404);
@@ -239,26 +232,10 @@ class FamilyUpdateController extends Controller
         $data = $request->validated();
         $action = $data['action'];
         $hasPhoto = $request->hasFile('photo');
-        $removePhoto = $request->boolean('remove_photo');
-
         $currentPhoto = $update['photo_path'] ?? null;
-        $finalPhotoPath = $currentPhoto;
-
-        if ($removePhoto && ! $hasPhoto) {
-            if (filled($currentPhoto) && Storage::disk('local')->exists($currentPhoto)) {
-                Storage::disk('local')->delete($currentPhoto);
-            }
-            $finalPhotoPath = null;
-        }
-
-        if ($hasPhoto) {
-            if (filled($currentPhoto) && Storage::disk('local')->exists($currentPhoto)) {
-                Storage::disk('local')->delete($currentPhoto);
-            }
-            $file = $request->file('photo');
-            $extension = $file->getClientOriginalExtension() ?: 'jpg';
-            $filename = Str::uuid().'.'.$extension;
-            $finalPhotoPath = $file->storeAs('family_updates', $filename, 'local');
+        if (! $hasPhoto && (! filled($currentPhoto)
+            || (str_starts_with($currentPhoto, 'family_updates/') && ! Storage::disk('local')->exists($currentPhoto)))) {
+            throw ValidationException::withMessages(['photo' => 'Foto dokumentasi wajib diunggah.']);
         }
 
         $status = $action === 'publish' ? 'published' : 'draft';
@@ -270,12 +247,16 @@ class FamilyUpdateController extends Controller
                 ]);
             }
 
-            if (filled($finalPhotoPath) && ! $consents->hasPhotoConsent($residentId)) {
+            if (! $consents->hasPhotoConsent($residentId)) {
                 throw ValidationException::withMessages([
                     'photo' => 'Lansia ini belum memiliki izin berbagi foto (consent photo_share aktif). Unggah foto tidak diperbolehkan.',
                 ]);
             }
         }
+
+        $finalPhotoPath = $hasPhoto
+            ? $media->upload($request->file('photo'), $residentId.'/updates')
+            : $currentPhoto;
 
         $payload = [
             'summary' => trim($data['summary']),
@@ -329,8 +310,9 @@ class FamilyUpdateController extends Controller
         FamilyUpdate $familyUpdates,
         CaregiverAssignment $assignments,
         FamilyLink $familyLinks,
-        Consent $consents
-    ): BinaryFileResponse {
+        Consent $consents,
+        FamilyMediaStorage $media
+    ): Response {
         /** @var SupabaseUser $user */
         $user = $request->user();
 
@@ -358,16 +340,6 @@ class FamilyUpdateController extends Controller
             abort_unless($consents->hasPhotoConsent($residentId), 403);
         }
 
-        // 2. Cek keberadaan file di private disk
-        abort_unless(Storage::disk('local')->exists($photoPath), 404);
-
-        $fullPath = Storage::disk('local')->path($photoPath);
-        $mime = mime_content_type($fullPath) ?: 'image/jpeg';
-
-        return response()->file($fullPath, [
-            'Content-Type' => $mime,
-            'Cache-Control' => 'no-store, private',
-            'X-Content-Type-Options' => 'nosniff',
-        ]);
+        return $media->downloadUpdate($photoPath, $residentId);
     }
 }

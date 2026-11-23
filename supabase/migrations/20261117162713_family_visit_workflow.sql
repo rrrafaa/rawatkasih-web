@@ -1,4 +1,4 @@
--- Orang 3: additive visit fields, atomic state transitions, and idempotent submission.
+-- Orang 3: penambahan kolom kunjungan, perubahan status atomik, dan pengajuan idempoten.
 ALTER TABLE public.visit_requests
   ADD COLUMN IF NOT EXISTS requested_end_at timestamptz,
   ADD COLUMN IF NOT EXISTS primary_visitor_name text,

@@ -7,9 +7,7 @@ use Illuminate\Validation\Rules\Password;
 
 trait PasswordValidationRules
 {
-    /**
-     * Get the validation rules used to validate passwords.
-     *
+    /** Ambil aturan validasi kata sandi.
      * @return array<int, Password|ValidationRule|array<mixed>|string>
      */
     protected function passwordRules(): array
@@ -17,9 +15,7 @@ trait PasswordValidationRules
         return ['required', 'string', Password::default(), 'confirmed'];
     }
 
-    /**
-     * Get the validation rules used to validate the current password.
-     *
+    /** Ambil aturan validasi kata sandi saat ini.
      * @return array<int, Password|ValidationRule|array<mixed>|string>
      */
     protected function currentPasswordRules(): array

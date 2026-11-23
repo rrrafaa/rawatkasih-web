@@ -9,9 +9,7 @@ use Livewire\Features\SupportRedirects\Redirector;
 
 class Logout
 {
-    /**
-     * Log the current user out of the application.
-     */
+    /** Keluarkan pengguna saat ini dari aplikasi. */
     public function __invoke(): Redirector|RedirectResponse
     {
         Auth::guard('web')->logout();

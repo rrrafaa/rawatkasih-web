@@ -8,6 +8,8 @@
         </div>
     </header>
 
+    @include('modules.family-visits.partials.notification')
+
     <section aria-label="Ringkasan status" class="adm-visit-counts">
         @foreach (\App\Enums\VisitStatus::cases() as $status)
             <a href="{{ route('admin.visits.index', ['status' => $status->value]) }}" class="adm-visit-card"
@@ -60,7 +62,17 @@
                             </td>
                             <td>{{ $item->visitor_count }} orang</td>
                             <td><x-visit-status :status="$item->status"/></td>
-                            <td><a class="adm-visit-link" href="{{ route('admin.visits.show', $item->id) }}">Lihat detail</a></td>
+                            <td>
+                                <div class="adm-action-menu">
+                                    <button type="button" class="adm-row-action" data-action-menu-toggle aria-label="Buka menu aksi" aria-expanded="false">⋯</button>
+                                    <div class="adm-action-dropdown" data-action-menu hidden>
+                                        <a class="adm-dropdown-item" href="{{ route('admin.visits.show', $item->id) }}">Lihat detail</a>
+                                        @can('review', $item)
+                                            <a class="adm-dropdown-item" href="{{ route('admin.visits.show', $item->id) }}#keputusan">Edit keputusan</a>
+                                        @endcan
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr><td class="adm-visit-empty" colspan="6">Belum ada pengajuan untuk status ini.</td></tr>

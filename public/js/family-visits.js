@@ -1,4 +1,4 @@
-// Use native controls as the fallback when JavaScript is disabled.
+// Gunakan kontrol bawaan jika JavaScript dinonaktifkan.
 const visitForm = document.querySelector('[data-visit-form]');
 if (visitForm) {
     const { visit_date: date, start_time: start, end_time: end, visitor_count: count,
@@ -192,12 +192,52 @@ if (decision) {
         });
     }
 }
-document.querySelectorAll('form[data-confirm], form[data-visit-form], form[data-review-form]').forEach((form) => {
+const actionDialog = document.getElementById('fv-action-confirmation');
+let pendingAction;
+let approvedForm;
+
+if (actionDialog) {
+    actionDialog.addEventListener('close', () => {
+        const action = pendingAction;
+        pendingAction = undefined;
+        if (!action || actionDialog.returnValue !== 'confirm') return;
+
+        approvedForm = action.form;
+        action.form.requestSubmit(action.submitter);
+        approvedForm = undefined;
+    });
+}
+
+document.querySelectorAll('form[data-confirm], form[data-review-form]').forEach((form) => {
     form.addEventListener('submit', (event) => {
         if (event.defaultPrevented) return;
-        if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) { event.preventDefault(); return; }
+        if (form.dataset.confirm && approvedForm !== form && actionDialog?.showModal) {
+            event.preventDefault();
+            pendingAction = { form, submitter: event.submitter || undefined };
+            document.getElementById('fv-action-title').textContent = form.dataset.confirm;
+            actionDialog.returnValue = '';
+            actionDialog.showModal();
+            return;
+        }
+
         const button = form.querySelector('button[type="submit"]');
         if (button) { button.disabled = true; button.dataset.submitting = 'true'; }
     });
 });
+
+document.querySelectorAll('[data-story-photo]').forEach((photo) => {
+    const showUnavailable = () => {
+        photo.hidden = true;
+        photo.nextElementSibling.hidden = false;
+    };
+    photo.addEventListener('error', showUnavailable, { once: true });
+    if (photo.complete && !photo.naturalWidth) showUnavailable();
+});
+
 window.addEventListener('pageshow', () => document.querySelectorAll('[data-submitting]').forEach((button) => { button.disabled = false; }));
+
+const profileDialog = document.getElementById('fv-profile-dialog');
+if (profileDialog) {
+    document.querySelector('[data-edit-profile]').addEventListener('click', () => profileDialog.showModal());
+    if (profileDialog.hasAttribute('data-reopen')) profileDialog.showModal();
+}

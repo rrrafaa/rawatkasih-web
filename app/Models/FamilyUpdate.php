@@ -9,7 +9,7 @@ class FamilyUpdate extends SupabaseModel
 {
     protected string $table = 'family_updates';
 
-    protected string $columns = 'id,resident_id,author_id,summary,photo_path,status,published_at,created_at,updated_at';
+    protected string $columns = 'id,resident_id,author_id,title,category,summary,photo_path,photo_caption,status,published_at,created_at,updated_at';
 
     /**
      * @param  array<string, mixed>  $data
@@ -50,7 +50,7 @@ class FamilyUpdate extends SupabaseModel
     {
         abort_unless(auth()->user() instanceof SupabaseUser, 401);
 
-        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id)) {
+        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id)) {
             abort(404);
         }
 
@@ -81,14 +81,14 @@ class FamilyUpdate extends SupabaseModel
     {
         abort_unless(auth()->user() instanceof SupabaseUser, 401);
 
-        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id)) {
+        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id)) {
             abort(404);
         }
 
         $token = request()->session()->get('supabase.access_token');
         abort_unless(is_string($token) && $token !== '', 401);
 
-        // Cobalah HARD DELETE terlebih dahulu
+        // Coba hapus data secara permanen terlebih dahulu.
         $response = $this->client->request(
             'DELETE',
             '/rest/v1/'.$this->table.'?id=eq.'.$id,
@@ -96,9 +96,10 @@ class FamilyUpdate extends SupabaseModel
             $token
         );
 
-        // Jika Supabase RLS melarang DELETE (HTTP 401/403/404), lakukan SOFT DELETE (archived) sesuai PRD 8.5
+        // Jika penghapusan gagal, coba arsipkan data.
         if (! $response->successful()) {
             Log::info("Supabase DELETE family_updates returned {$response->status()}, falling back to soft-delete (status='archived')");
+
             $response = $this->client->request(
                 'PATCH',
                 '/rest/v1/'.$this->table.'?id=eq.'.$id,
@@ -126,7 +127,10 @@ class FamilyUpdate extends SupabaseModel
     {
         $validIds = array_values(array_unique(array_filter(
             $residentIds,
-            fn ($id) => preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $id) === 1
+            fn ($id) => preg_match(
+                '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD',
+                $id
+            ) === 1
         )));
 
         if ($validIds === []) {
@@ -143,7 +147,7 @@ class FamilyUpdate extends SupabaseModel
         if ($status !== null) {
             $query['status'] = 'eq.'.$status;
         } else {
-            // Jangan tampilkan item yang sudah di-arsipkan (soft-deleted) secara default
+            // Sembunyikan kabar yang sudah diarsipkan.
             $query['status'] = 'neq.archived';
         }
 
@@ -155,7 +159,7 @@ class FamilyUpdate extends SupabaseModel
      */
     public function publishedForResident(string $residentId, int $page = 1, int $perPage = 25): array
     {
-        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $residentId)) {
+        if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD', $residentId)) {
             return [];
         }
 

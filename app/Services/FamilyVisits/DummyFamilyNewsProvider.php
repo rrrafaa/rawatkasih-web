@@ -4,7 +4,7 @@ namespace App\Services\FamilyVisits;
 
 use App\Contracts\FamilyNewsProvider;
 
-/** Temporary read-only module-2 contract. Never writes family_updates or internal notes. */
+/** Kontrak sementara modul 2 khusus baca; tidak menulis family_updates atau catatan internal. */
 class DummyFamilyNewsProvider implements FamilyNewsProvider
 {
     public function publishedFor(string $residentId, bool $photoConsent): array

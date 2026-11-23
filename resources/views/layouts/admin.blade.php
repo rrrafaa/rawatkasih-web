@@ -46,6 +46,10 @@
                     <span>Insiden</span>
                 </a>
 
+                <a href="{{ route('admin.family-media') }}" class="adm-nav-link {{ request()->routeIs('admin.family-media*') ? 'is-active' : '' }}">
+                    <span>Foto keluarga</span>
+                </a>
+
                 <a href="{{ route('admin.visits.index') }}"
                    @class(['adm-nav-link', 'is-active' => request()->routeIs('admin.visits.*')])
                    @if (request()->routeIs('admin.visits.*')) aria-current="page" @endif>
