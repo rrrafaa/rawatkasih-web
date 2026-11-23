@@ -41,7 +41,7 @@ class UpdateFamilyUpdateRequest extends FormRequest
                 'mimes:jpeg,jpg,png,webp',
                 'max:3072',
             ],
-            'remove_photo' => ['nullable', 'boolean'],
+            'remove_photo' => ['prohibited'],
         ];
     }
 

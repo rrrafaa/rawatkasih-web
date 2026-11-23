@@ -9,19 +9,37 @@
         </div>
     </section>
 
-    <div class="fv-card" style="padding:20px;margin-bottom:20px">
-        <form method="post" action="{{ route('family.avatar.upload') }}" enctype="multipart/form-data" class="fv-form" data-confirm="Simpan foto profil baru?">
-            @csrf
-            <h2>Ubah foto profil</h2>
-            <label class="adm-form-label" for="account-photo">Pilih foto (JPEG, PNG, WebP; maksimal 3 MiB)</label>
-            <input id="account-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
-            @error('photo') <p class="adm-form-error">{{ $message }}</p> @enderror
-            <button class="adm-primary-button" type="submit">Simpan foto</button>
-        </form>
-    </div>
-
     <div class="fv-profile-grid">
-        <form class="fv-card fv-form" method="post" data-confirm="Simpan perubahan profil akun?"
+        <section class="fv-card fv-relationship">
+            <h2>Informasi pribadi</h2>
+            <dl class="fv-account-facts">
+                <div><dt>Nama lengkap</dt><dd>{{ $account['full_name'] ?? $user->name() }}</dd></div>
+                <div><dt>Nomor telepon</dt><dd>{{ ($account['phone'] ?? '') ?: 'Belum diisi' }}</dd></div>
+                <div><dt>Email login</dt><dd>{{ $account['email'] ?? $user->email }}</dd></div>
+            </dl>
+            <button class="adm-primary-button" type="button" data-edit-profile>Ubah profil</button>
+        </section>
+        <section class="fv-card fv-relationship">
+            <h2>Hubungan keluarga</h2>
+            @if ($resident)
+                <dl class="fv-account-facts">
+                    <div><dt>Lansia</dt><dd>{{ $resident->full_name }}</dd></div>
+                    <div><dt>Lokasi</dt><dd>{{ $resident->room ?: 'Kamar belum diisi' }} · {{ config('family_visits.facility_name') }}</dd></div>
+                    <div><dt>Hubungan</dt><dd>{{ $resident->familyLink->relationship }}</dd></div>
+                </dl>
+                <span class="fv-badge fv-badge-success">Terverifikasi</span>
+            @else
+                <p>Akun ini sedang menunggu verifikasi hubungan keluarga dari admin panti.</p>
+            @endif
+        </section>
+    </div>
+    <dialog id="fv-profile-dialog" class="adm-visit-dialog fv-profile-dialog" aria-labelledby="fv-profile-dialog-title"
+            @if ($errors->hasAny(['full_name', 'phone', 'photo'])) data-reopen @endif>
+        <div class="fv-profile-dialog-heading">
+            <h2 id="fv-profile-dialog-title">Ubah profil akun</h2>
+            <form method="dialog"><button type="submit" class="adm-secondary-button">Tutup</button></form>
+        </div>
+        <form class="fv-form" method="post" data-confirm="Simpan perubahan profil akun?"
               action="{{ route('family.profile.update', $resident ? ['resident' => $resident->id] : []) }}">
             @csrf
             @method('PATCH')
@@ -49,18 +67,13 @@
             </div>
         </form>
 
-        <section class="fv-card fv-relationship">
-            <h2>Hubungan keluarga</h2>
-            @if ($resident)
-                <dl class="fv-account-facts">
-                    <div><dt>Lansia</dt><dd>{{ $resident->full_name }}</dd></div>
-                    <div><dt>Lokasi</dt><dd>{{ $resident->room ?: 'Kamar belum diisi' }} · {{ config('family_visits.facility_name') }}</dd></div>
-                    <div><dt>Hubungan</dt><dd>{{ $resident->familyLink->relationship }}</dd></div>
-                </dl>
-                <span class="fv-badge fv-badge-success">Terverifikasi</span>
-            @else
-                <p>Akun ini sedang menunggu verifikasi hubungan keluarga dari admin panti.</p>
-            @endif
-        </section>
-    </div>
+        <form method="post" action="{{ route('family.avatar.upload', $resident ? ['resident' => $resident->id] : []) }}" enctype="multipart/form-data" class="fv-form" data-confirm="Simpan foto profil baru?">
+            @csrf
+            <h2>Ubah foto profil</h2>
+            <label class="adm-form-label" for="account-photo">Pilih foto (JPEG, PNG, WebP; maksimal 3 MiB)</label>
+            <input id="account-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+            @error('photo') <p class="adm-form-error">{{ $message }}</p> @enderror
+            <button class="adm-primary-button" type="submit">Simpan foto</button>
+        </form>
+    </dialog>
 @endsection

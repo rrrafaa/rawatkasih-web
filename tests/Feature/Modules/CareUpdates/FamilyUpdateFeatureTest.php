@@ -105,6 +105,7 @@ test('caregiver can save family update as draft with optional photo without cons
     loginCaregiver($caregiverId);
 
     Http::fake([
+        '*/storage/v1/object/rawatkasih-private/*' => Http::response([], 201),
         '*/rest/v1/caregiver_assignments*' => Http::response([
             [
                 'id' => '60000000-0000-4000-8000-000000000001',
@@ -191,6 +192,7 @@ test('caregiver can publish family update with photo when photo consent is grant
     loginCaregiver($caregiverId);
 
     Http::fake([
+        '*/storage/v1/object/rawatkasih-private/*' => Http::response([], 201),
         '*/rest/v1/caregiver_assignments*' => Http::response([
             [
                 'id' => '60000000-0000-4000-8000-000000000001',
@@ -370,4 +372,18 @@ test('private photo route returns 403 when photo consent is revoked for family',
 
     $response = $this->get(route('care-updates.family-updates.photo', ['updateId' => $updateId]));
     $response->assertForbidden();
+});
+
+test('caregiver cannot create a draft without a documentation photo', function () {
+    loginCaregiver();
+    Http::fake(['*/rest/v1/caregiver_assignments*' => Http::response([['id' => 'assigned']])]);
+
+    $this->from(route('care-updates.family-updates.index'))
+        ->post(route('care-updates.family-updates.store'), [
+            'resident_id' => '30000000-0000-4000-8000-000000000001',
+            'summary' => 'Kabar kegiatan pagi Eyang.',
+            'action' => 'draft',
+        ])->assertSessionHasErrors('photo');
+
+    Http::assertNotSent(fn ($request) => $request->method() === 'POST');
 });

@@ -608,3 +608,6 @@ if (openDrawerButton && templateForm) {
         }
     });
 })();
+document.querySelectorAll('[data-dismiss-notice]').forEach((button) => {
+    button.addEventListener('click', () => button.closest('.rk-corner-notice').remove());
+});

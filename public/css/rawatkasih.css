@@ -1680,3 +1680,34 @@
         padding: 22px 18px;
     }
 }
+.rk-corner-notice {
+    position: fixed;
+    z-index: 1000;
+    inset: 16px 16px auto auto;
+    max-width: min(360px, calc(100vw - 32px));
+    padding: 14px 16px;
+    border: 1px solid #b8e1cb;
+    border-radius: 12px;
+    background: #e5fcf0;
+    color: #005338;
+    box-shadow: 0 8px 24px rgb(0 53 36 / 15%);
+}
+
+.rk-corner-notice[role="alert"] {
+    border-color: #e8b8b3;
+    background: #fae8e6;
+    color: #92332f;
+}
+
+.rk-corner-notice {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+}
+
+.rk-corner-notice button {
+    flex: none;
+    color: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+}

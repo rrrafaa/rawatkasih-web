@@ -235,3 +235,9 @@ document.querySelectorAll('[data-story-photo]').forEach((photo) => {
 });
 
 window.addEventListener('pageshow', () => document.querySelectorAll('[data-submitting]').forEach((button) => { button.disabled = false; }));
+
+const profileDialog = document.getElementById('fv-profile-dialog');
+if (profileDialog) {
+    document.querySelector('[data-edit-profile]').addEventListener('click', () => profileDialog.showModal());
+    if (profileDialog.hasAttribute('data-reopen')) profileDialog.showModal();
+}
