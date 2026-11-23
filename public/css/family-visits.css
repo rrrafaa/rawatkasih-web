@@ -802,3 +802,11 @@ a.adm-visit-card[aria-current] {
 img[data-story-photo][hidden] {
     display: none;
 }
+
+.fv-verification {
+    justify-content: flex-end;
+}
+
+.adm-visits .adm-table-wrap:has([data-action-menu-toggle][aria-expanded="true"]) {
+    padding-bottom: 105px;
+}

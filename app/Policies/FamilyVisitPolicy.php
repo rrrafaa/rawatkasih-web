@@ -37,6 +37,8 @@ class FamilyVisitPolicy
 
     public function review(SupabaseUser $user, VisitRequest $visit): bool
     {
-        return $user->role() === Role::Admin && $visit->status === VisitStatus::Pending;
+        return $user->role() === Role::Admin
+            && $visit->status !== VisitStatus::Cancelled
+            && $visit->requested_at->isFuture();
     }
 }

@@ -42,11 +42,11 @@ class FamilyVisitController extends Controller
         Gate::authorize('create', [VisitRequest::class, $resident]);
         $start = CarbonImmutable::createFromFormat('!Y-m-d H:i', $input['visit_date'].' '.$input['start_time'], 'Asia/Jakarta');
         $end = CarbonImmutable::createFromFormat('!Y-m-d H:i', $input['visit_date'].' '.$input['end_time'], 'Asia/Jakarta');
-        $visit = $data->submit(['p_resident_id' => $resident->id, 'p_submission_key' => $input['submission_key'],
+        $data->submit(['p_resident_id' => $resident->id, 'p_submission_key' => $input['submission_key'],
             'p_requested_at' => $start->utc()->toIso8601String(), 'p_requested_end_at' => $end->utc()->toIso8601String(),
             'p_visitor_count' => (int) $input['visitor_count'], 'p_primary_visitor_name' => $input['primary_visitor_name'], 'p_note' => $input['note'] ?? null]);
 
-        return redirect()->route('family.visits.show', $visit->id)->with('status', 'Pengajuan kunjungan tersimpan. Menunggu keputusan admin.');
+        return redirect()->route('family.visits.index', ['resident' => $resident->id])->with('status', 'Pengajuan kunjungan tersimpan. Menunggu keputusan admin.');
     }
 
     public function show(Request $request, VisitRequest $visit, PortalContext $context): View

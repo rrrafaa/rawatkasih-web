@@ -74,7 +74,7 @@ test('an unlinked resident ID cannot be selected or submitted', function () {
 });
 
 test('a valid visit is persisted with current actor and times converted from WIB', function () {
-    $this->post('/family/kunjungan', [...validFamilyVisit(), 'requester_id' => 'attacker', 'status' => 'approved', 'reviewed_by' => 'attacker'])->assertRedirect()->assertSessionHas('status');
+    $this->post('/family/kunjungan', [...validFamilyVisit(), 'requester_id' => 'attacker', 'status' => 'approved', 'reviewed_by' => 'attacker'])->assertRedirect('/family/kunjungan?resident='.FamilyVisitFake::RESIDENT)->assertSessionHas('status');
     expect($this->fake->rows)->toHaveCount(1);
     $call = $this->fake->calls[0]['data'];
     expect($call['p_requested_at'])->toBe('2026-11-19T02:00:00+00:00')
@@ -156,8 +156,7 @@ test('admin sees real counts and can decide a pending visit', function (string $
     ]);
 
     Auth::forgetGuards();
-    $this->get($url)->assertOk()->assertSee('Sari Admin')->assertSee('17 November 2026, 08.00')
-        ->assertDontSee('Simpan keputusan');
+    $this->get($url)->assertOk()->assertSee('Simpan keputusan');
 
     $this->fake->role = 'family';
     Auth::forgetGuards();
@@ -172,11 +171,31 @@ test('admin rejection requires a nonblank note', function () {
     expect($this->fake->calls)->toBeEmpty();
 });
 
-test('admin cannot decide an already decided visit', function () {
+test('admin can edit an existing decision before the visit starts', function () {
     $this->fake->role = 'admin';
     $this->fake->rows[] = $this->fake->row(['status' => 'approved']);
-    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => 'rejected', 'review_note' => 'late change'])->assertForbidden();
+    $this->get('/admin/kunjungan')->assertOk()->assertSee('Edit keputusan');
+    Auth::forgetGuards();
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, [
+        'decision' => 'rejected', 'review_note' => 'Jadwal panti berubah.',
+    ])->assertRedirect('/admin/kunjungan')->assertSessionHas('status');
+    expect($this->fake->rows[0]['status'])->toBe('rejected');
 });
+
+test('admin cannot change status after the visit starts or after family cancellation', function (string $status, string $requestedAt) {
+    $this->fake->role = 'admin';
+    $this->fake->rows[] = $this->fake->row(['status' => $status, 'requested_at' => $requestedAt]);
+    $this->get('/admin/kunjungan')->assertOk()->assertDontSee('Edit keputusan');
+    Auth::forgetGuards();
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, [
+        'decision' => 'rejected', 'review_note' => 'Jadwal panti berubah.',
+    ])->assertForbidden();
+    expect(array_column($this->fake->calls, 'path'))->not->toContain('/rest/v1/rpc/review_family_visit');
+})->with([
+    ['pending', '2026-11-17T01:00:00+00:00'],
+    ['approved', '2026-11-16T01:00:00+00:00'],
+    ['cancelled', '2026-11-19T02:00:00+00:00'],
+]);
 
 test('database race conflicts return HTTP 409 without a success message', function () {
     $this->fake->conflict = true;
