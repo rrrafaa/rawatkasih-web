@@ -40,7 +40,9 @@ test('admin sees pending links and verifies only a pending link with their own t
         '*/rest/v1/family_links*' => Http::response([['id' => $id, 'user_id' => $id, 'resident_id' => $id, 'relationship' => 'Anak', 'status' => 'pending']]),
     ]);
 
-    $this->get('/admin/anggota')->assertOk()->assertSee('Tambah Keluarga')->assertSee('Rina')->assertSee('Verifikasi relasi');
+    $this->get('/admin/anggota')->assertOk()->assertSee('Tambah Anggota Keluarga')->assertSee('Tambah Caregiver')->assertDontSee('Konfirmasi kata sandi')->assertSee('Rina')->assertSee('Verifikasi relasi');
+    $this->get('/admin/anggota?tambah=family')->assertOk()->assertSee('Buat akun Keluarga')->assertSee('Hubungan keluarga')->assertDontSee('Buat akun Caregiver');
+    $this->get('/admin/anggota?tambah=caregiver')->assertOk()->assertSee('Buat akun Caregiver')->assertDontSee('Hubungan keluarga')->assertDontSee('Buat akun Keluarga');
     $this->patch('/admin/anggota/relasi/'.$id)->assertRedirect('/admin/anggota');
 
     Http::assertSent(fn ($request) => $request->method() === 'PATCH'
