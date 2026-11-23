@@ -9,7 +9,9 @@
 
 @section('admin-content')
     <div class="adm-visits">
-        @include('modules.family-visits.partials.notification')
+        @unless (request()->routeIs('admin.visits.index'))
+            @include('modules.family-visits.partials.notification')
+        @endunless
         @yield('visit-content')
         @include('modules.family-visits.partials.confirmation')
     </div>

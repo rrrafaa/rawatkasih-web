@@ -8,6 +8,8 @@
         </div>
     </header>
 
+    @include('modules.family-visits.partials.notification')
+
     <section aria-label="Ringkasan status" class="adm-visit-counts">
         @foreach (\App\Enums\VisitStatus::cases() as $status)
             <a href="{{ route('admin.visits.index', ['status' => $status->value]) }}" class="adm-visit-card"

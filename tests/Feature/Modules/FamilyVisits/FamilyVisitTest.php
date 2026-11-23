@@ -147,8 +147,13 @@ test('admin sees real counts and can decide a pending visit', function (string $
     $url = '/admin/kunjungan/'.FamilyVisitFake::VISIT;
     $this->get($url)->assertOk()->assertSee('Simpan keputusan');
     Auth::forgetGuards();
-    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => $decision, 'review_note' => $decision === 'rejected' ? 'Kegiatan panti berlangsung.' : null])->assertRedirect()->assertSessionHas('status');
+    $this->patch('/admin/kunjungan/'.FamilyVisitFake::VISIT, ['decision' => $decision, 'review_note' => $decision === 'rejected' ? 'Kegiatan panti berlangsung.' : null])->assertRedirect('/admin/kunjungan')->assertSessionHas('status');
     expect($this->fake->rows[0]['status'])->toBe($decision);
+
+    Auth::forgetGuards();
+    $this->get('/admin/kunjungan')->assertOk()->assertSeeInOrder([
+        'Manajemen Kunjungan', 'Keputusan kunjungan berhasil disimpan.', 'Ringkasan status',
+    ]);
 
     Auth::forgetGuards();
     $this->get($url)->assertOk()->assertSee('Sari Admin')->assertSee('17 November 2026, 08.00')

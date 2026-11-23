@@ -34,6 +34,6 @@ class AdminVisitController extends Controller
         $input = $request->validated();
         $data->review($visit, $input['decision'], $input['review_note'] ?? null);
 
-        return redirect()->route('admin.visits.show', $visit->id)->with('status', 'Keputusan kunjungan berhasil disimpan.');
+        return redirect()->route('admin.visits.index')->with('status', 'Keputusan kunjungan berhasil disimpan.');
     }
 }
